@@ -27,7 +27,7 @@ javafx {
 }
 
 dependencies {
-    implementation 'com.github.almasb:fxgl:17.3'
+    implementation 'com.github.almasb:fxgl:21.1'
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
