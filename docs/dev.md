@@ -28,22 +28,32 @@ BlockBounce/
 │   ├── main/
 │   │   ├── java/
 │   │   │   └── com/birb_birb/blockbounce/
-│   │   │       └── Main.java              # Điểm khởi động chính của ứng dụng
+│   │   │       ├── constants/
+│   │   │       │   └── GameConstants.java
+│   │   │       ├── core/
+│   │   │       │   └── BlockBounceApp.java
+│   │   │       ├── ui/
+│   │   │       │   └── menus/
+│   │   │       │       ├── BaseMenu.java
+│   │   │       │       ├── MainMenu.java
+│   │   │       │       ├── ScoreModeMenu.java
+│   │   │       │       ├── StoryModeMenu.java
+│   │   │       │       └── VersusModeMenu.java
+│   │   │       └── utils/
+│   │   │           ├── FontManager.java
+│   │   │           └── SoundManager.java
 │   │   └── resources/
-│   │       └── assets/                    # Thư mục tài nguyên game
-│   │           ├── textures/              # Hình ảnh và sprites
-│   │           ├── sounds/                # Hiệu ứng âm thanh
-│   │           ├── music/                 # Nhạc nền
-│   │           ├── fonts/                 # Font chữ tùy chỉnh
-│   │           ├── ui/                    # Phần tử giao diện người dùng
-│   │           └── data/                  # File dữ liệu game
+│   │       └── assets/
+│   │           ├── block_bounce.png
+│   │           ├── textures/
+│   │           │   └── menus/
+│   │           ├── sounds/
+│   │           └── fonts/
 │   └── test/
-│       └── java/                          # Unit tests
-├── gradle/
-├── build.gradle                           # Cấu hình build
-├── settings.gradle                        # Cài đặt dự án
-├── .gitignore
-└── README.md
+│       └── java/                               # Unit tests
+├── build.gradle                                # Cấu hình build
+├── settings.gradle                             # Cài đặt dự án
+└── gradlew.bat                                 # Gradle wrapper
 ```
 
 ### Các task Gradle có sẵn
