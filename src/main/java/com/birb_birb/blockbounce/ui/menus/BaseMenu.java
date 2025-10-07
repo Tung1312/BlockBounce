@@ -10,6 +10,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
+import java.util.Objects;
+
 /**
  * Base class for all game menus.
  */
@@ -47,7 +49,7 @@ public abstract class BaseMenu extends FXGLMenu {
         try {
             String imagePath = getBackgroundImagePath();
             if (imagePath != null) {
-                Image backgroundImage = new Image(getClass().getResourceAsStream(imagePath));
+                Image backgroundImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
                 ImageView backgroundView = new ImageView(backgroundImage);
                 backgroundView.setFitWidth(getAppWidth());
                 backgroundView.setFitHeight(getAppHeight());
@@ -78,7 +80,7 @@ public abstract class BaseMenu extends FXGLMenu {
         // Declare custom button styles:
         String baseStyle = "-fx-font-family: '" + fontFamily + "';" +
                 "-fx-font-size: " + (customFont != null ? customFont.getSize() : 16) + "px;" +
-                "-fx-background-color: rgba(54,222,227,0.55);" + // TODO: Set to transparent when release
+                "-fx-background-color: rgba(54,222,227,0.55);" +
                 "-fx-background-radius: 6;" +
                 "-fx-border-radius: 6;" +
                 "-fx-text-fill: rgb(62, 32, 31);" +
@@ -87,7 +89,7 @@ public abstract class BaseMenu extends FXGLMenu {
                 "-fx-text-alignment: center;";
         String hoverStyle = "-fx-font-family: '" + fontFamily + "';" +
                 "-fx-font-size: " + (customFont != null ? customFont.getSize() : 16) + "px;" +
-                "-fx-background-color: rgba(54,222,227,0.55);" + // TODO: Set to transparent when release
+                "-fx-background-color: rgba(54,222,227,0.55);" +
                 "-fx-background-radius: 6;" +
                 "-fx-border-radius: 6;" +
                 "-fx-text-fill: white;" +
@@ -98,7 +100,7 @@ public abstract class BaseMenu extends FXGLMenu {
                 "-fx-scale-y: 1.05;";   // hovered
         String pressStyle = "-fx-font-family: '" + fontFamily + "';" +
                 "-fx-font-size: " + (customFont != null ? customFont.getSize() : 16) + "px;" +
-                "-fx-background-color: rgba(54,222,227,0.55);" + // TODO: Set to transparent when release
+                "-fx-background-color: rgba(54,222,227,0.55);" +
                 "-fx-background-radius: 6;" +
                 "-fx-border-radius: 6;" +
                 "-fx-text-fill: white;" +

@@ -37,9 +37,4 @@ public final class FontManager {
             customFont = Font.font(GameConstants.FALLBACK_FONT, FontWeight.BOLD, GameConstants.DEFAULT_FONT_SIZE);
         }
     }
-
-    public static Font getCustomFont(double size) {
-        Font baseFont = getCustomFont();
-        return Font.font(baseFont.getFamily(), size);
-    }
 }

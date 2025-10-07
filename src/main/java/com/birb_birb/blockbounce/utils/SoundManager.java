@@ -26,7 +26,6 @@ public class SoundManager {
             initialized = true;
         } catch (Exception e) {
             System.err.println("Failed to load sounds: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -35,7 +34,6 @@ public class SoundManager {
             getAudioPlayer().playSound(hoverSound);
         } catch (Exception e) {
             System.err.println("Failed to play hover sound: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -44,7 +42,6 @@ public class SoundManager {
             getAudioPlayer().playSound(clickSound);
         } catch (Exception e) {
             System.err.println("Failed to play click sound: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
