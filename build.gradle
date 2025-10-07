@@ -15,6 +15,11 @@ java {
 // Configure main class for the application plugin
 application {
     mainClass = 'com.birb_birb.blockbounce.core.BlockBounceApp'
+    applicationDefaultJvmArgs = ['--enable-native-access=ALL-UNNAMED']
+}
+
+tasks.withType(JavaExec).configureEach {
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
 }
 
 repositories {
@@ -22,7 +27,7 @@ repositories {
 }
 
 javafx {
-    version = "17.0.2"
+    version = "21.0.1"
     modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.media' ]
 }
 
@@ -36,4 +41,5 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
 }
