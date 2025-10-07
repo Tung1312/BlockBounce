@@ -14,7 +14,7 @@ java {
 
 // Configure main class for the application plugin
 application {
-    mainClass = 'com.birb_birb.blockbounce.Main'
+    mainClass = 'com.birb_birb.blockbounce.core.BlockBounceApp'
 }
 
 repositories {

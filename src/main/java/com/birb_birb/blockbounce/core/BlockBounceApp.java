@@ -2,10 +2,15 @@ package com.birb_birb.blockbounce.core;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.scene.FXGLMenu;
+import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.entity.Entity;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.ui.menus.MainMenu;
+import com.birb_birb.blockbounce.utils.SoundManager;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.jetbrains.annotations.NotNull;
 
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
 import static com.almasb.fxgl.dsl.FXGL.getGameScene;
@@ -21,6 +26,19 @@ public class BlockBounceApp extends GameApplication {
         settings.setFullScreenFromStart(false);
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
+
+        settings.setSceneFactory(new SceneFactory() {
+            @NotNull
+            @Override
+            public FXGLMenu newMainMenu() {
+                return new MainMenu();
+            }
+        });
+    }
+
+    @Override
+    protected void onPreInit() {
+        SoundManager.initialize();
     }
 
     @Override
