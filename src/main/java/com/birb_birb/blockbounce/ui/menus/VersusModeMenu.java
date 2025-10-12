@@ -10,7 +10,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 /**
  * Versus Mode menu.
  */
-public class VersusModeMenu extends BaseMenu {
+public class VersusModeMenu extends MenuManager {
 
     public VersusModeMenu() {
         super(MenuType.GAME_MENU);

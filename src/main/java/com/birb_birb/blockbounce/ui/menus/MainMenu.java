@@ -8,9 +8,9 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * Main menu of the game with options for different game modes.
- * Extends BaseMenu to inherit common functionality.
+ * Extends MenuManager to inherit common functionality.
  */
-public class MainMenu extends BaseMenu {
+public class MainMenu extends MenuManager {
 
     public MainMenu() {
         super(MenuType.MAIN_MENU);
@@ -52,17 +52,14 @@ public class MainMenu extends BaseMenu {
     }
 
     private void navigateToStoryMode() {
-        // Use scene service to properly navigate without creating conflicting subscenes
         getSceneService().pushSubScene(new StoryModeMenu());
     }
 
     private void navigateToScoreMode() {
-        // Use scene service to properly navigate without creating conflicting subscenes
         getSceneService().pushSubScene(new ScoreModeMenu());
     }
 
     private void navigateToVersusMode() {
-        // Use scene service to properly navigate without creating conflicting subscenes
         getSceneService().pushSubScene(new VersusModeMenu());
     }
 }

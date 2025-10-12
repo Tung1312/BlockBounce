@@ -10,7 +10,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 /**
  * Story Mode menu.
  */
-public class StoryModeMenu extends BaseMenu {
+public class StoryModeMenu extends MenuManager {
 
     public StoryModeMenu() {
         super(MenuType.GAME_MENU);

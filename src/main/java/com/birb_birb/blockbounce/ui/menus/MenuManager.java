@@ -5,6 +5,7 @@ import com.almasb.fxgl.app.scene.MenuType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.utils.FontManager;
 import com.birb_birb.blockbounce.utils.SoundManager;
+import com.birb_birb.blockbounce.utils.CursorManager;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -15,11 +16,11 @@ import java.util.Objects;
 /**
  * Base class for all game menus.
  */
-public abstract class BaseMenu extends FXGLMenu {
+public abstract class MenuManager extends FXGLMenu {
 
     protected Pane root;
 
-    public BaseMenu(MenuType menuType) {
+    public MenuManager(MenuType menuType) {
         super(menuType);
 
         if (!SoundManager.isInitialized()) {
@@ -30,6 +31,9 @@ public abstract class BaseMenu extends FXGLMenu {
         root = new Pane();
         root.setFocusTraversable(true);
         root.requestFocus();
+        // Apply custom cursor to menu roots
+        CursorManager.apply(root);
+        CursorManager.apply(getContentRoot());
 
         // Set up the menu
         setupBackground();
@@ -80,7 +84,7 @@ public abstract class BaseMenu extends FXGLMenu {
         // Declare custom button styles:
         String baseStyle = "-fx-font-family: '" + fontFamily + "';" +
                 "-fx-font-size: " + (customFont != null ? customFont.getSize() : 16) + "px;" +
-                "-fx-background-color: rgba(54,222,227,0.55);" +
+                "-fx-background-color: rgba(54,222,227,0);" +
                 "-fx-background-radius: 6;" +
                 "-fx-border-radius: 6;" +
                 "-fx-text-fill: rgb(62, 32, 31);" +
@@ -89,7 +93,7 @@ public abstract class BaseMenu extends FXGLMenu {
                 "-fx-text-alignment: center;";
         String hoverStyle = "-fx-font-family: '" + fontFamily + "';" +
                 "-fx-font-size: " + (customFont != null ? customFont.getSize() : 16) + "px;" +
-                "-fx-background-color: rgba(54,222,227,0.55);" +
+                "-fx-background-color: rgba(54,222,227,0);" +
                 "-fx-background-radius: 6;" +
                 "-fx-border-radius: 6;" +
                 "-fx-text-fill: white;" +
@@ -100,7 +104,7 @@ public abstract class BaseMenu extends FXGLMenu {
                 "-fx-scale-y: 1.05;";   // hovered
         String pressStyle = "-fx-font-family: '" + fontFamily + "';" +
                 "-fx-font-size: " + (customFont != null ? customFont.getSize() : 16) + "px;" +
-                "-fx-background-color: rgba(54,222,227,0.55);" +
+                "-fx-background-color: rgba(54,222,227,0);" +
                 "-fx-background-radius: 6;" +
                 "-fx-border-radius: 6;" +
                 "-fx-text-fill: white;" +
@@ -154,4 +158,3 @@ public abstract class BaseMenu extends FXGLMenu {
         return getAppHeight() * 0.445;
     }
 }
-

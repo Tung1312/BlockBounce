@@ -10,7 +10,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 /**
  * Score Mode menu.
  */
-public class ScoreModeMenu extends BaseMenu {
+public class ScoreModeMenu extends MenuManager {
 
     public ScoreModeMenu() {
         super(MenuType.GAME_MENU);
