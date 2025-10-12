@@ -8,6 +8,7 @@ import com.almasb.fxgl.entity.Entity;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.ui.menus.MainMenu;
 import com.birb_birb.blockbounce.utils.SoundManager;
+import com.birb_birb.blockbounce.utils.CursorManager;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import org.jetbrains.annotations.NotNull;
@@ -43,6 +44,8 @@ public class BlockBounceApp extends GameApplication {
 
     @Override
     protected void initGame() {
+        // Ensure the custom cursor is applied in gameplay scene
+        CursorManager.apply(getGameScene().getRoot());
         initializeGameWorld();
     }
 

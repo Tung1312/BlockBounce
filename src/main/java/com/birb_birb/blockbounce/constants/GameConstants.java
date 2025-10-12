@@ -15,6 +15,8 @@ public class GameConstants {
     public static final int DEFAULT_FONT_SIZE = 16;
     public static final String FALLBACK_FONT = null;
 
+    public static final String CURSOR_PATH = "/assets/textures/ui/cursor.png";
+
     public static final double BUTTON_WIDTH = 340;
     public static final double BUTTON_HEIGHT = 50;
     public static final double BUTTON_SPACING = 70;
