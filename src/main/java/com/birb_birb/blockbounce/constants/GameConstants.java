@@ -10,6 +10,7 @@ public class GameConstants {
     public static final String STORY_MODE_BACKGROUND = "/assets/textures/menus/story_mode_template.png";
     public static final String SCORE_MODE_BACKGROUND = "/assets/textures/menus/score_mode_template.png";
     public static final String VERSUS_MODE_BACKGROUND = "/assets/textures/menus/versus_mode_template.png";
+    public static final String HOW_TO_PLAY = "/assets/textures/menus/how_to_play.png";
 
     public static final String FONT_PATH = "/assets/fonts/Daydream.ttf";
     public static final int DEFAULT_FONT_SIZE = 16;
