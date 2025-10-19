@@ -4,19 +4,20 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
-import com.almasb.fxgl.entity.Entity;
+import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.entities.PaddleComponent;
 import com.birb_birb.blockbounce.ui.menus.MainMenu;
-import com.birb_birb.blockbounce.utils.SoundManager;
 import com.birb_birb.blockbounce.utils.CursorManager;
+import com.birb_birb.blockbounce.utils.SoundManager;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import org.jetbrains.annotations.NotNull;
 
-import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
-import static com.almasb.fxgl.dsl.FXGL.getGameScene;
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class BlockBounceApp extends GameApplication {
+
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(GameConstants.WINDOW_WIDTH);
@@ -38,31 +39,38 @@ public class BlockBounceApp extends GameApplication {
     }
 
     @Override
+    protected void initInput() {
+        getInput().addEventHandler(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.LEFT) {
+                getGameWorld().getEntitiesByType(EntityType.PADDLE)
+                    .forEach(p -> p.getComponent(PaddleComponent.class).moveLeft(true));
+            }
+            if (e.getCode() == KeyCode.RIGHT) {
+                getGameWorld().getEntitiesByType(EntityType.PADDLE)
+                    .forEach(p -> p.getComponent(PaddleComponent.class).moveRight(true));
+            }
+        });
+        getInput().addEventHandler(javafx.scene.input.KeyEvent.KEY_RELEASED, e -> {
+            if (e.getCode() == KeyCode.LEFT) {
+                getGameWorld().getEntitiesByType(EntityType.PADDLE)
+                    .forEach(p -> p.getComponent(PaddleComponent.class).moveLeft(false));
+            }
+            if (e.getCode() == KeyCode.RIGHT) {
+                getGameWorld().getEntitiesByType(EntityType.PADDLE)
+                    .forEach(p -> p.getComponent(PaddleComponent.class).moveRight(false));
+            }
+        });
+    }
+    @Override
     protected void onPreInit() {
         SoundManager.initialize();
     }
 
     @Override
     protected void initGame() {
-        // Ensure the custom cursor is applied in gameplay scene
         CursorManager.apply(getGameScene().getRoot());
-        initializeGameWorld();
-    }
-
-    /**
-     * Initialize the game world with basic entities
-     */
-    private void initializeGameWorld() {
-        Entity player = entityBuilder()
-                .buildAndAttach();
-
-        getGameScene().getViewport().bindToEntity(player, 0, 0);
-        getGameScene().setBackgroundColor(Color.BLUE);
-
-        entityBuilder()
-                .at(150, 150)
-                .view(new Rectangle(80, 40, Color.RED))
-                .buildAndAttach();
+        GameInitializer.initializeGame();
+        getGameScene().setBackgroundColor(Color.BLACK);
     }
 
     public static void main(String[] args) {
