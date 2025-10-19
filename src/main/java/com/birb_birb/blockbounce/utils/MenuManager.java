@@ -1,11 +1,8 @@
-package com.birb_birb.blockbounce.ui.menus;
+package com.birb_birb.blockbounce.utils;
 
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.birb_birb.blockbounce.constants.GameConstants;
-import com.birb_birb.blockbounce.utils.FontManager;
-import com.birb_birb.blockbounce.utils.SoundManager;
-import com.birb_birb.blockbounce.utils.CursorManager;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -84,33 +81,23 @@ public abstract class MenuManager extends FXGLMenu {
         // Declare custom button styles:
         String baseStyle = "-fx-font-family: '" + fontFamily + "';" +
                 "-fx-font-size: " + (customFont != null ? customFont.getSize() : 16) + "px;" +
-                "-fx-background-color: rgba(54,222,227,0);" +
+                "-fx-background-color: rgba(255,255,255,0);" +
                 "-fx-background-radius: 6;" +
-                "-fx-border-radius: 6;" +
                 "-fx-text-fill: rgb(62, 32, 31);" +
                 "-fx-font-weight: bold;" +
                 "-fx-alignment: center;" +
                 "-fx-text-alignment: center;";
+
         String hoverStyle = "-fx-font-family: '" + fontFamily + "';" +
                 "-fx-font-size: " + (customFont != null ? customFont.getSize() : 16) + "px;" +
-                "-fx-background-color: rgba(54,222,227,0);" +
+                "-fx-background-color: rgba(255,255,255,0);" +
                 "-fx-background-radius: 6;" +
-                "-fx-border-radius: 6;" +
                 "-fx-text-fill: white;" +
                 "-fx-font-weight: bold;" +
                 "-fx-alignment: center;" +
                 "-fx-text-alignment: center;" +
                 "-fx-scale-x: 1.05;" +  // Scale when
-                "-fx-scale-y: 1.05;";   // hovered
-        String pressStyle = "-fx-font-family: '" + fontFamily + "';" +
-                "-fx-font-size: " + (customFont != null ? customFont.getSize() : 16) + "px;" +
-                "-fx-background-color: rgba(54,222,227,0);" +
-                "-fx-background-radius: 6;" +
-                "-fx-border-radius: 6;" +
-                "-fx-text-fill: white;" +
-                "-fx-font-weight: bold;" +
-                "-fx-alignment: center;" +
-                "-fx-text-alignment: center;";
+                "-fx-scale-y: 1.05;";    // hovered
 
         button.setStyle(baseStyle);
 
@@ -131,7 +118,7 @@ public abstract class MenuManager extends FXGLMenu {
 
         button.setOnMousePressed(e -> {
             SoundManager.playClickSound();
-            button.setStyle(pressStyle);
+            button.setStyle(baseStyle);
             button.setFont(customFont);
         });
 

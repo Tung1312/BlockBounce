@@ -8,12 +8,8 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import java.util.Objects;
 
-/**
- * Manages the game's custom mouse cursor.
- *
- * Creates a small crosshair-style cursor programmatically without relying on FX-thread-only APIs.
- */
 public final class CursorManager {
 
     private static Cursor CUSTOM_CURSOR;
@@ -95,7 +91,7 @@ public final class CursorManager {
     private static Cursor loadPngCursor() {
         try {
             // Load the cursor image from resources using GameConstants
-            Image cursorImage = new Image(CursorManager.class.getResourceAsStream(GameConstants.CURSOR_PATH));
+            Image cursorImage = new Image(Objects.requireNonNull(CursorManager.class.getResourceAsStream(GameConstants.CURSOR_PATH)));
 
             if (cursorImage.isError()) {
                 System.err.println("Failed to load cursor image from: " + GameConstants.CURSOR_PATH);
