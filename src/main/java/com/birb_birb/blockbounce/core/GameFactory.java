@@ -13,7 +13,7 @@ import javafx.scene.shape.Rectangle;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getAssetLoader;
-import static com.birb_birb.blockbounce.constants.GameConstants.BRICK_TEXTURE;
+import static com.birb_birb.blockbounce.constants.GameConstants.*;
 
 public final class GameFactory {
 
@@ -78,23 +78,19 @@ public final class GameFactory {
         int rows = 5;    // number of brick rows
         double offsetY = 80; // top margin
 
-        // Calculate width so that bricks perfectly fit the screen
-        double brickWidth = (double) GameConstants.WINDOW_WIDTH / cols;
-        double brickHeight = 50; // adjust if your texture is tall/short
-
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
                 Texture texture = baseTexture.copy();
                 texture.setPreserveRatio(false);
                 texture.setSmooth(false);
-                texture.setFitWidth(brickWidth);
-                texture.setFitHeight(brickHeight);
+                texture.setFitWidth(BRICK_WIDTH);
+                texture.setFitHeight(BRICK_HEIGHT);
 
                 entityBuilder()
                         .type(EntityType.BRICK)
-                        .at(x * brickWidth, offsetY + y * brickHeight)
+                        .at(x * BRICK_WIDTH, offsetY + y * BRICK_HEIGHT)
                         .view(texture)
-                        .bbox(new HitBox(BoundingShape.box(brickWidth, brickHeight)))
+                        .bbox(new HitBox(BoundingShape.box(BRICK_WIDTH, BRICK_HEIGHT)))
                         .with(new BrickComponent()) // simple brick component
                         .collidable()
                         .buildAndAttach();
