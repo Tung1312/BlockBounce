@@ -30,8 +30,9 @@ public class GameConstants {
     public static final String SOUND_HOVER = "hover.wav";
     public static final String SOUND_CLICK = "click.wav";
 
-    public static final double BRICK_WIDTH = 300;
-    public static final double BRICK_HEIGHT = 100;
+
+    public static final double BRICK_WIDTH = WINDOW_WIDTH / 10.0;
+    public static final double BRICK_HEIGHT = 50;
     public static final double BALL_SIZE = 24;
     public static final double PADDLE_WIDTH = 180;
     public static final double PADDLE_HEIGHT = 30;
