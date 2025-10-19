@@ -8,16 +8,40 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
+import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 
 public final class GameInitializer {
 
     private GameInitializer() {}
 
-    public static void initGameWorld() {
-        FXGL.getGameScene().setBackgroundColor(Color.BLACK);
+    public static void initializeGame() {
+        resetWorld();
+        setupLevel();
+    }
+    private static void resetWorld() {
+        // 1️⃣ Clear all existing entities and physics state
+        getGameWorld().getEntitiesCopy().forEach(Entity::removeFromWorld);
+        getPhysicsWorld().clear();
+
+        // 2️⃣ Clear UI overlays, timers, variables if you use them
+        getGameTimer().clear();
+        getWorldProperties().clear();
+    }
+
+    private static void setupLevel() {
+        // 3️⃣ Recreate your gameplay entities in correct order
+        GameFactory.createBackground();
         GameFactory.createWalls();
         GameFactory.createBricks();
-        GameFactory.createBall();
         GameFactory.createPaddle();
+        GameFactory.createBall();
+    }
+
+    public void restartGame() {
+        initializeGame();
+        getGameScene().clearUINodes();
+        getGameScene().getViewport().setBounds(0, 0,
+                GameConstants.WINDOW_WIDTH, GameConstants.WINDOW_HEIGHT);
+        getGameScene().getViewport().setZoom(1.0);
     }
 }
