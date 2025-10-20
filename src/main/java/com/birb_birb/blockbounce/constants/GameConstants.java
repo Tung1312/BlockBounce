@@ -6,12 +6,10 @@ public class GameConstants {
     public static final String GAME_TITLE = "BlockBounce";
     public static final String GAME_VERSION = "(beta 0.2)";
 
-    // Playable area offsets
     public static final double OFFSET_TOP = 20;
     public static final double OFFSET_BOTTOM = 20;
     public static final double OFFSET_LEFT = 20;
     public static final double OFFSET_RIGHT = 80;
-
     public static final double PLAYABLE_WIDTH = WINDOW_WIDTH - OFFSET_LEFT - OFFSET_RIGHT;
     public static final double PLAYABLE_HEIGHT = WINDOW_HEIGHT - OFFSET_TOP - OFFSET_BOTTOM;
 
@@ -39,6 +37,9 @@ public class GameConstants {
     public static final double BUTTON_WIDTH = 340;
     public static final double BUTTON_HEIGHT = 50;
     public static final double BUTTON_SPACING = 70;
+
+    public static final String BASE_STYLE = "-fx-background-color: rgba(255, 255, 255, 0);";
+    public static final String HOVER_STYLE = "-fx-background-color: rgba(255, 255, 255, 0.36);";
 
     public static final String SOUND_HOVER = "hover.wav";
     public static final String SOUND_CLICK = "click.wav";

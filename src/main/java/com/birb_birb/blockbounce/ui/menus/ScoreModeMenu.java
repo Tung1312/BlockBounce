@@ -2,11 +2,10 @@ package com.birb_birb.blockbounce.ui.menus;
 
 import com.almasb.fxgl.app.scene.MenuType;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.utils.ButtonManager;
 import com.birb_birb.blockbounce.utils.MenuManager;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
-
-import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * Score Mode menu.
@@ -27,7 +26,7 @@ public class ScoreModeMenu extends MenuManager {
         Button newGameButton = createMenuButton("New Game");
         newGameButton.setLayoutX(getButtonX());
         newGameButton.setLayoutY(getStartY());
-        newGameButton.setOnAction(e -> fireNewGame());
+        newGameButton.setOnAction(e -> ButtonManager.newGame());
         root.getChildren().add(newGameButton);
 
         setupKeyHandling();
@@ -37,7 +36,7 @@ public class ScoreModeMenu extends MenuManager {
         getInput().addAction(new com.almasb.fxgl.input.UserAction("ESC_BACK") {
             @Override
             protected void onActionBegin() {
-                getSceneService().popSubScene();
+                ButtonManager.navigateToMainMenu();
             }
         }, KeyCode.ESCAPE);
     }
