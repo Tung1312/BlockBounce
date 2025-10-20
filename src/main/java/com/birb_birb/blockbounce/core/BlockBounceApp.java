@@ -4,7 +4,6 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
-import com.almasb.fxgl.entity.Entity;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.gamemode.score.ScoreModeGame;
@@ -17,6 +16,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class BlockBounceApp extends GameApplication {
@@ -27,9 +29,10 @@ public class BlockBounceApp extends GameApplication {
     }
 
     private static GameMode currentGameMode = GameMode.STORY;
-    private boolean leftPressed = false;
-    private boolean rightPressed = false;
-    private Entity paddle;
+
+    // Track pressed keys manually
+    private final Set<KeyCode> pressedKeys = new HashSet<>();
+    private boolean inputInitialized = false;
 
     public static void setGameMode(GameMode mode) {
         currentGameMode = mode;
@@ -61,16 +64,8 @@ public class BlockBounceApp extends GameApplication {
 
     @Override
     protected void initInput() {
-        // Use A/D keys with onKey
-        onKey(KeyCode.A, () -> {
-            getGameWorld().getEntitiesByType(EntityType.PADDLE)
-                    .forEach(paddle -> paddle.translateX(-8));
-        });
-
-        onKey(KeyCode.D, () -> {
-            getGameWorld().getEntitiesByType(EntityType.PADDLE)
-                    .forEach(paddle -> paddle.translateX(8));
-        });
+        // Input bindings get cleared when switching scenes
+        // We'll handle input directly using JavaFX scene events
     }
 
     @Override
@@ -82,7 +77,7 @@ public class BlockBounceApp extends GameApplication {
     protected void initGame() {
         CursorManager.apply(getGameScene().getRoot());
 
-        // Initialize game based on selected mode
+        // Initialize game based on selected mode FIRST
         switch (currentGameMode) {
             case STORY:
                 StoryModeGame.initialize();
@@ -96,6 +91,48 @@ public class BlockBounceApp extends GameApplication {
         }
 
         getGameScene().setBackgroundColor(Color.BLACK);
+
+        // Scene event listeners will be set up in onUpdate when scene is ready
+    }
+
+    @Override
+    protected void onUpdate(double tpf) {
+        // Setup input listeners once scene is ready
+        if (!inputInitialized && getGameScene().getRoot().getScene() != null) {
+            // Use addEventFilter instead of setOnKeyPressed to capture events BEFORE FXGL intercepts them
+            getGameScene().getRoot().getScene().addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
+                pressedKeys.add(e.getCode());
+                // Consume the event to prevent FXGL from intercepting arrow keys
+                if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT ||
+                    e.getCode() == KeyCode.UP || e.getCode() == KeyCode.DOWN) {
+                    e.consume();
+                }
+            });
+
+            getGameScene().getRoot().getScene().addEventFilter(javafx.scene.input.KeyEvent.KEY_RELEASED, e -> {
+                pressedKeys.remove(e.getCode());
+                // Consume the event to prevent FXGL from intercepting arrow keys
+                if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT ||
+                    e.getCode() == KeyCode.UP || e.getCode() == KeyCode.DOWN) {
+                    e.consume();
+                }
+            });
+
+            inputInitialized = true;
+        }
+
+        // Handle paddle movement based on manually tracked keys
+        if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
+            getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle ->
+                paddle.translateX(-6)
+            );
+        }
+
+        if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
+            getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle ->
+                paddle.translateX(6)
+            );
+        }
     }
 
     public static void main(String[] args) {
