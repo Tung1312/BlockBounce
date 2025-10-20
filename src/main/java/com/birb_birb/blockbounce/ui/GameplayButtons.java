@@ -2,6 +2,7 @@ package com.birb_birb.blockbounce.ui;
 
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.utils.ButtonManager;
+import com.birb_birb.blockbounce.utils.SoundManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -47,11 +48,29 @@ public class GameplayButtons {
         button.setStyle(GameConstants.BASE_STYLE);
 
         button.setOnMouseEntered(e -> {
-            button.setStyle(GameConstants.HOVER_STYLE);
+            if (!button.isPressed()) {
+                SoundManager.playHoverSound();
+                button.setStyle(GameConstants.HOVER_STYLE);
+            }
         });
 
         button.setOnMouseExited(e -> {
+            if (!button.isPressed()) {
+                button.setStyle(GameConstants.BASE_STYLE);
+            }
+        });
+
+        button.setOnMousePressed(e -> {
+            SoundManager.playClickSound();
             button.setStyle(GameConstants.BASE_STYLE);
+        });
+
+        button.setOnMouseReleased(e -> {
+            if (button.isHover()) {
+                button.setStyle(GameConstants.HOVER_STYLE);
+            } else {
+                button.setStyle(GameConstants.BASE_STYLE);
+            }
         });
 
         return button;

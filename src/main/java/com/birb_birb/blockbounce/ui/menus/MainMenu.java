@@ -108,7 +108,7 @@ public class MainMenu extends MenuManager {
         });
 
         button.setOnMousePressed(e -> {
-            SoundManager.playHoverSound();
+            SoundManager.playClickSound();
             button.setStyle(GameConstants.BASE_STYLE);
         });
 
