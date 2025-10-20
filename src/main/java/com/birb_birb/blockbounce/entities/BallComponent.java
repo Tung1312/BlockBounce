@@ -29,12 +29,34 @@ public class BallComponent extends Component {
             velocity = new Point2D(velocity.getX(), -velocity.getY());
         }
 
-        // Check paddle collision
-        getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle -> {
-            if (entity.isColliding(paddle)) {
-                velocity = new Point2D(velocity.getX(), -Math.abs(velocity.getY()));
-            }
-        });
+        // Check paddle collision - only once per frame to prevent multiple bounces
+        if (!hasCollidedThisFrame) {
+            getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle -> {
+                if (entity.isColliding(paddle) && !hasCollidedThisFrame) {
+                    // Adjust ball position to prevent getting stuck in paddle
+                    double ballBottom = entity.getY() + entity.getHeight();
+                    double paddleTop = paddle.getY();
+
+                    if (ballBottom > paddleTop && velocity.getY() > 0) {
+                        // Push ball above paddle
+                        entity.setY(paddleTop - entity.getHeight());
+
+                        // Bounce with slight angle based on where ball hits paddle
+                        double paddleCenter = paddle.getX() + paddle.getWidth() / 2;
+                        double ballCenter = entity.getX() + entity.getWidth() / 2;
+                        double hitOffset = (ballCenter - paddleCenter) / (paddle.getWidth() / 2);
+
+                        // Add angle to the bounce (max ±1.5 horizontal velocity)
+                        double newVelX = velocity.getX() + hitOffset * 1.5;
+                        // Clamp horizontal velocity to prevent ball from going too fast horizontally
+                        newVelX = Math.max(-5, Math.min(5, newVelX));
+
+                        velocity = new Point2D(newVelX, -Math.abs(velocity.getY()));
+                        hasCollidedThisFrame = true;
+                    }
+                }
+            });
+        }
 
         // Brick collision - only destroy ONE brick per frame
         if (!hasCollidedThisFrame) {

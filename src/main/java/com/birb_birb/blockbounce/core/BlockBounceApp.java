@@ -121,16 +121,16 @@ public class BlockBounceApp extends GameApplication {
             inputInitialized = true;
         }
 
-        // Handle paddle movement based on manually tracked keys
+        // Handle paddle movement based on manually tracked keys - reduced speed to 4 for smoother control
         if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
             getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle ->
-                paddle.translateX(-6)
+                paddle.translateX(-4)
             );
         }
 
         if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
             getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle ->
-                paddle.translateX(6)
+                paddle.translateX(4)
             );
         }
     }
