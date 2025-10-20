@@ -3,7 +3,6 @@ package com.birb_birb.blockbounce.ui.menus;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.core.BlockBounceApp;
-import com.birb_birb.blockbounce.utils.ButtonManager;
 import com.birb_birb.blockbounce.utils.MenuManager;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;

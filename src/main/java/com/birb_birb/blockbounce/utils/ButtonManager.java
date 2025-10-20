@@ -31,10 +31,6 @@ public class ButtonManager {
         getSceneService().pushSubScene(new VersusModeMenu());
     }
 
-    public static void newGame() {
-        getGameController().startNewGame();
-    }
-
     public static void openSettings() {
         getGameController().gotoGameMenu();
     }

@@ -1,14 +1,7 @@
 package com.birb_birb.blockbounce.entities;
 
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.UserAction;
 import com.birb_birb.blockbounce.constants.GameConstants;
-import javafx.scene.Node;
-
-import javafx.scene.input.KeyCode;
-
-import static com.almasb.fxgl.dsl.FXGL.getInput;
 
 
 public class PaddleComponent extends Component {

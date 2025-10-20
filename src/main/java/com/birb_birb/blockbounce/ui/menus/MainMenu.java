@@ -8,16 +8,6 @@ import com.birb_birb.blockbounce.utils.SoundManager;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
-
-import java.util.Objects;
-
-import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * Main menu of the game with options for different game modes.
