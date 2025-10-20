@@ -10,6 +10,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class BallComponent extends Component {
 
+    private static final double BASE_SPEED = 3.0; // Tốc độ cơ bản không đổi
     private Point2D velocity = new Point2D(2.5, -2.5);
     private boolean hasCollidedThisFrame = false;
     private double collisionCooldown = 0;
@@ -50,17 +51,25 @@ public class BallComponent extends Component {
                         // Push ball above paddle
                         entity.setY(paddleTop - entity.getHeight() - 1);
 
-                        // Bounce with slight angle based on where ball hits paddle
+                        // Calculate angle based on where ball hits paddle
                         double paddleCenter = paddle.getX() + paddle.getWidth() / 2;
                         double ballCenter = entity.getX() + entity.getWidth() / 2;
                         double hitOffset = (ballCenter - paddleCenter) / (paddle.getWidth() / 2);
 
-                        // Add angle to the bounce (max ±1.5 horizontal velocity)
-                        double newVelX = velocity.getX() + hitOffset * 1.2;
-                        // Clamp horizontal velocity to prevent ball from going too fast horizontally
-                        newVelX = Math.max(-4, Math.min(4, newVelX));
+                        // Clamp hit offset để tránh góc quá dốc
+                        hitOffset = Math.max(-0.75, Math.min(0.75, hitOffset));
 
-                        velocity = new Point2D(newVelX, -Math.abs(velocity.getY()));
+                        // Tính góc bounce (từ -60 đến 60 độ)
+                        double bounceAngle = hitOffset * Math.PI / 3; // ±60 degrees
+
+                        // Tạo velocity mới với tốc độ cố định BASE_SPEED
+                        double newVelX = BASE_SPEED * Math.sin(bounceAngle);
+                        double newVelY = -BASE_SPEED * Math.cos(bounceAngle);
+
+                        // Đảm bảo velocity Y luôn hướng lên và không quá nhỏ
+                        newVelY = Math.min(newVelY, -2.0);
+
+                        velocity = new Point2D(newVelX, newVelY);
                         hasCollidedThisFrame = true;
                         collisionCooldown = 0.05; // 50ms cooldown
                     }
@@ -103,6 +112,12 @@ public class BallComponent extends Component {
                         } else {
                             entity.setY(brick.getY() - entity.getHeight() - 1);
                         }
+                    }
+
+                    // Normalize velocity để giữ tốc độ ổn định sau va chạm
+                    double currentSpeed = velocity.magnitude();
+                    if (currentSpeed > BASE_SPEED * 1.2) {
+                        velocity = velocity.normalize().multiply(BASE_SPEED);
                     }
 
                     brick.removeFromWorld();
