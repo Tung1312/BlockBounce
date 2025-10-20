@@ -3,6 +3,7 @@ package com.birb_birb.blockbounce.ui.menus;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.utils.MenuManager;
+import com.birb_birb.blockbounce.utils.SoundManager;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
@@ -108,6 +109,7 @@ public class MainMenu extends MenuManager {
 
         button.setOnMouseEntered(e -> {
             if (!button.isPressed()) {
+                SoundManager.playHoverSound();
                 button.setStyle(hoverStyle);
             }
         });
@@ -119,6 +121,7 @@ public class MainMenu extends MenuManager {
         });
 
         button.setOnMousePressed(e -> {
+            SoundManager.playHoverSound();
             button.setStyle(baseStyle);
         });
 
@@ -155,7 +158,7 @@ public class MainMenu extends MenuManager {
             Image howToPlayImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(GameConstants.HOW_TO_PLAY)));
             ImageView imageView = new ImageView(howToPlayImage);
             imageView.setPreserveRatio(true);
-            imageView.setFitWidth(800);
+            imageView.setFitWidth(1080);
             layout.getChildren().add(imageView);
         } catch (Exception e) {
             // Fallback
@@ -165,7 +168,7 @@ public class MainMenu extends MenuManager {
             layout.getChildren().add(text);
         }
 
-        Scene scene = new Scene(layout, 800, 600);
+        Scene scene = new Scene(layout, 1080, 720);
         howToPlayStage.setScene(scene);
         howToPlayStage.show();
     }

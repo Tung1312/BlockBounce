@@ -25,8 +25,8 @@ public class PaddleComponent extends Component {
         if (right) entity.translateX(speed);
 
         double paddleWidth = entity.getBoundingBoxComponent().getWidth();
-        double minX = 0;
-        double maxX = GameConstants.WINDOW_WIDTH - paddleWidth;
+        double minX = GameConstants.OFFSET_LEFT;
+        double maxX = GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - paddleWidth;
         double clampedX = Math.max(minX, Math.min(entity.getX(), maxX));
         entity.setX(clampedX);
     }

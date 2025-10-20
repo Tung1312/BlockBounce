@@ -35,6 +35,7 @@ public final class GameInitializer {
         GameFactory.createBricks();
         GameFactory.createPaddle();
         GameFactory.createBall();
+        GameFactory.createStoryModeFrame();
     }
 
     public void restartGame() {
