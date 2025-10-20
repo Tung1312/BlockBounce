@@ -15,54 +15,30 @@ import java.util.Objects;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
-/**
- * Centralized manager for all button actions and navigation in the game.
- * Provides static methods that can be used across different menus and UI components.
- */
 public class ButtonManager {
 
-    private ButtonManager() {
-        // Private constructor to prevent instantiation
-    }
+    private ButtonManager() {}
 
-    /**
-     * Navigate to Story Mode menu
-     */
     public static void navigateToStoryMode() {
         getSceneService().pushSubScene(new StoryModeMenu());
     }
 
-    /**
-     * Navigate to Score Mode menu
-     */
     public static void navigateToScoreMode() {
         getSceneService().pushSubScene(new ScoreModeMenu());
     }
 
-    /**
-     * Navigate to Versus Mode menu
-     */
     public static void navigateToVersusMode() {
         getSceneService().pushSubScene(new VersusModeMenu());
     }
 
-    /**
-     * Start a new game
-     */
     public static void newGame() {
         getGameController().startNewGame();
     }
 
-    /**
-     * Open FXGL settings/game menu
-     */
     public static void openSettings() {
         getGameController().gotoGameMenu();
     }
 
-    /**
-     * Show How to Play window with instructions
-     */
     public static void showHowToPlay() {
         Stage howToPlayStage = new Stage();
         howToPlayStage.setTitle("How to Play");
@@ -93,18 +69,10 @@ public class ButtonManager {
         howToPlayStage.show();
     }
 
-    /**
-     * Navigate back to Main Menu
-     * Pops the current sub-scene to return to main menu
-     */
     public static void navigateToMainMenu() {
         getSceneService().popSubScene();
     }
 
-    /**
-     * Navigate back to Main Menu from game
-     * Goes to main menu from the game scene
-     */
     public static void exitToMainMenu() {
         getGameController().gotoMainMenu();
     }

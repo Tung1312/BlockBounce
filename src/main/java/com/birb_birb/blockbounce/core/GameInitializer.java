@@ -1,11 +1,9 @@
 package com.birb_birb.blockbounce.core;
 
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
-import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import com.birb_birb.blockbounce.ui.GameplayButtons;
+import javafx.scene.layout.VBox;
 
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
@@ -18,6 +16,7 @@ public final class GameInitializer {
         resetWorld();
         setupLevel();
     }
+
     private static void resetWorld() {
         // 1️⃣ Clear all existing entities and physics state
         getGameWorld().getEntitiesCopy().forEach(Entity::removeFromWorld);
@@ -36,6 +35,12 @@ public final class GameInitializer {
         GameFactory.createPaddle();
         GameFactory.createBall();
         GameFactory.createStoryModeFrame();
+
+        // Add gameplay buttons to UI
+        VBox buttonPanel = GameplayButtons.createButtonPanel();
+        buttonPanel.setTranslateX(GameConstants.WINDOW_WIDTH - 60); // Position on right side
+        buttonPanel.setTranslateY(10); // Top offset
+        getGameScene().addUINode(buttonPanel);
     }
 
     public void restartGame() {
