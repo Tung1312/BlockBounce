@@ -2,7 +2,9 @@ package com.birb_birb.blockbounce.ui.menus;
 
 import com.almasb.fxgl.app.scene.MenuType;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.utils.ButtonManager;
 import com.birb_birb.blockbounce.utils.MenuManager;
+import com.birb_birb.blockbounce.utils.SoundManager;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
@@ -56,9 +58,9 @@ public class MainMenu extends MenuManager {
         versusModeButton.setLayoutY(startY + (GameConstants.BUTTON_SPACING * 2));
 
         // Set button actions
-        storyModeButton.setOnAction(e -> navigateToStoryMode());
-        scoreModeButton.setOnAction(e -> navigateToScoreMode());
-        versusModeButton.setOnAction(e -> navigateToVersusMode());
+        storyModeButton.setOnAction(e -> ButtonManager.navigateToStoryMode());
+        scoreModeButton.setOnAction(e -> ButtonManager.navigateToScoreMode());
+        versusModeButton.setOnAction(e -> ButtonManager.navigateToVersusMode());
 
         // Add buttons to the root pane
         root.getChildren().addAll(storyModeButton, scoreModeButton, versusModeButton);
@@ -80,14 +82,14 @@ public class MainMenu extends MenuManager {
         hbox.setLayoutY(getAppHeight() - 60);
 
         // Help button
-        Button helpButton = createButton();
-        helpButton.setOnAction(e -> openSettings());
+        Button settingButton = createButton();
+        settingButton.setOnAction(e -> ButtonManager.openSettings());
 
         // How to play button
         Button howToPlayButton = createButton();
-        howToPlayButton.setOnAction(e -> showHowToPlay());
+        howToPlayButton.setOnAction(e -> ButtonManager.showHowToPlay());
 
-        hbox.getChildren().addAll(helpButton, howToPlayButton);
+        hbox.getChildren().addAll(settingButton, howToPlayButton);
 
         return hbox;
     }
@@ -100,85 +102,34 @@ public class MainMenu extends MenuManager {
         button.setPrefWidth(ICON_BUTTON_SIZE);
         button.setPrefHeight(ICON_BUTTON_SIZE);
 
-        String baseStyle = "-fx-background-color: rgba(255, 255, 255, 0);";
-
-        String hoverStyle = "-fx-background-color: rgba(255, 255, 255, 0.36);";
-
-        button.setStyle(baseStyle);
+        button.setStyle(GameConstants.BASE_STYLE);
 
         button.setOnMouseEntered(e -> {
             if (!button.isPressed()) {
-                button.setStyle(hoverStyle);
+                SoundManager.playHoverSound();
+                button.setStyle(GameConstants.HOVER_STYLE);
             }
         });
 
         button.setOnMouseExited(e -> {
             if (!button.isPressed()) {
-                button.setStyle(baseStyle);
+                button.setStyle(GameConstants.BASE_STYLE);
             }
         });
 
         button.setOnMousePressed(e -> {
-            button.setStyle(baseStyle);
+            SoundManager.playClickSound();
+            button.setStyle(GameConstants.BASE_STYLE);
         });
 
         button.setOnMouseReleased(e -> {
             if (button.isHover()) {
-                button.setStyle(hoverStyle);
+                button.setStyle(GameConstants.HOVER_STYLE);
             } else {
-                button.setStyle(baseStyle);
+                button.setStyle(GameConstants.BASE_STYLE);
             }
         });
 
         return button;
-    }
-
-    /**
-     * Open FXGL settings menu
-     */
-    private void openSettings() {
-        // Open the game menu (settings)
-        getController().gotoGameMenu();
-    }
-
-    /**
-     * Open How to Play window
-     */
-    private void showHowToPlay() {
-        Stage howToPlayStage = new Stage();
-        howToPlayStage.setTitle("How to Play");
-
-        StackPane layout = new StackPane();
-        layout.setStyle("-fx-background-color: #2c3e50;");
-
-        try {
-            Image howToPlayImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(GameConstants.HOW_TO_PLAY)));
-            ImageView imageView = new ImageView(howToPlayImage);
-            imageView.setPreserveRatio(true);
-            imageView.setFitWidth(800);
-            layout.getChildren().add(imageView);
-        } catch (Exception e) {
-            // Fallback
-            javafx.scene.text.Text text = new javafx.scene.text.Text("How to Play image not found");
-            text.setFill(Color.WHITE);
-            text.setStyle("-fx-font-size: 24px;");
-            layout.getChildren().add(text);
-        }
-
-        Scene scene = new Scene(layout, 800, 600);
-        howToPlayStage.setScene(scene);
-        howToPlayStage.show();
-    }
-
-    private void navigateToStoryMode() {
-        getSceneService().pushSubScene(new StoryModeMenu());
-    }
-
-    private void navigateToScoreMode() {
-        getSceneService().pushSubScene(new ScoreModeMenu());
-    }
-
-    private void navigateToVersusMode() {
-        getSceneService().pushSubScene(new VersusModeMenu());
     }
 }

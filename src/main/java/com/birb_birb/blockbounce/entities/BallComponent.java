@@ -16,12 +16,14 @@ public class BallComponent extends Component {
     public void onUpdate(double tpf) {
         entity.translate(velocity);
 
-        // Bounce off walls
-        if (entity.getX() <= 10 || entity.getRightX() >= GameConstants.WINDOW_WIDTH - 10) {
+        // Bounce off walls (left and right)
+        if (entity.getX() <= GameConstants.OFFSET_LEFT + 10 ||
+            entity.getRightX() >= GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 10) {
             velocity = new Point2D(-velocity.getX(), velocity.getY());
         }
 
-        if (entity.getY() <= 10) {
+        // Bounce off top wall
+        if (entity.getY() <= GameConstants.OFFSET_TOP + 10) {
             velocity = new Point2D(velocity.getX(), -velocity.getY());
         }
 
@@ -41,13 +43,16 @@ public class BallComponent extends Component {
         });
 
         // Reset if ball falls off screen
-        if (entity.getY() > GameConstants.WINDOW_HEIGHT) {
+        if (entity.getY() > GameConstants.WINDOW_HEIGHT - GameConstants.OFFSET_BOTTOM) {
             resetBall();
         }
     }
 
     private void resetBall() {
-        entity.setPosition(GameConstants.WINDOW_WIDTH / 2.0, GameConstants.WINDOW_HEIGHT / 2.0);
+        entity.setPosition(
+            GameConstants.OFFSET_LEFT + GameConstants.PLAYABLE_WIDTH / 2.0,
+            GameConstants.OFFSET_TOP + GameConstants.PLAYABLE_HEIGHT / 2.0
+        );
         velocity = new Point2D(4, -4);
     }
 }

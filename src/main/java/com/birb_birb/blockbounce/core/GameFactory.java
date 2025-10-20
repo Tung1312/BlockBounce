@@ -8,7 +8,6 @@ import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.entities.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -43,10 +42,10 @@ public final class GameFactory {
 
         return entityBuilder()
                 .type(EntityType.BALL)
-                .at(GameConstants.WINDOW_WIDTH / 2.0 - GameConstants.BALL_SIZE / 2,
-                        GameConstants.WINDOW_HEIGHT / 2.0)
+                .at(GameConstants.OFFSET_LEFT + GameConstants.PLAYABLE_WIDTH / 2.0 - BALL_SIZE / 2,
+                        GameConstants.OFFSET_TOP + GameConstants.PLAYABLE_HEIGHT / 2.0)
                 .view(ballTexture)
-                .bbox(new HitBox(BoundingShape.circle(GameConstants.BALL_SIZE / 2)))
+                .bbox(new HitBox(BoundingShape.circle(BALL_SIZE / 2)))
                 .with(new BallComponent())
                 .collidable()
                 .buildAndAttach();
@@ -61,10 +60,10 @@ public final class GameFactory {
 
         return entityBuilder()
                 .type(EntityType.PADDLE)
-                .at(GameConstants.WINDOW_WIDTH / 2.0 - GameConstants.PADDLE_WIDTH / 2.0,
-                        GameConstants.WINDOW_HEIGHT - 100)
+                .at(GameConstants.OFFSET_LEFT + GameConstants.PLAYABLE_WIDTH / 2.0 - PADDLE_WIDTH / 2.0,
+                        WINDOW_HEIGHT - GameConstants.OFFSET_BOTTOM - 60)
                 .view(paddleTexture)
-                .bbox(new HitBox(BoundingShape.box(GameConstants.PADDLE_WIDTH, GameConstants.PADDLE_HEIGHT)))
+                .bbox(new HitBox(BoundingShape.box(PADDLE_WIDTH, PADDLE_HEIGHT)))
                 .with(new PaddleComponent())
                 .collidable()
                 .buildAndAttach();
@@ -74,24 +73,25 @@ public final class GameFactory {
     public static void createBricks() {
         Texture baseTexture = getAssetLoader().loadTexture(GameConstants.BRICK_TEXTURE);
 
-        int cols = 10;   // number of bricks per row
+        int cols = 15;   // number of bricks per row
         int rows = 5;    // number of brick rows
-        double offsetY = 80; // top margin
+        double offsetY = GameConstants.OFFSET_TOP + 80;
+        double offsetX = GameConstants.OFFSET_LEFT + 60;
 
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
                 Texture texture = baseTexture.copy();
                 texture.setPreserveRatio(false);
                 texture.setSmooth(false);
-                texture.setFitWidth(BRICK_WIDTH);
-                texture.setFitHeight(BRICK_HEIGHT);
+                texture.setFitWidth(BRICK_SIZE);
+                texture.setFitHeight(BRICK_SIZE);
 
                 entityBuilder()
                         .type(EntityType.BRICK)
-                        .at(x * BRICK_WIDTH, offsetY + y * BRICK_HEIGHT)
+                        .at(offsetX + x * BRICK_SIZE, offsetY + y * BRICK_SIZE)
                         .view(texture)
-                        .bbox(new HitBox(BoundingShape.box(BRICK_WIDTH, BRICK_HEIGHT)))
-                        .with(new BrickComponent()) // simple brick component
+                        .bbox(new HitBox(BoundingShape.box(BRICK_SIZE, BRICK_SIZE)))
+                        .with(new BrickComponent())
                         .collidable()
                         .buildAndAttach();
             }
@@ -101,23 +101,69 @@ public final class GameFactory {
     public static void createWalls() {
         entityBuilder()
                 .type(EntityType.WALL)
-                .at(0, 0)
-                .viewWithBBox(new Rectangle(10, GameConstants.WINDOW_HEIGHT, Color.TRANSPARENT))
+                .at(OFFSET_LEFT, OFFSET_TOP)
+                .viewWithBBox(new Rectangle(10, PLAYABLE_HEIGHT, Color.TRANSPARENT))
                 .collidable()
                 .buildAndAttach();
 
         entityBuilder()
                 .type(EntityType.WALL)
-                .at(GameConstants.WINDOW_WIDTH - 10, 0)
-                .viewWithBBox(new Rectangle(10, GameConstants.WINDOW_HEIGHT, Color.TRANSPARENT))
+                .at(WINDOW_WIDTH - OFFSET_RIGHT - 10, OFFSET_TOP)
+                .viewWithBBox(new Rectangle(10, PLAYABLE_HEIGHT, Color.TRANSPARENT))
                 .collidable()
                 .buildAndAttach();
 
         entityBuilder()
                 .type(EntityType.WALL)
                 .at(0, 0)
-                .viewWithBBox(new Rectangle(GameConstants.WINDOW_WIDTH, 10, Color.TRANSPARENT))
+                .at(OFFSET_LEFT, OFFSET_TOP)
+                .viewWithBBox(new Rectangle(PLAYABLE_WIDTH, 10, Color.TRANSPARENT))
                 .collidable()
+                .buildAndAttach();
+    }
+
+    public static Entity createStoryModeFrame() {
+        Texture frameTexture = getAssetLoader().loadTexture(STORY_MODE_FRAME);
+        frameTexture.setFitWidth(WINDOW_WIDTH);
+        frameTexture.setFitHeight(WINDOW_HEIGHT);
+        frameTexture.setPreserveRatio(false);
+        frameTexture.setSmooth(false);
+
+        return entityBuilder()
+                .type(EntityType.WALL)
+                .at(0, 0)
+                .view(frameTexture)
+                .zIndex(100)
+                .buildAndAttach();
+    }
+
+    public static Entity createScoreModeFrame() {
+        Texture frameTexture = getAssetLoader().loadTexture(SCORE_MODE_FRAME);
+        frameTexture.setFitWidth(WINDOW_WIDTH);
+        frameTexture.setFitHeight(WINDOW_HEIGHT);
+        frameTexture.setPreserveRatio(false);
+        frameTexture.setSmooth(false);
+
+        return entityBuilder()
+                .type(EntityType.WALL)
+                .at(0, 0)
+                .view(frameTexture)
+                .zIndex(100)
+                .buildAndAttach();
+    }
+
+    public static Entity createVersusModeFrame() {
+        Texture frameTexture = getAssetLoader().loadTexture(VERSUS_MODE_FRAME);
+        frameTexture.setFitWidth(WINDOW_WIDTH);
+        frameTexture.setFitHeight(WINDOW_HEIGHT);
+        frameTexture.setPreserveRatio(false);
+        frameTexture.setSmooth(false);
+
+        return entityBuilder()
+                .type(EntityType.WALL)
+                .at(0, 0)
+                .view(frameTexture)
+                .zIndex(100)
                 .buildAndAttach();
     }
 }

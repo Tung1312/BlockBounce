@@ -6,7 +6,7 @@ import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
-import com.birb_birb.blockbounce.gamemode.endless.EndlessModeGame;
+import com.birb_birb.blockbounce.gamemode.score.ScoreModeGame;
 import com.birb_birb.blockbounce.entities.PaddleComponent;
 import com.birb_birb.blockbounce.gamemode.story.StoryModeGame;
 import com.birb_birb.blockbounce.ui.menus.MainMenu;
@@ -97,7 +97,7 @@ public class BlockBounceApp extends GameApplication {
                 VersusModeGame.initialize();
                 break;
             case ENDLESS:
-                EndlessModeGame.initialize();
+                ScoreModeGame.initialize();
                 break;
         }
 
