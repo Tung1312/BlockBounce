@@ -6,21 +6,17 @@ import com.birb_birb.blockbounce.constants.GameConstants;
 
 public class PaddleComponent extends Component {
 
-    private double speed = 8;
-    private boolean left, right;
-
-    public void moveLeft(boolean active) { left = active; }
-    public void moveRight(boolean active) { right = active; }
-
     @Override
     public void onUpdate(double tpf) {
-        if (left) entity.translateX(-speed);
-        if (right) entity.translateX(speed);
-
+        // Clamp paddle position to stay within game boundaries
         double paddleWidth = entity.getBoundingBoxComponent().getWidth();
         double minX = GameConstants.OFFSET_LEFT;
         double maxX = GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - paddleWidth;
-        double clampedX = Math.max(minX, Math.min(entity.getX(), maxX));
-        entity.setX(clampedX);
+
+        if (entity.getX() < minX) {
+            entity.setX(minX);
+        } else if (entity.getX() > maxX) {
+            entity.setX(maxX);
+        }
     }
 }

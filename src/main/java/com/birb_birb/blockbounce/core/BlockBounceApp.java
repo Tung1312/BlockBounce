@@ -4,10 +4,10 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
+import com.almasb.fxgl.entity.Entity;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.gamemode.score.ScoreModeGame;
-import com.birb_birb.blockbounce.entities.PaddleComponent;
 import com.birb_birb.blockbounce.gamemode.story.StoryModeGame;
 import com.birb_birb.blockbounce.ui.menus.MainMenu;
 import com.birb_birb.blockbounce.utils.CursorManager;
@@ -27,6 +27,9 @@ public class BlockBounceApp extends GameApplication {
     }
 
     private static GameMode currentGameMode = GameMode.STORY;
+    private boolean leftPressed = false;
+    private boolean rightPressed = false;
+    private Entity paddle;
 
     public static void setGameMode(GameMode mode) {
         currentGameMode = mode;
@@ -45,7 +48,7 @@ public class BlockBounceApp extends GameApplication {
         settings.setFullScreenAllowed(true);
         settings.setFullScreenFromStart(false);
         settings.setMainMenuEnabled(true);
-        settings.setGameMenuEnabled(true);
+        settings.setGameMenuEnabled(false);  // Disable game menu to free up arrow keys
 
         settings.setSceneFactory(new SceneFactory() {
             @NotNull
@@ -58,27 +61,18 @@ public class BlockBounceApp extends GameApplication {
 
     @Override
     protected void initInput() {
-        getInput().addEventHandler(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
-            if (e.getCode() == KeyCode.LEFT) {
-                getGameWorld().getEntitiesByType(EntityType.PADDLE)
-                    .forEach(p -> p.getComponent(PaddleComponent.class).moveLeft(true));
-            }
-            if (e.getCode() == KeyCode.RIGHT) {
-                getGameWorld().getEntitiesByType(EntityType.PADDLE)
-                    .forEach(p -> p.getComponent(PaddleComponent.class).moveRight(true));
-            }
+        // Use A/D keys with onKey
+        onKey(KeyCode.A, () -> {
+            getGameWorld().getEntitiesByType(EntityType.PADDLE)
+                    .forEach(paddle -> paddle.translateX(-8));
         });
-        getInput().addEventHandler(javafx.scene.input.KeyEvent.KEY_RELEASED, e -> {
-            if (e.getCode() == KeyCode.LEFT) {
-                getGameWorld().getEntitiesByType(EntityType.PADDLE)
-                    .forEach(p -> p.getComponent(PaddleComponent.class).moveLeft(false));
-            }
-            if (e.getCode() == KeyCode.RIGHT) {
-                getGameWorld().getEntitiesByType(EntityType.PADDLE)
-                    .forEach(p -> p.getComponent(PaddleComponent.class).moveRight(false));
-            }
+
+        onKey(KeyCode.D, () -> {
+            getGameWorld().getEntitiesByType(EntityType.PADDLE)
+                    .forEach(paddle -> paddle.translateX(8));
         });
     }
+
     @Override
     protected void onPreInit() {
         SoundManager.initialize();
