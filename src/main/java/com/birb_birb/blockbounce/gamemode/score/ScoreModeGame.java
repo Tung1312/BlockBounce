@@ -1,8 +1,11 @@
 package com.birb_birb.blockbounce.gamemode.score;
 
 import com.almasb.fxgl.entity.Entity;
+import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.core.BlockBounceApp;
 import com.birb_birb.blockbounce.core.GameFactory;
+import com.birb_birb.blockbounce.ui.GameplayButtons;
+import javafx.scene.layout.VBox;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getWorldProperties;
@@ -29,6 +32,12 @@ public class ScoreModeGame {
         GameFactory.createPaddle();
         GameFactory.createBall();
         GameFactory.createScoreModeFrame();
+
+        // UI elements
+        VBox buttonPanel = GameplayButtons.createButtonPanel();
+        buttonPanel.setTranslateX(GameConstants.WINDOW_WIDTH - 60);
+        buttonPanel.setTranslateY(10);
+        getGameScene().addUINode(buttonPanel);
 
         // TODO: Add endless-specific initialization here
         // - Set up endless brick generation

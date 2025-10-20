@@ -1,8 +1,11 @@
 package com.birb_birb.blockbounce.gamemode.story;
 
 import com.almasb.fxgl.entity.Entity;
+import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.core.BlockBounceApp;
 import com.birb_birb.blockbounce.core.GameFactory;
+import com.birb_birb.blockbounce.ui.GameplayButtons;
+import javafx.scene.layout.VBox;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getWorldProperties;
@@ -29,6 +32,12 @@ public class StoryModeGame {
         GameFactory.createPaddle();
         GameFactory.createBall();
         GameFactory.createStoryModeFrame();
+
+        // UI elements
+        VBox buttonPanel = GameplayButtons.createButtonPanel();
+        buttonPanel.setTranslateX(GameConstants.WINDOW_WIDTH - 60);
+        buttonPanel.setTranslateY(10);
+        getGameScene().addUINode(buttonPanel);
 
         // TODO: Add story-specific initialization here
         // - Load story levels
