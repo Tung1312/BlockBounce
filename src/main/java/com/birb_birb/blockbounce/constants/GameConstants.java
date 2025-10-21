@@ -16,10 +16,20 @@ public class GameConstants {
     public static final double VERSUS_PLAYABLE_WIDTH =  WINDOW_WIDTH - (OFFSET_LEFT * 2) - OFFSET_MIDDLE;
 
     public static final String MAIN_MENU_BACKGROUND = "/assets/textures/menus/main_menu_background.png";
-    public static final String STORY_MODE_BACKGROUND = "/assets/textures/menus/story_mode_template.png";
     public static final String SCORE_MODE_BACKGROUND = "/assets/textures/menus/score_mode_template.png";
     public static final String VERSUS_MODE_BACKGROUND = "/assets/textures/menus/versus_mode_template.png";
     public static final String HOW_TO_PLAY = "/assets/textures/menus/how_to_play.png";
+
+    public static final String STORY_MODE_BACKGROUND = "/assets/textures/menus/story_mode_background.png";
+    public static final String STORY_MODE_LEVELS = "/assets/textures/menus/levels/unlocked_level_8.png";
+    public static final String SELECT_1 = "/assets/textures/menus/levels/select_level_1.png";
+    public static final String SELECT_2 = "/assets/textures/menus/levels/select_level_2.png";
+    public static final String SELECT_3 = "/assets/textures/menus/levels/select_level_3.png";
+    public static final String SELECT_4 = "/assets/textures/menus/levels/select_level_4.png";
+    public static final String SELECT_5 = "/assets/textures/menus/levels/select_level_5.png";
+    public static final String SELECT_6 = "/assets/textures/menus/levels/select_level_6.png";
+    public static final String SELECT_7 = "/assets/textures/menus/levels/select_level_7.png";
+    public static final String SELECT_8 = "/assets/textures/menus/levels/select_level_8.png";
 
     public static final String BRICK_TEXTURE = "/entities/brick.png";
     public static final String PADDLE_TEXTURE = "/entities/paddle.png";
