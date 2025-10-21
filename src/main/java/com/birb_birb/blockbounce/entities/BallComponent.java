@@ -3,6 +3,7 @@ package com.birb_birb.blockbounce.entities;
 import com.almasb.fxgl.entity.component.Component;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.utils.SoundManager;
 import javafx.geometry.Point2D;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -31,12 +32,14 @@ public class BallComponent extends Component {
             velocity = new Point2D(-velocity.getX(), velocity.getY());
             entity.setX(Math.max(GameConstants.OFFSET_LEFT + 10,
                         Math.min(entity.getX(), GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 10 - entity.getWidth())));
+            SoundManager.playBounce(); // Thêm âm thanh
         }
 
         // Bounce off top wall
         if (entity.getY() <= GameConstants.OFFSET_TOP + 10) {
             velocity = new Point2D(velocity.getX(), -velocity.getY());
             entity.setY(GameConstants.OFFSET_TOP + 10);
+            SoundManager.playBounce(); // Thêm âm thanh
         }
 
         // Check paddle collision - only once per frame to prevent multiple bounces
@@ -72,6 +75,7 @@ public class BallComponent extends Component {
                         velocity = new Point2D(newVelX, newVelY);
                         hasCollidedThisFrame = true;
                         collisionCooldown = 0.05; // 50ms cooldown
+                        SoundManager.playPaddleHit(); // Thêm âm thanh
                     }
                 }
             });
@@ -123,6 +127,11 @@ public class BallComponent extends Component {
                     brick.removeFromWorld();
                     hasCollidedThisFrame = true;
                     collisionCooldown = 0.05; // 50ms cooldown to prevent multiple hits
+
+                    // Thêm âm thanh và cập nhật điểm
+                    SoundManager.playBrickBreak();
+                    inc("score", 10); // Tăng 10 điểm mỗi block
+
                     break; // Stop after first collision
                 }
             }
@@ -131,6 +140,13 @@ public class BallComponent extends Component {
         // Reset if ball falls off screen
         if (entity.getY() > GameConstants.WINDOW_HEIGHT - GameConstants.OFFSET_BOTTOM) {
             resetBall();
+            inc("lives", -1); // Trừ 1 mạng
+
+            // Kiểm tra game over
+            if (geti("lives") <= 0) {
+                // Game over logic sẽ được xử lý ở game mode
+                set("gameOver", true);
+            }
         }
     }
 
@@ -143,5 +159,12 @@ public class BallComponent extends Component {
         hasCollidedThisFrame = false;
         collisionCooldown = 0;
     }
-}
 
+    public Point2D getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(Point2D velocity) {
+        this.velocity = velocity;
+    }
+}
