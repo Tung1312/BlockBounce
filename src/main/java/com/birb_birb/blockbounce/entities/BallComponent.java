@@ -42,7 +42,7 @@ public class BallComponent extends Component {
                 entity.setY(GameConstants.OFFSET_TOP + 10);
             }
 
-            SoundManager.playBounce();
+            SoundManager.playHitSound();
         }
 
         // Check paddle collision - preventing multiple bounces
@@ -78,7 +78,7 @@ public class BallComponent extends Component {
                         velocity = new Point2D(newVelX, newVelY);
                         hasCollidedThisFrame = true;
                         collisionCooldown = 0.05;
-                        SoundManager.playPaddleHit();
+                        SoundManager.playHitSound();
                     }
                 }
             });
@@ -130,7 +130,7 @@ public class BallComponent extends Component {
                     collisionCooldown = 0.05;
 
                     // Play sound and update score
-                    SoundManager.playBrickBreak();
+                    SoundManager.playBreakSound();
                     inc("score", 10);
                     break;
                 }

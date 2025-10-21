@@ -45,6 +45,8 @@ public class GameConstants {
 
     public static final String SOUND_HOVER = "hover.wav";
     public static final String SOUND_CLICK = "click.wav";
+    public static final String SOUND_HIT = "hit.wav";
+    public static final String SOUND_BREAK = "break.wav";
 
     public static final double BRICK_SIZE = 48;
     public static final double BALL_SIZE = 24;

@@ -8,9 +8,8 @@ import static com.almasb.fxgl.dsl.FXGL.getAudioPlayer;
 public class SoundManager {
     private static Sound hoverSound;
     private static Sound clickSound;
-    private static Sound bounceSound;
-    private static Sound paddleHitSound;
-    private static Sound brickBreakSound;
+    private static Sound ballHitSound;
+    private static Sound breakSound;
 
     private static boolean initialized = false;
 
@@ -26,12 +25,8 @@ public class SoundManager {
         try {
             hoverSound = getAssetLoader().loadSound(GameConstants.SOUND_HOVER);
             clickSound = getAssetLoader().loadSound(GameConstants.SOUND_CLICK);
-
-            // Sử dụng lại các âm thanh có sẵn cho gameplay
-            // Nếu không có file riêng, dùng click sound cho các hiệu ứng
-            bounceSound = clickSound;
-            paddleHitSound = clickSound;
-            brickBreakSound = clickSound;
+            ballHitSound = getAssetLoader().loadSound(GameConstants.SOUND_HIT);
+            breakSound = getAssetLoader().loadSound(GameConstants.SOUND_BREAK);
 
             initialized = true;
         } catch (Exception e) {
@@ -42,47 +37,29 @@ public class SoundManager {
     public static void playHoverSound() {
         try {
             getAudioPlayer().playSound(hoverSound);
-        } catch (Exception e) {
-            System.err.println("Failed to play hover sound: " + e.getMessage());
-        }
+        } catch (Exception e) {}
     }
 
     public static void playClickSound() {
         try {
             getAudioPlayer().playSound(clickSound);
-        } catch (Exception e) {
-            System.err.println("Failed to play click sound: " + e.getMessage());
-        }
+        } catch (Exception e) { }
     }
 
-    public static void playBounce() {
+    public static void playHitSound() {
         try {
-            if (bounceSound != null) {
-                getAudioPlayer().playSound(bounceSound);
+            if (ballHitSound != null) {
+                getAudioPlayer().playSound(ballHitSound);
             }
-        } catch (Exception e) {
-            // Không in lỗi để tránh spam console
-        }
+        } catch (Exception e) {}
     }
 
-    public static void playPaddleHit() {
+    public static void playBreakSound() {
         try {
-            if (paddleHitSound != null) {
-                getAudioPlayer().playSound(paddleHitSound);
+            if (breakSound != null) {
+                getAudioPlayer().playSound(breakSound);
             }
-        } catch (Exception e) {
-            // Không in lỗi để tránh spam console
-        }
-    }
-
-    public static void playBrickBreak() {
-        try {
-            if (brickBreakSound != null) {
-                getAudioPlayer().playSound(brickBreakSound);
-            }
-        } catch (Exception e) {
-            // Không in lỗi để tránh spam console
-        }
+        } catch (Exception e) {}
     }
 
     public static boolean isInitialized() {
