@@ -9,14 +9,16 @@ import javafx.scene.paint.Color;
 import javafx.scene.input.KeyCode;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
-import com.almasb.fxgl.entity.Entity;
-import com.birb_birb.blockbounce.entities.PaddleComponent;
 
 import java.util.Set;
 
 public class VersusModeGame extends GameManager {
 
     public static final VersusModeGame INSTANCE = new VersusModeGame();
+
+    // Two separate playfields - one for each player
+    private Playfield player1Playfield;
+    private Playfield player2Playfield;
 
     private VersusModeGame() {}
 
@@ -30,60 +32,43 @@ public class VersusModeGame extends GameManager {
     @Override
     protected void setupProperties() {
         super.setupProperties();
-        // Versus mode has more lives
-        set("lives", 5);
+
+        // Player 1 properties
+        set("player1Score", 0);
+        set("player1Lives", 5);
+        set("player1GameOver", false);
+
+        // Player 2 properties
+        set("player2Score", 0);
+        set("player2Lives", 5);
+        set("player2GameOver", false);
     }
 
     @Override
     protected void setupNewGame() {
-        // Versus mode: don't create default paddle, we'll create two custom ones in createFrame()
+        // Create background and frame
         GameFactory.createBackground();
-        GameFactory.createWalls();
-        GameFactory.createBricks();
-        // Note: NOT calling GameFactory.createPaddle() - we create two paddles in createFrame()
-        GameFactory.createBall();
+
+        // Create two separate playfields
+        player1Playfield = PlayfieldFactory.createLeftPlayfield();
+        player2Playfield = PlayfieldFactory.createRightPlayfield();
     }
 
     public boolean isMovingLeft(int playerId) {
         BlockBounceApp app = (BlockBounceApp) getApp();
         Set<KeyCode> pressedKeys = app.getPressedKeys();
-        if (playerId == 1) {
-            return pressedKeys.contains(KeyCode.A);
-        } else if (playerId == 2) {
-            return pressedKeys.contains(KeyCode.LEFT);
-        }
-        return false;
+        return playerId == 1 ? pressedKeys.contains(KeyCode.A) : pressedKeys.contains(KeyCode.LEFT);
     }
 
     public boolean isMovingRight(int playerId) {
         BlockBounceApp app = (BlockBounceApp) getApp();
         Set<KeyCode> pressedKeys = app.getPressedKeys();
-        if (playerId == 1) {
-            return pressedKeys.contains(KeyCode.D);
-        } else if (playerId == 2) {
-            return pressedKeys.contains(KeyCode.RIGHT);
-        }
-        return false;
-    }
-
-    private void movePaddle(int playerId, double dx) {
-        for (Entity paddle : getGameWorld().getEntitiesByType(com.birb_birb.blockbounce.constants.EntityType.PADDLE)) {
-            PaddleComponent pc = paddle.getComponent(PaddleComponent.class);
-            if (pc.getPlayerId() == playerId) {
-                paddle.setX(paddle.getX() + dx);
-            }
-        }
+        return playerId == 1 ? pressedKeys.contains(KeyCode.D) : pressedKeys.contains(KeyCode.RIGHT);
     }
 
     @Override
     protected void createFrame() {
         GameFactory.createVersusModeFrame();
-        // Spawn two paddles for Versus mode - one on left, one on right
-        double leftPaddleX = GameConstants.OFFSET_LEFT + GameConstants.PLAYABLE_WIDTH / 2.0 - GameConstants.PADDLE_WIDTH / 2.0;
-        double rightPaddleX = GameConstants.OFFSET_LEFT +  GameConstants.PLAYABLE_WIDTH / 2.0 - GameConstants.PADDLE_WIDTH / 2.0;
-        double paddleY = GameConstants.WINDOW_HEIGHT - GameConstants.OFFSET_BOTTOM - 60;
-        GameFactory.createPaddle(leftPaddleX, paddleY, 1); // Player 1 - left half
-        GameFactory.createPaddle(rightPaddleX, paddleY, 2); // Player 2 - right half
     }
 
     @Override
@@ -97,20 +82,70 @@ public class VersusModeGame extends GameManager {
 
     @Override
     protected void setupGameLogic() {
-        // Versus mode: automatically respawn bricks when all are destroyed
+        // Check for ball out of bounds and brick respawn for both players
         getGameTimer().runAtInterval(() -> {
-            if (getGameWorld().getEntitiesByType(com.birb_birb.blockbounce.constants.EntityType.BRICK).isEmpty()
-                && !getb("gameOver")) {
-                respawnBricks();
-            }
-        }, javafx.util.Duration.seconds(0.5));
+            updatePlayer(player1Playfield, "player1", "PLAYER 1");
+            updatePlayer(player2Playfield, "player2", "PLAYER 2");
+
+            // Update score properties
+            set("player1Score", player1Playfield.getScore());
+            set("player2Score", player2Playfield.getScore());
+        }, javafx.util.Duration.seconds(0.1));
     }
 
-    private void respawnBricks() {
-        // Create new bricks for versus mode
-        GameFactory.createBricks();
+    /**
+     * Update logic for a single player - eliminates code duplication
+     */
+    private void updatePlayer(Playfield playfield, String propertyPrefix, String playerName) {
+        if (playfield.isGameOver()) return;
 
-        // Show message
-        displayMessage("FIGHT!", Color.ORANGE, 1.5);
+        if (playfield.isBallOutOfBounds()) {
+            playfield.loseLife();
+            set(propertyPrefix + "Lives", playfield.getLives());
+
+            if (playfield.isGameOver()) {
+                set(propertyPrefix + "GameOver", true);
+                displayMessage(playerName + " LOSES!", Color.RED, 2.0);
+                checkGameEnd();
+            } else {
+                playfield.resetBall();
+            }
+        }
+
+        if (!playfield.hasBricks()) {
+            playfield.respawnBricks();
+            displayMessage(playerName + ": NEW WAVE!", Color.CYAN, 1.5);
+        }
+    }
+
+    private void checkGameEnd() {
+        if (player1Playfield.isGameOver() && player2Playfield.isGameOver()) {
+            // Both players lost - compare scores
+            int score1 = player1Playfield.getScore();
+            int score2 = player2Playfield.getScore();
+
+            if (score1 > score2) {
+                displayMessage("PLAYER 1 WINS!", Color.GOLD, 3.0);
+            } else if (score2 > score1) {
+                displayMessage("PLAYER 2 WINS!", Color.GOLD, 3.0);
+            } else {
+                displayMessage("TIE GAME!", Color.ORANGE, 3.0);
+            }
+            set("gameOver", true);
+        } else if (player1Playfield.isGameOver()) {
+            displayMessage("PLAYER 2 WINS!", Color.GOLD, 3.0);
+            set("gameOver", true);
+        } else if (player2Playfield.isGameOver()) {
+            displayMessage("PLAYER 1 WINS!", Color.GOLD, 3.0);
+            set("gameOver", true);
+        }
+    }
+
+    public Playfield getPlayer1Playfield() {
+        return player1Playfield;
+    }
+
+    public Playfield getPlayer2Playfield() {
+        return player2Playfield;
     }
 }

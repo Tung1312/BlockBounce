@@ -1,20 +1,40 @@
 package com.birb_birb.blockbounce.entities;
 
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.core.gamemode.versus.Playfield;
 import com.birb_birb.blockbounce.utils.SoundManager;
 import javafx.geometry.Point2D;
 
+import java.util.List;
+
 import static com.almasb.fxgl.dsl.FXGL.*;
 
-
+/**
+ * Unified Ball component that works for both single-player and versus modes.
+ * Uses Strategy Pattern to handle different game modes.
+ */
 public class BallComponent extends Component {
 
     private static final double BASE_SPEED = 3.0;
     private Point2D velocity = new Point2D(2.5, -2.5);
     private boolean hasCollidedThisFrame = false;
     private double collisionCooldown = 0;
+
+    // Strategy: null for single-player, non-null for versus mode
+    private final Playfield playfield;
+
+    // Constructor for single-player modes
+    public BallComponent() {
+        this.playfield = null;
+    }
+
+    // Constructor for versus mode
+    public BallComponent(Playfield playfield) {
+        this.playfield = playfield;
+    }
 
     @Override
     public void onUpdate(double tpf) {
@@ -25,125 +45,180 @@ public class BallComponent extends Component {
         hasCollidedThisFrame = false;
         entity.translate(velocity);
 
-        // Bounce off walls (left, right and top)
-        if (entity.getX() <= GameConstants.OFFSET_LEFT + 10 ||
-                entity.getRightX() >= GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 10 ||
-                entity.getY() <= GameConstants.OFFSET_TOP + 10) {
+        // Wall collision - strategy based
+        handleWallCollision();
 
-            if (entity.getX() <= GameConstants.OFFSET_LEFT + 10 ||
-                    entity.getRightX() >= GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 10) {
+        // Paddle collision
+        if (!hasCollidedThisFrame && collisionCooldown <= 0) {
+            handlePaddleCollision();
+        }
+
+        // Brick collision
+        if (!hasCollidedThisFrame && collisionCooldown <= 0) {
+            handleBrickCollision();
+        }
+
+        // Out of bounds check
+        if (isOutOfBounds()) {
+            handleOutOfBounds();
+        }
+    }
+
+    // ==================== COLLISION HANDLERS ====================
+
+    private void handleWallCollision() {
+        double leftBound, rightBound, topBound;
+
+        if (playfield != null) {
+            // Versus mode - use playfield boundaries
+            leftBound = playfield.getLeftBoundary();
+            rightBound = playfield.getRightBoundary(entity.getWidth());
+            topBound = playfield.getTopBoundary();
+        } else {
+            // Single-player mode - use global boundaries
+            leftBound = GameConstants.OFFSET_LEFT + 10;
+            rightBound = GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 10;
+            topBound = GameConstants.OFFSET_TOP + 10;
+        }
+
+        if (entity.getX() <= leftBound || entity.getRightX() >= rightBound || entity.getY() <= topBound) {
+            if (entity.getX() <= leftBound || entity.getRightX() >= rightBound) {
                 velocity = new Point2D(-velocity.getX(), velocity.getY());
-                entity.setX(Math.max(GameConstants.OFFSET_LEFT + 10,
-                        Math.min(entity.getX(), GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 10 - entity.getWidth())));
+                entity.setX(Math.max(leftBound, Math.min(entity.getX(), rightBound - entity.getWidth())));
             }
 
-            if (entity.getY() <= GameConstants.OFFSET_TOP + 10) {
+            if (entity.getY() <= topBound) {
                 velocity = new Point2D(velocity.getX(), -velocity.getY());
-                entity.setY(GameConstants.OFFSET_TOP + 10);
+                entity.setY(topBound);
             }
 
             SoundManager.playBounce();
         }
+    }
 
-        // Check paddle collision - preventing multiple bounces
-        if (!hasCollidedThisFrame && collisionCooldown <= 0) {
-            getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle -> {
-                if (entity.isColliding(paddle) && !hasCollidedThisFrame) {
-                    // Adjust ball position to prevent getting stuck in paddle
-                    double ballBottom = entity.getY() + entity.getHeight();
-                    double paddleTop = paddle.getY();
+    private void handlePaddleCollision() {
+        Entity paddle = getPaddle();
+        if (paddle == null || !entity.isColliding(paddle)) return;
 
-                    if (ballBottom > paddleTop && velocity.getY() > 0) {
-                        // Push ball above paddle
-                        entity.setY(paddleTop - entity.getHeight() - 1);
+        double ballBottom = entity.getY() + entity.getHeight();
+        double paddleTop = paddle.getY();
 
-                        // Calculate angle based on where ball hits paddle
-                        double paddleCenter = paddle.getX() + paddle.getWidth() / 2;
-                        double ballCenter = entity.getX() + entity.getWidth() / 2;
-                        double hitOffset = (ballCenter - paddleCenter) / (paddle.getWidth() / 2);
+        if (ballBottom > paddleTop && velocity.getY() > 0) {
+            entity.setY(paddleTop - entity.getHeight() - 1);
 
-                        // Clamp hit offset
-                        hitOffset = Math.max(-0.75, Math.min(0.75, hitOffset));
+            // Calculate bounce angle based on hit position
+            double paddleCenter = paddle.getX() + paddle.getWidth() / 2;
+            double ballCenter = entity.getX() + entity.getWidth() / 2;
+            double hitOffset = (ballCenter - paddleCenter) / (paddle.getWidth() / 2);
 
-                        // Calculate bounce angle (±60 degrees)
-                        double bounceAngle = hitOffset * Math.PI / 3;
+            hitOffset = Math.max(-0.75, Math.min(0.75, hitOffset));
+            double bounceAngle = hitOffset * Math.PI / 3;
 
-                        // Create new velocity based on BASE_SPEED
-                        double newVelX = BASE_SPEED * Math.sin(bounceAngle);
-                        double newVelY = -BASE_SPEED * Math.cos(bounceAngle);
+            double newVelX = BASE_SPEED * Math.sin(bounceAngle);
+            double newVelY = -BASE_SPEED * Math.cos(bounceAngle);
+            newVelY = Math.min(newVelY, -2.0);
 
-                        // Velocity Y always upward and not too small
-                        newVelY = Math.min(newVelY, -2.0);
-
-                        velocity = new Point2D(newVelX, newVelY);
-                        hasCollidedThisFrame = true;
-                        collisionCooldown = 0.05;
-                        SoundManager.playPaddleHit();
-                    }
-                }
-            });
+            velocity = new Point2D(newVelX, newVelY);
+            hasCollidedThisFrame = true;
+            collisionCooldown = 0.05;
+            SoundManager.playPaddleHit();
         }
+    }
 
-        // Brick collision - destroy 1 brick / frame with position adjustment
-        if (!hasCollidedThisFrame && collisionCooldown <= 0) {
-            for (var brick : getGameWorld().getEntitiesByType(EntityType.BRICK)) {
-                if (entity.isColliding(brick)) {
-                    // Calculate collision side to determine bounce direction
-                    double ballCenterX = entity.getX() + entity.getWidth() / 2;
-                    double ballCenterY = entity.getY() + entity.getHeight() / 2;
-                    double brickCenterX = brick.getX() + brick.getWidth() / 2;
-                    double brickCenterY = brick.getY() + brick.getHeight() / 2;
+    private void handleBrickCollision() {
+        List<Entity> bricks = getBricks();
 
-                    double deltaX = ballCenterX - brickCenterX;
-                    double deltaY = ballCenterY - brickCenterY;
+        for (Entity brick : bricks) {
+            if (entity.isColliding(brick)) {
+                // Calculate collision side
+                double ballCenterX = entity.getX() + entity.getWidth() / 2;
+                double ballCenterY = entity.getY() + entity.getHeight() / 2;
+                double brickCenterX = brick.getX() + brick.getWidth() / 2;
+                double brickCenterY = brick.getY() + brick.getHeight() / 2;
 
-                    // Determine which side was hit based on the ratio of deltas
-                    double ratioX = Math.abs(deltaX) / (brick.getWidth() / 2);
-                    double ratioY = Math.abs(deltaY) / (brick.getHeight() / 2);
+                double deltaX = ballCenterX - brickCenterX;
+                double deltaY = ballCenterY - brickCenterY;
 
-                    if (ratioX > ratioY) {
-                        // Hit from left or right -> Push ball out horizontally
-                        velocity = new Point2D(-velocity.getX(), velocity.getY());
-                        if (deltaX > 0) {
-                            entity.setX(brick.getX() + brick.getWidth() + 1);
-                        } else {
-                            entity.setX(brick.getX() - entity.getWidth() - 1);
-                        }
+                double ratioX = Math.abs(deltaX) / (brick.getWidth() / 2);
+                double ratioY = Math.abs(deltaY) / (brick.getHeight() / 2);
+
+                if (ratioX > ratioY) {
+                    velocity = new Point2D(-velocity.getX(), velocity.getY());
+                    if (deltaX > 0) {
+                        entity.setX(brick.getX() + brick.getWidth() + 1);
                     } else {
-                        // Hit from top or bottom -> Push ball out vertically
-                        velocity = new Point2D(velocity.getX(), -velocity.getY());
-                        if (deltaY > 0) {
-                            entity.setY(brick.getY() + brick.getHeight() + 1);
-                        } else {
-                            entity.setY(brick.getY() - entity.getHeight() - 1);
-                        }
+                        entity.setX(brick.getX() - entity.getWidth() - 1);
                     }
-
-                    // Normalize velocity after collision
-                    double currentSpeed = velocity.magnitude();
-                    if (currentSpeed > BASE_SPEED * 1.2) {
-                        velocity = velocity.normalize().multiply(BASE_SPEED);
+                } else {
+                    velocity = new Point2D(velocity.getX(), -velocity.getY());
+                    if (deltaY > 0) {
+                        entity.setY(brick.getY() + brick.getHeight() + 1);
+                    } else {
+                        entity.setY(brick.getY() - entity.getHeight() - 1);
                     }
-
-                    brick.removeFromWorld();
-                    hasCollidedThisFrame = true;
-                    collisionCooldown = 0.05;
-
-                    // Play sound and update score
-                    SoundManager.playBrickBreak();
-                    inc("score", 10);
-                    break;
                 }
+
+                double currentSpeed = velocity.magnitude();
+                if (currentSpeed > BASE_SPEED * 1.2) {
+                    velocity = velocity.normalize().multiply(BASE_SPEED);
+                }
+
+                // Destroy brick using appropriate strategy
+                destroyBrick(brick);
+
+                hasCollidedThisFrame = true;
+                collisionCooldown = 0.05;
+                SoundManager.playBrickBreak();
+                break;
             }
         }
+    }
 
-        // Reset if ball falls off screen
-        if (entity.getY() > GameConstants.WINDOW_HEIGHT - GameConstants.OFFSET_BOTTOM) {
+    // ==================== STRATEGY METHODS ====================
+
+    private Entity getPaddle() {
+        if (playfield != null) {
+            return playfield.getPaddle();
+        } else {
+            var paddles = getGameWorld().getEntitiesByType(EntityType.PADDLE);
+            return paddles.isEmpty() ? null : paddles.get(0);
+        }
+    }
+
+    private List<Entity> getBricks() {
+        if (playfield != null) {
+            return playfield.getBricks();
+        } else {
+            return getGameWorld().getEntitiesByType(EntityType.BRICK);
+        }
+    }
+
+    private void destroyBrick(Entity brick) {
+        if (playfield != null) {
+            playfield.destroyBrick(brick);
+        } else {
+            brick.removeFromWorld();
+            inc("score", 10);
+        }
+    }
+
+    private boolean isOutOfBounds() {
+        if (playfield != null) {
+            return playfield.isBallOutOfBounds();
+        } else {
+            return entity.getY() > GameConstants.WINDOW_HEIGHT - GameConstants.OFFSET_BOTTOM;
+        }
+    }
+
+    private void handleOutOfBounds() {
+        if (playfield != null) {
+            // Versus mode - playfield handles this in VersusModeGame
+            return;
+        } else {
+            // Single-player mode
             resetBall();
-            // -1 lives if ball falls off screen
             inc("lives", -1);
 
-            // Game over if ball <= 0
             if (geti("lives") <= 0) {
                 set("gameOver", true);
             }
@@ -160,6 +235,8 @@ public class BallComponent extends Component {
         collisionCooldown = 0;
     }
 
+    // ==================== PUBLIC API ====================
+
     public Point2D getVelocity() {
         return velocity;
     }
@@ -168,3 +245,4 @@ public class BallComponent extends Component {
         this.velocity = velocity;
     }
 }
+
