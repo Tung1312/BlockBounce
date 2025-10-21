@@ -29,26 +29,39 @@ BlockBounce/
 │   │   ├── java/
 │   │   │   └── com/birb_birb/blockbounce/
 │   │   │       ├── constants/
-│   │   │       │   └── GameConstants.java
+│   │   │       │   ├── EntityType.java                     # Khai báo loại Entity
+│   │   │       │   └── GameConstants.java                  # Khai báo hằng số game
 │   │   │       ├── core/
-│   │   │       │   └── BlockBounceApp.java
+│   │   │       │   ├── gamemode/
+│   │   │       │   │   ├── score                           # Score Mode
+│   │   │       │   │   │   └── ScoreModeGame.java
+│   │   │       │   │   ├── story                           # Story Mode
+│   │   │       │   │   │   └── StoryModeGame.java
+│   │   │       │   │   └── versus                          # Versus Mode
+│   │   │       │   │       └── VersusModeGame.java
+│   │   │       │   ├── BlockBounceApp.java                 # Khời động game
+│   │   │       │   ├── GameFactory.java                    # Khởi tạo các game entity
+│   │   │       │   └── GameManager.java                    # Quản lý các Gamemode
+│   │   │       ├── entites/
+│   │   │       │   ├── BallComponent.java                  # Game entities
+│   │   │       │   ├── BrickComponent.java
+│   │   │       │   ├── PaddleComponent.java
+│   │   │       │   └── WallComponent.java
 │   │   │       ├── ui/
-│   │   │       │   └── menus/
-│   │   │       │       ├── BaseMenu.java
-│   │   │       │       ├── MainMenu.java
-│   │   │       │       ├── ScoreModeMenu.java
-│   │   │       │       ├── StoryModeMenu.java
-│   │   │       │       └── VersusModeMenu.java
-│   │   │       └── utils/
+│   │   │       │   ├── menus/                              # Các menu của game
+│   │   │       │   │    ├── MainMenu.java
+│   │   │       │   │    ├── ScoreModeMenu.java
+│   │   │       │   │    ├── StoryModeMenu.java
+│   │   │       │   │    └── VersusModeMenu.java
+│   │   │       │   └── GameplayButton.java
+│   │   │       └── utils/                                  # Các Manager khác
+│   │   │           ├── ButtonManager.java
+│   │   │           ├── CursorManager.java
 │   │   │           ├── FontManager.java
+│   │   │           ├── MenuManager.java
 │   │   │           └── SoundManager.java
 │   │   └── resources/
 │   │       └── assets/
-│   │           ├── block_bounce.png
-│   │           ├── textures/
-│   │           │   └── menus/
-│   │           ├── sounds/
-│   │           └── fonts/
 │   └── test/
 │       └── java/                               # Unit tests
 ├── build.gradle                                # Cấu hình build
