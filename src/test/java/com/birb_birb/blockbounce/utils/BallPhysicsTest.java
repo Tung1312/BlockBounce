@@ -14,66 +14,66 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Ball Physics Tests")
 class BallPhysicsTest {
 
-    private static final double DELTA = 0.1; // Độ chính xác cho so sánh số thực
+    private static final double DELTA = 0.1; // Precision for floating point comparison
 
     @Test
-    @DisplayName("Tính góc từ vận tốc - góc 45 độ")
+    @DisplayName("Calculate angle from velocity - 45 degrees")
     void testCalculateAngle45Degrees() {
         double angle = BallPhysics.calculateAngle(1, 1);
         assertEquals(45.0, angle, DELTA);
     }
 
     @Test
-    @DisplayName("Tính góc từ vận tốc - góc 0 độ (ngang phải)")
+    @DisplayName("Calculate angle from velocity - 0 degrees (horizontal right)")
     void testCalculateAngle0Degrees() {
         double angle = BallPhysics.calculateAngle(1, 0);
         assertEquals(0.0, angle, DELTA);
     }
 
     @Test
-    @DisplayName("Tính góc từ vận tốc - góc 90 độ (xuống dưới)")
+    @DisplayName("Calculate angle from velocity - 90 degrees (downward)")
     void testCalculateAngle90Degrees() {
         double angle = BallPhysics.calculateAngle(0, 1);
         assertEquals(90.0, angle, DELTA);
     }
 
     @Test
-    @DisplayName("Tính góc từ vận tốc - góc -90 độ (lên trên)")
+    @DisplayName("Calculate angle from velocity - -90 degrees (upward)")
     void testCalculateAngleNegative90Degrees() {
         double angle = BallPhysics.calculateAngle(0, -1);
         assertEquals(-90.0, angle, DELTA);
     }
 
     @Test
-    @DisplayName("Chuẩn hóa góc - góc quá dốc (80°) phải giảm về 75°")
+    @DisplayName("Normalize angle - too steep (80°) should reduce to 75°")
     void testNormalizeAngleTooSteep() {
         double angle = BallPhysics.normalizeAngle(80);
         assertEquals(75.0, angle, DELTA);
     }
 
     @Test
-    @DisplayName("Chuẩn hóa góc - góc quá ngang (5°) phải tăng lên 15°")
+    @DisplayName("Normalize angle - too flat (5°) should increase to 15°")
     void testNormalizeAngleTooFlat() {
         double angle = BallPhysics.normalizeAngle(5);
         assertEquals(15.0, angle, DELTA);
     }
 
     @Test
-    @DisplayName("Chuẩn hóa góc - góc bình thường (45°) không đổi")
+    @DisplayName("Normalize angle - normal angle (45°) remains unchanged")
     void testNormalizeAngleNormal() {
         double angle = BallPhysics.normalizeAngle(45);
         assertEquals(45.0, angle, DELTA);
     }
 
     @Test
-    @DisplayName("Chuẩn hóa góc - góc âm quá dốc (-80°) phải giảm về -75°")
+    @DisplayName("Normalize angle - negative too steep (-80°) should reduce to -75°")
     void testNormalizeAngleNegativeTooSteep() {
         double angle = BallPhysics.normalizeAngle(-80);
         assertEquals(-75.0, angle, DELTA);
     }
 
     @Test
-    @DisplayName("Chuẩn hóa góc - góc âm quá ngang (-5°) phải tăng lên -15°")
+    @DisplayName("Normalize angle - negative too flat (-5°) should increase to -15°")
     void testNormalizeAngleNegativeTooFlat() {
         double angle = BallPhysics.normalizeAngle(-5);
         assertEquals(-15.0, angle, DELTA);
@@ -83,22 +83,22 @@ class BallPhysicsTest {
     @CsvSource({
         "0, 15",      // 0° -> 15°
         "10, 15",     // 10° -> 15°
-        "45, 45",     // 45° không đổi
-        "75, 75",     // 75° không đổi
+        "45, 45",     // 45° unchanged
+        "75, 75",     // 75° unchanged
         "80, 75",     // 80° -> 75°
         "90, 75",     // 90° -> 75°
         "-5, -15",    // -5° -> -15°
-        "-45, -45",   // -45° không đổi
+        "-45, -45",   // -45° unchanged
         "-80, -75"    // -80° -> -75°
     })
-    @DisplayName("Chuẩn hóa góc - nhiều trường hợp")
+    @DisplayName("Normalize angle - multiple test cases")
     void testNormalizeAngleMultipleCases(double input, double expected) {
         double result = BallPhysics.normalizeAngle(input);
         assertEquals(expected, result, DELTA);
     }
 
     @Test
-    @DisplayName("Tính vận tốc từ góc 0° và tốc độ 5")
+    @DisplayName("Calculate velocity from angle 0° and speed 5")
     void testCalculateVelocityHorizontal() {
         Point2D velocity = BallPhysics.calculateVelocity(0, 5);
         assertEquals(5.0, velocity.getX(), DELTA);
@@ -106,7 +106,7 @@ class BallPhysicsTest {
     }
 
     @Test
-    @DisplayName("Tính vận tốc từ góc 90° và tốc độ 5")
+    @DisplayName("Calculate velocity from angle 90° and speed 5")
     void testCalculateVelocityVertical() {
         Point2D velocity = BallPhysics.calculateVelocity(90, 5);
         assertEquals(0.0, velocity.getX(), DELTA);
@@ -114,7 +114,7 @@ class BallPhysicsTest {
     }
 
     @Test
-    @DisplayName("Tính vận tốc từ góc 45° và tốc độ 5")
+    @DisplayName("Calculate velocity from angle 45° and speed 5")
     void testCalculateVelocity45Degrees() {
         Point2D velocity = BallPhysics.calculateVelocity(45, 5);
         assertEquals(3.535, velocity.getX(), DELTA);
@@ -122,100 +122,100 @@ class BallPhysicsTest {
     }
 
     @Test
-    @DisplayName("Chuẩn hóa vận tốc - vận tốc quá cao phải giảm")
+    @DisplayName("Normalize velocity - too fast speed should be reduced")
     void testNormalizeVelocityTooFast() {
-        Point2D velocity = new Point2D(10, 10); // Tốc độ ~14.14
+        Point2D velocity = new Point2D(10, 10); // Speed ~14.14
         Point2D normalized = BallPhysics.normalizeVelocity(velocity, 3.0);
 
-        // Tốc độ sau chuẩn hóa không được vượt quá 3.0 * 1.2 = 3.6
+        // Speed after normalization should not exceed 3.0 * 1.2 = 3.6
         double speed = normalized.magnitude();
         assertTrue(speed <= 3.6);
     }
 
     @Test
-    @DisplayName("Chuẩn hóa vận tốc - góc được điều chỉnh nếu không hợp lệ")
+    @DisplayName("Normalize velocity - angle adjusted if invalid")
     void testNormalizeVelocityInvalidAngle() {
-        Point2D velocity = new Point2D(10, 0.5); // Góc ~2.86° (quá ngang)
+        Point2D velocity = new Point2D(10, 0.5); // Angle ~2.86° (too flat)
         Point2D normalized = BallPhysics.normalizeVelocity(velocity, 5.0);
 
-        // Góc mới phải >= 15° (với tolerance nhỏ cho sai số làm tròn)
+        // New angle must be >= 15° (with tolerance for rounding errors)
         double angle = BallPhysics.calculateAngle(normalized.getX(), normalized.getY());
         assertTrue(Math.abs(angle) >= 14.9, "Angle was: " + angle);
     }
 
     @Test
-    @DisplayName("Tính bật paddle - va chạm ở giữa paddle")
+    @DisplayName("Calculate paddle bounce - center hit")
     void testPaddleBounceCenterHit() {
         Point2D velocity = BallPhysics.calculatePaddleBounce(400, 400, 80, 3.0);
 
-        // Va chạm ở giữa -> vận tốc X = 0, Y hướng lên
+        // Center hit -> velocity X = 0, Y upward
         assertEquals(0.0, velocity.getX(), DELTA);
-        assertTrue(velocity.getY() < 0); // Hướng lên
+        assertTrue(velocity.getY() < 0); // Upward
         assertEquals(-3.0, velocity.getY(), DELTA);
     }
 
     @Test
-    @DisplayName("Tính bật paddle - va chạm bên trái")
+    @DisplayName("Calculate paddle bounce - left side hit")
     void testPaddleBounceLeftSide() {
         Point2D velocity = BallPhysics.calculatePaddleBounce(370, 400, 80, 3.0);
 
-        // Va chạm bên trái -> vận tốc X âm (bay sang trái)
+        // Left side hit -> velocity X negative (bounce left)
         assertTrue(velocity.getX() < 0);
-        assertTrue(velocity.getY() < 0); // Hướng lên
+        assertTrue(velocity.getY() < 0); // Upward
     }
 
     @Test
-    @DisplayName("Tính bật paddle - va chạm bên phải")
+    @DisplayName("Calculate paddle bounce - right side hit")
     void testPaddleBounceRightSide() {
         Point2D velocity = BallPhysics.calculatePaddleBounce(430, 400, 80, 3.0);
 
-        // Va chạm bên phải -> vận tốc X dương (bay sang phải)
+        // Right side hit -> velocity X positive (bounce right)
         assertTrue(velocity.getX() > 0);
-        assertTrue(velocity.getY() < 0); // Hướng lên
+        assertTrue(velocity.getY() < 0); // Upward
     }
 
     @Test
-    @DisplayName("Tính bật paddle - đảm bảo vận tốc Y tối thiểu -2.0")
+    @DisplayName("Calculate paddle bounce - ensure minimum Y velocity -2.0")
     void testPaddleBounceMinimumYVelocity() {
-        // Va chạm cực biên paddle
+        // Extreme edge hit
         Point2D velocity = BallPhysics.calculatePaddleBounce(440, 400, 80, 3.0);
 
-        // Vận tốc Y phải <= -2.0 để tránh bóng bay chậm
+        // Y velocity must be <= -2.0 to prevent slow bounces
         assertTrue(velocity.getY() <= -2.0);
     }
 
     @Test
-    @DisplayName("Kiểm tra góc hợp lệ - góc 45° hợp lệ")
+    @DisplayName("Check valid angle - 45° is valid")
     void testIsAngleValid45Degrees() {
         assertTrue(BallPhysics.isAngleValid(45));
     }
 
     @Test
-    @DisplayName("Kiểm tra góc hợp lệ - góc 5° không hợp lệ")
+    @DisplayName("Check valid angle - 5° is invalid")
     void testIsAngleInvalid5Degrees() {
         assertFalse(BallPhysics.isAngleValid(5));
     }
 
     @Test
-    @DisplayName("Kiểm tra góc hợp lệ - góc 85° không hợp lệ")
+    @DisplayName("Check valid angle - 85° is invalid")
     void testIsAngleInvalid85Degrees() {
         assertFalse(BallPhysics.isAngleValid(85));
     }
 
     @Test
-    @DisplayName("Lấy giới hạn góc tối đa")
+    @DisplayName("Get maximum vertical angle limit")
     void testGetMaxVerticalAngle() {
         assertEquals(75.0, BallPhysics.getMaxVerticalAngle(), DELTA);
     }
 
     @Test
-    @DisplayName("Lấy giới hạn góc tối thiểu")
+    @DisplayName("Get minimum vertical angle limit")
     void testGetMinVerticalAngle() {
         assertEquals(15.0, BallPhysics.getMinVerticalAngle(), DELTA);
     }
 
     @Test
-    @DisplayName("Độ lớn vận tốc được bảo toàn sau chuẩn hóa góc")
+    @DisplayName("Velocity magnitude preserved after angle normalization")
     void testVelocityMagnitudePreserved() {
         double speed = 5.0;
         Point2D velocity = BallPhysics.calculateVelocity(30, speed);
@@ -224,15 +224,15 @@ class BallPhysicsTest {
     }
 
     @Test
-    @DisplayName("Xử lý góc 180° (bay ngược lại)")
+    @DisplayName("Handle 180° angle (backward horizontal)")
     void testNormalizeAngle180Degrees() {
         double angle = BallPhysics.normalizeAngle(180);
-        // Góc 180° phải được điều chỉnh về 165° (180 - 15)
+        // 180° should be adjusted to 165° (180 - 15)
         assertEquals(165.0, angle, DELTA);
     }
 
     @Test
-    @DisplayName("Xử lý góc -180° (bay ngược lại)")
+    @DisplayName("Handle -180° angle (backward horizontal)")
     void testNormalizeAngleNegative180Degrees() {
         double angle = BallPhysics.normalizeAngle(-180);
         assertEquals(-165.0, angle, DELTA);
