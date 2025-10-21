@@ -41,6 +41,10 @@ public class BlockBounceApp extends GameApplication {
         return currentGameMode;
     }
 
+    public Set<KeyCode> getPressedKeys() {
+        return pressedKeys;
+    }
+
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(GameConstants.WINDOW_WIDTH);
@@ -99,19 +103,23 @@ public class BlockBounceApp extends GameApplication {
             // Use addEventFilter instead of setOnKeyPressed to capture events BEFORE FXGL intercepts them
             getGameScene().getRoot().getScene().addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
                 pressedKeys.add(e.getCode());
-                // Consume the event to prevent FXGL from intercepting arrow keys
-                if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT ||
-                    e.getCode() == KeyCode.UP || e.getCode() == KeyCode.DOWN) {
-                    e.consume();
+                // Consume the event to prevent FXGL from intercepting arrow keys (but NOT in Versus mode)
+                if (currentGameMode != GameMode.VERSUS) {
+                    if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT ||
+                        e.getCode() == KeyCode.UP || e.getCode() == KeyCode.DOWN) {
+                        e.consume();
+                    }
                 }
             });
 
             getGameScene().getRoot().getScene().addEventFilter(javafx.scene.input.KeyEvent.KEY_RELEASED, e -> {
                 pressedKeys.remove(e.getCode());
-                // Consume the event to prevent FXGL from intercepting arrow keys
-                if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT ||
-                    e.getCode() == KeyCode.UP || e.getCode() == KeyCode.DOWN) {
-                    e.consume();
+                // Consume the event to prevent FXGL from intercepting arrow keys (but NOT in Versus mode)
+                if (currentGameMode != GameMode.VERSUS) {
+                    if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT ||
+                        e.getCode() == KeyCode.UP || e.getCode() == KeyCode.DOWN) {
+                        e.consume();
+                    }
                 }
             });
 
@@ -119,16 +127,19 @@ public class BlockBounceApp extends GameApplication {
         }
 
         // Handle paddle movement based on manually tracked keys - reduced speed to 4 for smoother control
-        if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
-            getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle ->
-                paddle.translateX(-4)
-            );
-        }
+        // Skip this in Versus mode - paddles are controlled independently there
+        if (currentGameMode != GameMode.VERSUS) {
+            if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
+                getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle ->
+                    paddle.translateX(-4)
+                );
+            }
 
-        if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
-            getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle ->
-                paddle.translateX(4)
-            );
+            if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
+                getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle ->
+                    paddle.translateX(4)
+                );
+            }
         }
     }
 

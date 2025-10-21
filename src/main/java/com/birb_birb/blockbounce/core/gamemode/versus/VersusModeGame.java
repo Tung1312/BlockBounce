@@ -6,12 +6,17 @@ import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.input.KeyCode;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
+import com.almasb.fxgl.entity.Entity;
+import com.birb_birb.blockbounce.entities.PaddleComponent;
+
+import java.util.Set;
 
 public class VersusModeGame extends GameManager {
 
-    private static final VersusModeGame INSTANCE = new VersusModeGame();
+    public static final VersusModeGame INSTANCE = new VersusModeGame();
 
     private VersusModeGame() {}
 
@@ -30,8 +35,55 @@ public class VersusModeGame extends GameManager {
     }
 
     @Override
+    protected void setupNewGame() {
+        // Versus mode: don't create default paddle, we'll create two custom ones in createFrame()
+        GameFactory.createBackground();
+        GameFactory.createWalls();
+        GameFactory.createBricks();
+        // Note: NOT calling GameFactory.createPaddle() - we create two paddles in createFrame()
+        GameFactory.createBall();
+    }
+
+    public boolean isMovingLeft(int playerId) {
+        BlockBounceApp app = (BlockBounceApp) getApp();
+        Set<KeyCode> pressedKeys = app.getPressedKeys();
+        if (playerId == 1) {
+            return pressedKeys.contains(KeyCode.A);
+        } else if (playerId == 2) {
+            return pressedKeys.contains(KeyCode.LEFT);
+        }
+        return false;
+    }
+
+    public boolean isMovingRight(int playerId) {
+        BlockBounceApp app = (BlockBounceApp) getApp();
+        Set<KeyCode> pressedKeys = app.getPressedKeys();
+        if (playerId == 1) {
+            return pressedKeys.contains(KeyCode.D);
+        } else if (playerId == 2) {
+            return pressedKeys.contains(KeyCode.RIGHT);
+        }
+        return false;
+    }
+
+    private void movePaddle(int playerId, double dx) {
+        for (Entity paddle : getGameWorld().getEntitiesByType(com.birb_birb.blockbounce.constants.EntityType.PADDLE)) {
+            PaddleComponent pc = paddle.getComponent(PaddleComponent.class);
+            if (pc.getPlayerId() == playerId) {
+                paddle.setX(paddle.getX() + dx);
+            }
+        }
+    }
+
+    @Override
     protected void createFrame() {
         GameFactory.createVersusModeFrame();
+        // Spawn two paddles for Versus mode - one on left, one on right
+        double leftPaddleX = GameConstants.OFFSET_LEFT + GameConstants.PLAYABLE_WIDTH / 2.0 - GameConstants.PADDLE_WIDTH / 2.0;
+        double rightPaddleX = GameConstants.OFFSET_LEFT +  GameConstants.PLAYABLE_WIDTH / 2.0 - GameConstants.PADDLE_WIDTH / 2.0;
+        double paddleY = GameConstants.WINDOW_HEIGHT - GameConstants.OFFSET_BOTTOM - 60;
+        GameFactory.createPaddle(leftPaddleX, paddleY, 1); // Player 1 - left half
+        GameFactory.createPaddle(rightPaddleX, paddleY, 2); // Player 2 - right half
     }
 
     @Override

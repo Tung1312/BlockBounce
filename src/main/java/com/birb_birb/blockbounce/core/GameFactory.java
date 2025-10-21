@@ -51,7 +51,7 @@ public final class GameFactory {
                 .buildAndAttach();
     }
 
-    public static Entity createPaddle() {
+    public static Entity createPaddle(double x, double y, int playerId) {
         Texture paddleTexture = getAssetLoader().loadTexture(GameConstants.PADDLE_TEXTURE);
         paddleTexture.setFitWidth(GameConstants.PADDLE_WIDTH);
         paddleTexture.setFitHeight(GameConstants.PADDLE_HEIGHT);
@@ -60,15 +60,22 @@ public final class GameFactory {
 
         return entityBuilder()
                 .type(EntityType.PADDLE)
-                .at(GameConstants.OFFSET_LEFT + GameConstants.PLAYABLE_WIDTH / 2.0 - PADDLE_WIDTH / 2.0,
-                        WINDOW_HEIGHT - GameConstants.OFFSET_BOTTOM - 60)
+                .at(x, y)
                 .view(paddleTexture)
-                .bbox(new HitBox(BoundingShape.box(PADDLE_WIDTH, PADDLE_HEIGHT)))
-                .with(new PaddleComponent())
+                .bbox(new HitBox(BoundingShape.box(GameConstants.PADDLE_WIDTH, GameConstants.PADDLE_HEIGHT)))
+                .with(new PaddleComponent(playerId)) // Pass playerId to PaddleComponent for control
                 .collidable()
                 .buildAndAttach();
     }
 
+    // Keep the old createPaddle() for compatibility
+    public static Entity createPaddle() {
+        return createPaddle(
+            GameConstants.OFFSET_LEFT + GameConstants.PLAYABLE_WIDTH / 2.0 - GameConstants.PADDLE_WIDTH / 2.0,
+            GameConstants.WINDOW_HEIGHT - GameConstants.OFFSET_BOTTOM - 60,
+            1
+        );
+    }
 
     public static void createBricks() {
         Texture baseTexture = getAssetLoader().loadTexture(GameConstants.BRICK_TEXTURE);
