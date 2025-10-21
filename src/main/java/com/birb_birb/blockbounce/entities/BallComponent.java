@@ -11,14 +11,13 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class BallComponent extends Component {
 
-    private static final double BASE_SPEED = 3.0; // Tốc độ cơ bản không đổi
+    private static final double BASE_SPEED = 3.0;
     private Point2D velocity = new Point2D(2.5, -2.5);
     private boolean hasCollidedThisFrame = false;
     private double collisionCooldown = 0;
 
     @Override
     public void onUpdate(double tpf) {
-        // Decrease cooldown
         if (collisionCooldown > 0) {
             collisionCooldown -= tpf;
         }
@@ -26,23 +25,27 @@ public class BallComponent extends Component {
         hasCollidedThisFrame = false;
         entity.translate(velocity);
 
-        // Bounce off walls (left and right)
+        // Bounce off walls (left, right and top)
         if (entity.getX() <= GameConstants.OFFSET_LEFT + 10 ||
-            entity.getRightX() >= GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 10) {
-            velocity = new Point2D(-velocity.getX(), velocity.getY());
-            entity.setX(Math.max(GameConstants.OFFSET_LEFT + 10,
+                entity.getRightX() >= GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 10 ||
+                entity.getY() <= GameConstants.OFFSET_TOP + 10) {
+
+            if (entity.getX() <= GameConstants.OFFSET_LEFT + 10 ||
+                    entity.getRightX() >= GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 10) {
+                velocity = new Point2D(-velocity.getX(), velocity.getY());
+                entity.setX(Math.max(GameConstants.OFFSET_LEFT + 10,
                         Math.min(entity.getX(), GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 10 - entity.getWidth())));
-            SoundManager.playBounce(); // Thêm âm thanh
+            }
+
+            if (entity.getY() <= GameConstants.OFFSET_TOP + 10) {
+                velocity = new Point2D(velocity.getX(), -velocity.getY());
+                entity.setY(GameConstants.OFFSET_TOP + 10);
+            }
+
+            SoundManager.playBounce();
         }
 
-        // Bounce off top wall
-        if (entity.getY() <= GameConstants.OFFSET_TOP + 10) {
-            velocity = new Point2D(velocity.getX(), -velocity.getY());
-            entity.setY(GameConstants.OFFSET_TOP + 10);
-            SoundManager.playBounce(); // Thêm âm thanh
-        }
-
-        // Check paddle collision - only once per frame to prevent multiple bounces
+        // Check paddle collision - preventing multiple bounces
         if (!hasCollidedThisFrame && collisionCooldown <= 0) {
             getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle -> {
                 if (entity.isColliding(paddle) && !hasCollidedThisFrame) {
@@ -59,29 +62,29 @@ public class BallComponent extends Component {
                         double ballCenter = entity.getX() + entity.getWidth() / 2;
                         double hitOffset = (ballCenter - paddleCenter) / (paddle.getWidth() / 2);
 
-                        // Clamp hit offset để tránh góc quá dốc
+                        // Clamp hit offset
                         hitOffset = Math.max(-0.75, Math.min(0.75, hitOffset));
 
-                        // Tính góc bounce (từ -60 đến 60 độ)
-                        double bounceAngle = hitOffset * Math.PI / 3; // ±60 degrees
+                        // Calculate bounce angle (±60 degrees)
+                        double bounceAngle = hitOffset * Math.PI / 3;
 
-                        // Tạo velocity mới với tốc độ cố định BASE_SPEED
+                        // Create new velocity based on BASE_SPEED
                         double newVelX = BASE_SPEED * Math.sin(bounceAngle);
                         double newVelY = -BASE_SPEED * Math.cos(bounceAngle);
 
-                        // Đảm bảo velocity Y luôn hướng lên và không quá nhỏ
+                        // Velocity Y always upward and not too small
                         newVelY = Math.min(newVelY, -2.0);
 
                         velocity = new Point2D(newVelX, newVelY);
                         hasCollidedThisFrame = true;
-                        collisionCooldown = 0.05; // 50ms cooldown
-                        SoundManager.playPaddleHit(); // Thêm âm thanh
+                        collisionCooldown = 0.05;
+                        SoundManager.playPaddleHit();
                     }
                 }
             });
         }
 
-        // Brick collision - only destroy ONE brick per frame with proper position adjustment
+        // Brick collision - destroy 1 brick / frame with position adjustment
         if (!hasCollidedThisFrame && collisionCooldown <= 0) {
             for (var brick : getGameWorld().getEntitiesByType(EntityType.BRICK)) {
                 if (entity.isColliding(brick)) {
@@ -99,18 +102,16 @@ public class BallComponent extends Component {
                     double ratioY = Math.abs(deltaY) / (brick.getHeight() / 2);
 
                     if (ratioX > ratioY) {
-                        // Hit from left or right
+                        // Hit from left or right -> Push ball out horizontally
                         velocity = new Point2D(-velocity.getX(), velocity.getY());
-                        // Push ball out horizontally
                         if (deltaX > 0) {
                             entity.setX(brick.getX() + brick.getWidth() + 1);
                         } else {
                             entity.setX(brick.getX() - entity.getWidth() - 1);
                         }
                     } else {
-                        // Hit from top or bottom
+                        // Hit from top or bottom -> Push ball out vertically
                         velocity = new Point2D(velocity.getX(), -velocity.getY());
-                        // Push ball out vertically
                         if (deltaY > 0) {
                             entity.setY(brick.getY() + brick.getHeight() + 1);
                         } else {
@@ -118,7 +119,7 @@ public class BallComponent extends Component {
                         }
                     }
 
-                    // Normalize velocity để giữ tốc độ ổn định sau va chạm
+                    // Normalize velocity after collision
                     double currentSpeed = velocity.magnitude();
                     if (currentSpeed > BASE_SPEED * 1.2) {
                         velocity = velocity.normalize().multiply(BASE_SPEED);
@@ -126,13 +127,12 @@ public class BallComponent extends Component {
 
                     brick.removeFromWorld();
                     hasCollidedThisFrame = true;
-                    collisionCooldown = 0.05; // 50ms cooldown to prevent multiple hits
+                    collisionCooldown = 0.05;
 
-                    // Thêm âm thanh và cập nhật điểm
+                    // Play sound and update score
                     SoundManager.playBrickBreak();
-                    inc("score", 10); // Tăng 10 điểm mỗi block
-
-                    break; // Stop after first collision
+                    inc("score", 10);
+                    break;
                 }
             }
         }
@@ -140,11 +140,11 @@ public class BallComponent extends Component {
         // Reset if ball falls off screen
         if (entity.getY() > GameConstants.WINDOW_HEIGHT - GameConstants.OFFSET_BOTTOM) {
             resetBall();
-            inc("lives", -1); // Trừ 1 mạng
+            // -1 lives if ball falls off screen
+            inc("lives", -1);
 
-            // Kiểm tra game over
+            // Game over if ball <= 0
             if (geti("lives") <= 0) {
-                // Game over logic sẽ được xử lý ở game mode
                 set("gameOver", true);
             }
         }

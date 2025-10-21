@@ -23,11 +23,10 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class BlockBounceApp extends GameApplication {
 
-    // Game mode tracking
+    // Track for current game mode
     public enum GameMode {
         STORY, VERSUS, ENDLESS
     }
-
     private static GameMode currentGameMode = GameMode.STORY;
 
     // Track pressed keys manually
@@ -51,7 +50,7 @@ public class BlockBounceApp extends GameApplication {
         settings.setFullScreenAllowed(true);
         settings.setFullScreenFromStart(false);
         settings.setMainMenuEnabled(true);
-        settings.setGameMenuEnabled(false);  // Disable game menu to free up arrow keys
+        settings.setGameMenuEnabled(true);
 
         settings.setSceneFactory(new SceneFactory() {
             @NotNull
