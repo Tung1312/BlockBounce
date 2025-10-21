@@ -124,7 +124,7 @@ public class BallComponent extends Component {
 
             hasCollidedThisFrame = true;
             collisionCooldown = 0.05;
-            SoundManager.playPaddleHit();
+            SoundManager.playHitSound();
         }
     }
 
@@ -171,7 +171,7 @@ public class BallComponent extends Component {
 
                 hasCollidedThisFrame = true;
                 collisionCooldown = 0.05;
-                SoundManager.playBrickBreak();
+                SoundManager.playBreakSound();
                 break;
             }
         }

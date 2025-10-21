@@ -87,7 +87,7 @@ public abstract class GameManager {
     }
 
     protected void setupGameplayButtons() {
-        VBox buttonPanel = GameplayButtons.createButtonPanel();
+        VBox buttonPanel = GameplayButtons.createButtonPanel(BlockBounceApp.getCurrentGameMode());
         buttonPanel.setTranslateX(GameConstants.WINDOW_WIDTH - 60);
         buttonPanel.setTranslateY(10);
         getGameScene().addUINode(buttonPanel);

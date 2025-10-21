@@ -1,6 +1,7 @@
 package com.birb_birb.blockbounce.utils;
 
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.core.BlockBounceApp;
 import com.birb_birb.blockbounce.ui.menus.ScoreModeMenu;
 import com.birb_birb.blockbounce.ui.menus.StoryModeMenu;
 import com.birb_birb.blockbounce.ui.menus.VersusModeMenu;
@@ -103,8 +104,26 @@ public class ButtonManager {
         howToPlayStage.show();
     }
 
-    public static void navigateToMainMenu() {
+    public static void goToPreviousScene() {
         getSceneService().popSubScene();
+    }
+
+    public static void navigateBackToGameModeMenu(BlockBounceApp.GameMode gameMode) {
+        // Exit the current game and return to the game mode menu
+        getGameController().gotoMainMenu();
+
+        // Push the appropriate menu based on game mode
+        switch (gameMode) {
+            case STORY:
+                getSceneService().pushSubScene(new StoryModeMenu());
+                break;
+            case ENDLESS:
+                getSceneService().pushSubScene(new ScoreModeMenu());
+                break;
+            case VERSUS:
+                getSceneService().pushSubScene(new VersusModeMenu());
+                break;
+        }
     }
 
     public static void exitToMainMenu() {

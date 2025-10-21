@@ -111,7 +111,7 @@ public class StoryModeMenu extends MenuManager {
         Button settingButton = ButtonManager.createButton();
         settingButton.setOnAction(e -> ButtonManager.openSettings());
         Button homeButton = ButtonManager.createButton();
-        homeButton.setOnAction(e -> ButtonManager.navigateToMainMenu());
+        homeButton.setOnAction(e -> ButtonManager.exitToMainMenu());
 
         Region spacer = new Region();
         spacer.setPrefHeight(601);

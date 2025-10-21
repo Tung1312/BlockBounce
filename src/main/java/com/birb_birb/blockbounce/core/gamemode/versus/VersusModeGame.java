@@ -74,7 +74,7 @@ public class VersusModeGame extends GameManager {
     @Override
     protected void setupGameplayButtons() {
         // Center the buttons for versus mode
-        VBox buttonPanel = com.birb_birb.blockbounce.ui.GameplayButtons.createButtonPanel();
+        VBox buttonPanel = com.birb_birb.blockbounce.ui.GameplayButtons.createButtonPanel(BlockBounceApp.GameMode.VERSUS);
         buttonPanel.setTranslateX((GameConstants.WINDOW_WIDTH / 2.0) - 26);
         buttonPanel.setTranslateY(10);
         getGameScene().addUINode(buttonPanel);

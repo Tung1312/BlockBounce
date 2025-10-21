@@ -1,8 +1,7 @@
 package com.birb_birb.blockbounce.ui;
 
-import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.core.BlockBounceApp;
 import com.birb_birb.blockbounce.utils.ButtonManager;
-import com.birb_birb.blockbounce.utils.SoundManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -15,11 +14,11 @@ public class GameplayButtons {
     private GameplayButtons() {}
 
     @NotNull
-    public static VBox createButtonPanel() {
+    public static VBox createButtonPanel(BlockBounceApp.GameMode gameMode) {
         Button settingButton = ButtonManager.createButton();
         settingButton.setOnAction(e -> ButtonManager.openSettings());
         Button backButton = ButtonManager.createButton();
-        backButton.setOnAction(e -> ButtonManager.navigateToStoryMode());
+        backButton.setOnAction(e -> ButtonManager.navigateBackToGameModeMenu(gameMode));
         Button homeButton = ButtonManager.createButton();
         homeButton.setOnAction(e -> ButtonManager.exitToMainMenu());
 
@@ -41,4 +40,3 @@ public class GameplayButtons {
         return buttonPanel;
     }
 }
-
