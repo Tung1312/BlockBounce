@@ -3,6 +3,7 @@ package com.birb_birb.blockbounce.entities;
 import com.almasb.fxgl.entity.component.Component;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.utils.BallPhysics;
 import com.birb_birb.blockbounce.utils.SoundManager;
 import javafx.geometry.Point2D;
 
@@ -42,6 +43,9 @@ public class BallComponent extends Component {
                 entity.setY(GameConstants.OFFSET_TOP + 10);
             }
 
+            // Normalize velocity using BallPhysics to ensure valid angle
+            velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED);
+
             SoundManager.playBounce();
         }
 
@@ -57,25 +61,17 @@ public class BallComponent extends Component {
                         // Push ball above paddle
                         entity.setY(paddleTop - entity.getHeight() - 1);
 
-                        // Calculate angle based on where ball hits paddle
+                        // Calculate bounce velocity using BallPhysics
                         double paddleCenter = paddle.getX() + paddle.getWidth() / 2;
                         double ballCenter = entity.getX() + entity.getWidth() / 2;
-                        double hitOffset = (ballCenter - paddleCenter) / (paddle.getWidth() / 2);
 
-                        // Clamp hit offset
-                        hitOffset = Math.max(-0.75, Math.min(0.75, hitOffset));
+                        velocity = BallPhysics.calculatePaddleBounce(
+                            ballCenter,
+                            paddleCenter,
+                            paddle.getWidth(),
+                            BASE_SPEED
+                        );
 
-                        // Calculate bounce angle (±60 degrees)
-                        double bounceAngle = hitOffset * Math.PI / 3;
-
-                        // Create new velocity based on BASE_SPEED
-                        double newVelX = BASE_SPEED * Math.sin(bounceAngle);
-                        double newVelY = -BASE_SPEED * Math.cos(bounceAngle);
-
-                        // Velocity Y always upward and not too small
-                        newVelY = Math.min(newVelY, -2.0);
-
-                        velocity = new Point2D(newVelX, newVelY);
                         hasCollidedThisFrame = true;
                         collisionCooldown = 0.05;
                         SoundManager.playPaddleHit();
@@ -119,11 +115,8 @@ public class BallComponent extends Component {
                         }
                     }
 
-                    // Normalize velocity after collision
-                    double currentSpeed = velocity.magnitude();
-                    if (currentSpeed > BASE_SPEED * 1.2) {
-                        velocity = velocity.normalize().multiply(BASE_SPEED);
-                    }
+                    // Normalize velocity using BallPhysics to ensure valid angle and speed
+                    velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED);
 
                     brick.removeFromWorld();
                     hasCollidedThisFrame = true;
@@ -168,3 +161,4 @@ public class BallComponent extends Component {
         this.velocity = velocity;
     }
 }
+
