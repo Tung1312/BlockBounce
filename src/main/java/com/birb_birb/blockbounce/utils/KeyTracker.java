@@ -143,9 +143,9 @@ public class KeyTracker {
      */
     public static boolean isArrowKey(KeyCode keyCode) {
         return keyCode == KeyCode.LEFT ||
-                keyCode == KeyCode.RIGHT ||
-                keyCode == KeyCode.UP ||
-                keyCode == KeyCode.DOWN;
+               keyCode == KeyCode.RIGHT ||
+               keyCode == KeyCode.UP ||
+               keyCode == KeyCode.DOWN;
     }
 
     /**
@@ -155,9 +155,9 @@ public class KeyTracker {
      */
     public static boolean isWASDKey(KeyCode keyCode) {
         return keyCode == KeyCode.W ||
-                keyCode == KeyCode.A ||
-                keyCode == KeyCode.S ||
-                keyCode == KeyCode.D;
+               keyCode == KeyCode.A ||
+               keyCode == KeyCode.S ||
+               keyCode == KeyCode.D;
     }
 
     /**

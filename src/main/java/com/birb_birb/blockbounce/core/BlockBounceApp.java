@@ -68,7 +68,7 @@ public class BlockBounceApp extends GameApplication {
     @Override
     protected void initInput() {
         // Input bindings get cleared when switching scenes
-        // We'll handle input directly using JavaFX scene events
+        // Handle input directly using JavaFX scene events
     }
 
     @Override

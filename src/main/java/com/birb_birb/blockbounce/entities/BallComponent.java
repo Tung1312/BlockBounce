@@ -96,7 +96,7 @@ public class BallComponent extends Component {
             // Normalize velocity using BallPhysics to ensure valid angle
             velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED);
 
-            SoundManager.playBounce();
+            SoundManager.playHitSound();
         }
     }
 
@@ -248,3 +248,4 @@ public class BallComponent extends Component {
         this.velocity = velocity;
     }
 }
+

@@ -77,8 +77,8 @@ public class BallPhysics {
     public static Point2D calculateVelocity(double angle, double speed) {
         double radians = Math.toRadians(angle);
         return new Point2D(
-                Math.cos(radians) * speed,
-                Math.sin(radians) * speed
+            Math.cos(radians) * speed,
+            Math.sin(radians) * speed
         );
     }
 
