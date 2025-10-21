@@ -5,6 +5,7 @@ import com.birb_birb.blockbounce.ui.menus.ScoreModeMenu;
 import com.birb_birb.blockbounce.ui.menus.StoryModeMenu;
 import com.birb_birb.blockbounce.ui.menus.VersusModeMenu;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -18,6 +19,43 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 public class ButtonManager {
 
     private ButtonManager() {}
+
+    public static Button createButton() {
+        Button button = new Button();
+        button.setPrefSize(52, 52); // Icon button size
+        button.setMinSize(52, 52);
+        button.setMaxSize(52, 52);
+
+        button.setStyle(GameConstants.BASE_STYLE);
+
+        button.setOnMouseEntered(e -> {
+            if (!button.isPressed()) {
+                SoundManager.playHoverSound();
+                button.setStyle(GameConstants.HOVER_STYLE);
+            }
+        });
+
+        button.setOnMouseExited(e -> {
+            if (!button.isPressed()) {
+                button.setStyle(GameConstants.BASE_STYLE);
+            }
+        });
+
+        button.setOnMousePressed(e -> {
+            SoundManager.playClickSound();
+            button.setStyle(GameConstants.BASE_STYLE);
+        });
+
+        button.setOnMouseReleased(e -> {
+            if (button.isHover()) {
+                button.setStyle(GameConstants.HOVER_STYLE);
+            } else {
+                button.setStyle(GameConstants.BASE_STYLE);
+            }
+        });
+
+        return button;
+    }
 
     public static void navigateToStoryMode() {
         getSceneService().pushSubScene(new StoryModeMenu());

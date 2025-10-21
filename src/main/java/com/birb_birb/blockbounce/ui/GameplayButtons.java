@@ -8,17 +8,19 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Region;
+import org.jetbrains.annotations.NotNull;
 
 public class GameplayButtons {
 
     private GameplayButtons() {}
 
+    @NotNull
     public static VBox createButtonPanel() {
-        Button settingButton = createButton();
+        Button settingButton = ButtonManager.createButton();
         settingButton.setOnAction(e -> ButtonManager.openSettings());
-        Button backButton = createButton();
+        Button backButton = ButtonManager.createButton();
         backButton.setOnAction(e -> ButtonManager.navigateToStoryMode());
-        Button homeButton = createButton();
+        Button homeButton = ButtonManager.createButton();
         homeButton.setOnAction(e -> ButtonManager.exitToMainMenu());
 
         Region spacer1 = new Region();
@@ -37,43 +39,6 @@ public class GameplayButtons {
         buttonPanel.getChildren().addAll(settingButton, spacer1, backButton, spacer2, homeButton);
 
         return buttonPanel;
-    }
-
-    private static Button createButton() {
-        Button button = new Button();
-        button.setPrefSize(52, 52); // Icon button size
-        button.setMinSize(52, 52);
-        button.setMaxSize(52, 52);
-
-        button.setStyle(GameConstants.BASE_STYLE);
-
-        button.setOnMouseEntered(e -> {
-            if (!button.isPressed()) {
-                SoundManager.playHoverSound();
-                button.setStyle(GameConstants.HOVER_STYLE);
-            }
-        });
-
-        button.setOnMouseExited(e -> {
-            if (!button.isPressed()) {
-                button.setStyle(GameConstants.BASE_STYLE);
-            }
-        });
-
-        button.setOnMousePressed(e -> {
-            SoundManager.playClickSound();
-            button.setStyle(GameConstants.BASE_STYLE);
-        });
-
-        button.setOnMouseReleased(e -> {
-            if (button.isHover()) {
-                button.setStyle(GameConstants.HOVER_STYLE);
-            } else {
-                button.setStyle(GameConstants.BASE_STYLE);
-            }
-        });
-
-        return button;
     }
 }
 

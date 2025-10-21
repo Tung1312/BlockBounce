@@ -16,7 +16,7 @@ public class GameConstants {
     public static final double VERSUS_PLAYABLE_WIDTH =  WINDOW_WIDTH - (OFFSET_LEFT * 2) - OFFSET_MIDDLE;
 
     public static final String MAIN_MENU_BACKGROUND = "/assets/textures/menus/main_menu_background.png";
-    public static final String STORY_MODE_BACKGROUND = "/assets/textures/menus/story_mode_template.png";
+    public static final String STORY_MODE_BACKGROUND = "/assets/textures/menus/story_mode_background.png";
     public static final String SCORE_MODE_BACKGROUND = "/assets/textures/menus/score_mode_template.png";
     public static final String VERSUS_MODE_BACKGROUND = "/assets/textures/menus/versus_mode_template.png";
     public static final String HOW_TO_PLAY = "/assets/textures/menus/how_to_play.png";
