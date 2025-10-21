@@ -2,7 +2,7 @@ package com.birb_birb.blockbounce.ui.menus;
 
 import com.almasb.fxgl.app.scene.MenuType;
 import com.birb_birb.blockbounce.constants.GameConstants;
-import com.birb_birb.blockbounce.core.BlockBounceApp;
+import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.utils.MenuManager;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
@@ -29,7 +29,7 @@ public class VersusModeMenu extends MenuManager {
         newGameButton.setLayoutX(getButtonX());
         newGameButton.setLayoutY(getStartY());
         newGameButton.setOnAction(e -> {
-            BlockBounceApp.setGameMode(BlockBounceApp.GameMode.VERSUS);
+            GameMode.setCurrentGameMode(GameMode.VERSUS);
             getGameController().startNewGame();
         });
         root.getChildren().add(newGameButton);

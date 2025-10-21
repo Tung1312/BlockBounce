@@ -2,6 +2,7 @@ package com.birb_birb.blockbounce.ui.menus;
 
 import com.almasb.fxgl.app.scene.MenuType;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.BlockBounceApp;
 import com.birb_birb.blockbounce.utils.MenuManager;
 import javafx.scene.control.Button;
@@ -29,7 +30,7 @@ public class ScoreModeMenu extends MenuManager {
         newGameButton.setLayoutX(getButtonX());
         newGameButton.setLayoutY(getStartY());
         newGameButton.setOnAction(e -> {
-            BlockBounceApp.setGameMode(BlockBounceApp.GameMode.ENDLESS);
+            GameMode.setCurrentGameMode(GameMode.ENDLESS);
             getGameController().startNewGame();
         });
         root.getChildren().add(newGameButton);

@@ -1,6 +1,7 @@
 package com.birb_birb.blockbounce.core.gamemode.versus;
 
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.BlockBounceApp;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
@@ -23,8 +24,8 @@ public class VersusModeGame extends GameManager {
     private VersusModeGame() {}
 
     public static void startGame() {
-        if (BlockBounceApp.getCurrentGameMode() != BlockBounceApp.GameMode.VERSUS) {
-            System.err.println("Warning: VersusModeGame.start() called but current mode is " + BlockBounceApp.getCurrentGameMode());
+        if (GameMode.getCurrentGameMode() != GameMode.VERSUS) {
+            System.err.println("Warning: VersusModeGame.start() called but current mode is " + GameMode.getCurrentGameMode());
         }
         INSTANCE.initialize();
     }
@@ -74,7 +75,7 @@ public class VersusModeGame extends GameManager {
     @Override
     protected void setupGameplayButtons() {
         // Center the buttons for versus mode
-        VBox buttonPanel = com.birb_birb.blockbounce.ui.GameplayButtons.createButtonPanel(BlockBounceApp.GameMode.VERSUS);
+        VBox buttonPanel = com.birb_birb.blockbounce.ui.GameplayButtons.createButtonPanel(GameMode.VERSUS);
         buttonPanel.setTranslateX((GameConstants.WINDOW_WIDTH / 2.0) - 26);
         buttonPanel.setTranslateY(10);
         getGameScene().addUINode(buttonPanel);

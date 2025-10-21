@@ -6,6 +6,7 @@ import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.gamemode.score.ScoreModeGame;
 import com.birb_birb.blockbounce.core.gamemode.story.StoryModeGame;
 import com.birb_birb.blockbounce.ui.menus.MainMenu;
@@ -23,23 +24,9 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class BlockBounceApp extends GameApplication {
 
-    // Track for current game mode
-    public enum GameMode {
-        STORY, VERSUS, ENDLESS
-    }
-    private static GameMode currentGameMode = GameMode.STORY;
-
     // Track pressed keys manually
     private final Set<KeyCode> pressedKeys = new HashSet<>();
     private boolean inputInitialized = false;
-
-    public static void setGameMode(GameMode mode) {
-        currentGameMode = mode;
-    }
-
-    public static GameMode getCurrentGameMode() {
-        return currentGameMode;
-    }
 
     public Set<KeyCode> getPressedKeys() {
         return pressedKeys;
@@ -81,7 +68,7 @@ public class BlockBounceApp extends GameApplication {
         CursorManager.apply(getGameScene().getRoot());
 
         // Initialize game based on selected mode
-        switch (currentGameMode) {
+        switch (GameMode.getCurrentGameMode()) {
             case STORY:
                 StoryModeGame.startGame();
                 break;
@@ -104,7 +91,7 @@ public class BlockBounceApp extends GameApplication {
             getGameScene().getRoot().getScene().addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
                 pressedKeys.add(e.getCode());
                 // Consume the event to prevent FXGL from intercepting arrow keys (but NOT in Versus mode)
-                if (currentGameMode != GameMode.VERSUS) {
+                if (GameMode.getCurrentGameMode() != GameMode.VERSUS) {
                     if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT ||
                         e.getCode() == KeyCode.UP || e.getCode() == KeyCode.DOWN) {
                         e.consume();
@@ -115,7 +102,7 @@ public class BlockBounceApp extends GameApplication {
             getGameScene().getRoot().getScene().addEventFilter(javafx.scene.input.KeyEvent.KEY_RELEASED, e -> {
                 pressedKeys.remove(e.getCode());
                 // Consume the event to prevent FXGL from intercepting arrow keys (but NOT in Versus mode)
-                if (currentGameMode != GameMode.VERSUS) {
+                if (GameMode.getCurrentGameMode() != GameMode.VERSUS) {
                     if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT ||
                         e.getCode() == KeyCode.UP || e.getCode() == KeyCode.DOWN) {
                         e.consume();
@@ -128,7 +115,7 @@ public class BlockBounceApp extends GameApplication {
 
         // Handle paddle movement based on manually tracked keys - reduced speed to 4 for smoother control
         // Skip this in Versus mode - paddles are controlled independently there
-        if (currentGameMode != GameMode.VERSUS) {
+        if (GameMode.getCurrentGameMode() != GameMode.VERSUS) {
             if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
                 getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle ->
                     paddle.translateX(-4)

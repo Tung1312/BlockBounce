@@ -1,6 +1,6 @@
 package com.birb_birb.blockbounce.ui;
 
-import com.birb_birb.blockbounce.core.BlockBounceApp;
+import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.utils.ButtonManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,7 +14,7 @@ public class GameplayButtons {
     private GameplayButtons() {}
 
     @NotNull
-    public static VBox createButtonPanel(BlockBounceApp.GameMode gameMode) {
+    public static VBox createButtonPanel(GameMode gameMode) {
         Button settingButton = ButtonManager.createButton();
         settingButton.setOnAction(e -> ButtonManager.openSettings());
         Button backButton = ButtonManager.createButton();

@@ -2,6 +2,7 @@ package com.birb_birb.blockbounce.core;
 
 import com.almasb.fxgl.entity.Entity;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.ui.GameplayButtons;
 import com.birb_birb.blockbounce.utils.FontManager;
 import javafx.scene.layout.VBox;
@@ -87,7 +88,7 @@ public abstract class GameManager {
     }
 
     protected void setupGameplayButtons() {
-        VBox buttonPanel = GameplayButtons.createButtonPanel(BlockBounceApp.getCurrentGameMode());
+        VBox buttonPanel = GameplayButtons.createButtonPanel(GameMode.getCurrentGameMode());
         buttonPanel.setTranslateX(GameConstants.WINDOW_WIDTH - 60);
         buttonPanel.setTranslateY(10);
         getGameScene().addUINode(buttonPanel);

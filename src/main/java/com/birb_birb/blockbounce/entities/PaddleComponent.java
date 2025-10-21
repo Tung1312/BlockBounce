@@ -2,7 +2,7 @@ package com.birb_birb.blockbounce.entities;
 
 import com.almasb.fxgl.entity.component.Component;
 import com.birb_birb.blockbounce.constants.GameConstants;
-import com.birb_birb.blockbounce.core.BlockBounceApp;
+import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.gamemode.versus.VersusModeGame;
 
 
@@ -23,7 +23,7 @@ public class PaddleComponent extends Component {
         double paddleWidth = entity.getBoundingBoxComponent().getWidth();
         double minX, maxX;
         double x = entity.getX();
-        if (BlockBounceApp.getCurrentGameMode() == BlockBounceApp.GameMode.VERSUS) {
+        if (GameMode.getCurrentGameMode() == GameMode.VERSUS) {
             // Versus mode: clamp to half screen with middle divider gap
             if (playerId == 1) {
                 // Player 1: Left side (from left edge to middle divider)

@@ -2,7 +2,7 @@ package com.birb_birb.blockbounce.ui.menus;
 
 import com.almasb.fxgl.app.scene.MenuType;
 import com.birb_birb.blockbounce.constants.GameConstants;
-import com.birb_birb.blockbounce.core.BlockBounceApp;
+import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.utils.ButtonManager;
 import com.birb_birb.blockbounce.utils.MenuManager;
 import com.birb_birb.blockbounce.utils.SoundManager;
@@ -57,7 +57,7 @@ public class StoryModeMenu extends MenuManager {
         newGameButton.setLayoutX(getButtonX());
         newGameButton.setLayoutY(getAppHeight() * 0.911);
         newGameButton.setOnAction(e -> {
-            BlockBounceApp.setGameMode(BlockBounceApp.GameMode.STORY);
+            GameMode.setCurrentGameMode(GameMode.STORY);
             getGameController().startNewGame();
         });
         root.getChildren().add(newGameButton);

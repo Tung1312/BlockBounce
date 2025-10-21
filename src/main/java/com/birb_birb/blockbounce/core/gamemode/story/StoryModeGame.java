@@ -2,7 +2,7 @@ package com.birb_birb.blockbounce.core.gamemode.story;
 
 import com.almasb.fxgl.entity.Entity;
 import com.birb_birb.blockbounce.constants.GameConstants;
-import com.birb_birb.blockbounce.core.BlockBounceApp;
+import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
 import javafx.scene.paint.Color;
@@ -18,8 +18,8 @@ public class StoryModeGame extends GameManager {
     private StoryModeGame() {}
 
     public static void startGame() {
-        if (BlockBounceApp.getCurrentGameMode() != BlockBounceApp.GameMode.STORY) {
-            System.err.println("Warning: StoryModeGame.start() called but current mode is " + BlockBounceApp.getCurrentGameMode());
+        if (GameMode.getCurrentGameMode() != GameMode.STORY) {
+            System.err.println("Warning: StoryModeGame.start() called but current mode is " + GameMode.getCurrentGameMode());
         }
         INSTANCE.initialize();
     }

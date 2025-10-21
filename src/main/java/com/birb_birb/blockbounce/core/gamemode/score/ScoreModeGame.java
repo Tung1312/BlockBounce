@@ -1,6 +1,6 @@
 package com.birb_birb.blockbounce.core.gamemode.score;
 
-import com.birb_birb.blockbounce.core.BlockBounceApp;
+import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.core.GameFactory;
@@ -18,8 +18,8 @@ public class ScoreModeGame extends GameManager {
     private ScoreModeGame() {}
 
     public static void startGame() {
-        if (BlockBounceApp.getCurrentGameMode() != BlockBounceApp.GameMode.ENDLESS) {
-            System.err.println("Warning: ScoreModeGame.start() called but current mode is " + BlockBounceApp.getCurrentGameMode());
+        if (GameMode.getCurrentGameMode() != GameMode.ENDLESS) {
+            System.err.println("Warning: ScoreModeGame.start() called but current mode is " + GameMode.getCurrentGameMode());
         }
         INSTANCE.initialize();
     }
