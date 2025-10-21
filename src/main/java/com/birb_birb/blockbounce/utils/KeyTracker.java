@@ -169,4 +169,3 @@ public class KeyTracker {
         return isArrowKey(keyCode) || isWASDKey(keyCode);
     }
 }
-

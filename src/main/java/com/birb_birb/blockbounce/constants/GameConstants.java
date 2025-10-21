@@ -10,7 +10,7 @@ public class GameConstants {
     public static final int OFFSET_BOTTOM = 20;
     public static final int OFFSET_MIDDLE = 90;
     public static final double OFFSET_LEFT = 20;
-    public static final double OFFSET_RIGHT = 80;
+    public static final double OFFSET_RIGHT = 100;
     public static final double PLAYABLE_WIDTH = WINDOW_WIDTH - OFFSET_LEFT - OFFSET_RIGHT;
     public static final double PLAYABLE_HEIGHT = WINDOW_HEIGHT - OFFSET_TOP - OFFSET_BOTTOM;
     public static final double VERSUS_PLAYABLE_WIDTH =  WINDOW_WIDTH - (OFFSET_LEFT * 2) - OFFSET_MIDDLE;

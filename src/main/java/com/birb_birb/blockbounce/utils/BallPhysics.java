@@ -114,7 +114,7 @@ public class BallPhysics {
      * @return vận tốc mới sau khi bật
      */
     public static Point2D calculatePaddleBounce(double ballCenterX, double paddleCenterX,
-                                                 double paddleWidth, double baseSpeed) {
+                                                double paddleWidth, double baseSpeed) {
         // Tính độ lệch so với tâm paddle (-1 đến 1)
         double hitOffset = (ballCenterX - paddleCenterX) / (paddleWidth / 2);
 
@@ -144,7 +144,7 @@ public class BallPhysics {
 
         // Góc hợp lệ nếu nằm trong khoảng [15°, 75°] hoặc [105°, 165°]
         return (absAngle >= MIN_VERTICAL_ANGLE && absAngle <= MAX_VERTICAL_ANGLE) ||
-               (absAngle >= 180 - MAX_VERTICAL_ANGLE && absAngle <= 180 - MIN_VERTICAL_ANGLE);
+                (absAngle >= 180 - MAX_VERTICAL_ANGLE && absAngle <= 180 - MIN_VERTICAL_ANGLE);
     }
 
     /**
