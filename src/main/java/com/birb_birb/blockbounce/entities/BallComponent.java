@@ -46,7 +46,7 @@ public class BallComponent extends Component {
             // Normalize velocity using BallPhysics to ensure valid angle
             velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED);
 
-            SoundManager.playBounce();
+            SoundManager.playHitSound();
         }
 
         // Check paddle collision - preventing multiple bounces
@@ -74,7 +74,7 @@ public class BallComponent extends Component {
 
                         hasCollidedThisFrame = true;
                         collisionCooldown = 0.05;
-                        SoundManager.playPaddleHit();
+                        SoundManager.playHitSound();
                     }
                 }
             });
@@ -123,7 +123,7 @@ public class BallComponent extends Component {
                     collisionCooldown = 0.05;
 
                     // Play sound and update score
-                    SoundManager.playBrickBreak();
+                    SoundManager.playBreakSound();
                     inc("score", 10);
                     break;
                 }
