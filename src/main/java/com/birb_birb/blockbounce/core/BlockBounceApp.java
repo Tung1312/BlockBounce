@@ -6,12 +6,12 @@ import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
-import com.birb_birb.blockbounce.gamemode.score.ScoreModeGame;
-import com.birb_birb.blockbounce.gamemode.story.StoryModeGame;
+import com.birb_birb.blockbounce.core.gamemode.score.ScoreModeGame;
+import com.birb_birb.blockbounce.core.gamemode.story.StoryModeGame;
 import com.birb_birb.blockbounce.ui.menus.MainMenu;
 import com.birb_birb.blockbounce.utils.CursorManager;
 import com.birb_birb.blockbounce.utils.SoundManager;
-import com.birb_birb.blockbounce.gamemode.versus.VersusModeGame;
+import com.birb_birb.blockbounce.core.gamemode.versus.VersusModeGame;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
@@ -76,22 +76,20 @@ public class BlockBounceApp extends GameApplication {
     protected void initGame() {
         CursorManager.apply(getGameScene().getRoot());
 
-        // Initialize game based on selected mode FIRST
+        // Initialize game based on selected mode
         switch (currentGameMode) {
             case STORY:
-                StoryModeGame.initialize();
+                StoryModeGame.startGame();
                 break;
             case VERSUS:
-                VersusModeGame.initialize();
+                VersusModeGame.startGame();
                 break;
             case ENDLESS:
-                ScoreModeGame.initialize();
+                ScoreModeGame.startGame();
                 break;
         }
 
         getGameScene().setBackgroundColor(Color.BLACK);
-
-        // Scene event listeners will be set up in onUpdate when scene is ready
     }
 
     @Override

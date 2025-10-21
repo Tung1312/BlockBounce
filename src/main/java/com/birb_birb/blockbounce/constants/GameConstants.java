@@ -6,12 +6,14 @@ public class GameConstants {
     public static final String GAME_TITLE = "BlockBounce";
     public static final String GAME_VERSION = "(beta 0.2)";
 
-    public static final double OFFSET_TOP = 20;
-    public static final double OFFSET_BOTTOM = 20;
+    public static final int OFFSET_TOP = 20;
+    public static final int OFFSET_BOTTOM = 20;
+    public static final int OFFSET_MIDDLE = 90;
     public static final double OFFSET_LEFT = 20;
     public static final double OFFSET_RIGHT = 80;
     public static final double PLAYABLE_WIDTH = WINDOW_WIDTH - OFFSET_LEFT - OFFSET_RIGHT;
     public static final double PLAYABLE_HEIGHT = WINDOW_HEIGHT - OFFSET_TOP - OFFSET_BOTTOM;
+    public static final double VERSUS_PLAYABLE_WIDTH =  WINDOW_WIDTH - (OFFSET_LEFT * 2) - OFFSET_MIDDLE;
 
     public static final String MAIN_MENU_BACKGROUND = "/assets/textures/menus/main_menu_background.png";
     public static final String STORY_MODE_BACKGROUND = "/assets/textures/menus/story_mode_template.png";
