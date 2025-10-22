@@ -94,8 +94,35 @@ public class BlockBounceApp extends GameApplication {
 
                 // Handle spacebar to launch ball
                 if (e.getCode() == KeyCode.SPACE) {
-                    launchBall();
+                    // In Versus mode, Space launches Player 1's ball only.
+                    if (GameMode.getCurrentGameMode() == GameMode.VERSUS) {
+                        var p1 = VersusModeGame.INSTANCE.getPlayer1Playfield();
+                        if (p1 != null && p1.getBall() != null) {
+                            BallComponent bc = p1.getBall().getComponent(BallComponent.class);
+                            if (bc != null && !bc.hasLaunched()) {
+                                bc.launch();
+                                SoundManager.playHitSound();
+                            }
+                        }
+                    } else {
+                        launchBall();
+                    }
                     e.consume();
+                }
+
+                // Handle Enter key to launch Player 2 in Versus mode
+                if (e.getCode() == KeyCode.ENTER) {
+                    if (GameMode.getCurrentGameMode() == GameMode.VERSUS) {
+                        var p2 = VersusModeGame.INSTANCE.getPlayer2Playfield();
+                        if (p2 != null && p2.getBall() != null) {
+                            BallComponent bc = p2.getBall().getComponent(BallComponent.class);
+                            if (bc != null && !bc.hasLaunched()) {
+                                bc.launch();
+                                SoundManager.playHitSound();
+                            }
+                        }
+                        e.consume();
+                    }
                 }
 
                 // Consume the event to prevent FXGL from intercepting arrow keys (but NOT in Versus mode)

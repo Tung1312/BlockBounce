@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.FontWeight;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 
@@ -17,6 +18,23 @@ public abstract class GameManager {
     protected Text scoreText;
     protected Text livesText;
     protected Font gameFont = FontManager.getCustomFont();
+
+    private final java.util.ArrayDeque<Message> messageQueue = new java.util.ArrayDeque<>();
+    private boolean messageActive = false;
+
+    private static class Message {
+        final String text;
+        final Color color;
+        final double durationSeconds;
+        final Runnable onComplete;
+
+        Message(String text, Color color, double durationSeconds, Runnable onComplete) {
+            this.text = text;
+            this.color = color;
+            this.durationSeconds = durationSeconds;
+            this.onComplete = onComplete;
+        }
+    }
 
     public void initialize() {
         clearAll();
@@ -52,6 +70,11 @@ public abstract class GameManager {
 
     protected void setupUI() {
         createFrame();
+
+        // Don't show the single-player global score/lives UI in Versus mode.
+        if (GameMode.getCurrentGameMode() == GameMode.VERSUS) {
+            return;
+        }
 
         // Score display
         scoreText = new Text("Score: 0");
@@ -132,24 +155,64 @@ public abstract class GameManager {
     }
 
     /**
-     * Displays a message on screen (temporary).
+     * Enqueue a message and optional completion callback that runs after the
+     * message is displayed and the 3s gap elapses.
      */
-    protected void displayMessage(String message, Color color, double durationSeconds) {
-        Text messageText = new Text(message);
-        try {
-            Font messageFont = Font.loadFont(
-                getAssetLoader().getURL("fonts/Daydream.ttf").toExternalForm(), 36);
-            messageText.setFont(messageFont);
-        } catch (Exception e) {
-            messageText.setFont(Font.font(36));
+    protected void displayMessage(String message, Color color, double durationSeconds, Runnable onComplete) {
+        // Enqueue the message and start processing if idle
+        messageQueue.addLast(new Message(message, color, durationSeconds, onComplete));
+        if (!messageActive) {
+            processNextMessage();
         }
-        messageText.setFill(color);
-        messageText.setTranslateX((double) GameConstants.WINDOW_WIDTH / 2 - 100);
+    }
+
+    // Process next message from the queue (internal)
+    private void processNextMessage() {
+        Message msg = messageQueue.pollFirst();
+        if (msg == null) {
+            messageActive = false;
+            return;
+        }
+
+        messageActive = true;
+
+        Text messageText = new Text(msg.text);
+        try {
+            // Load custom font if available, otherwise use default
+            Font messageFont = Font.loadFont(
+                getAssetLoader().getURL("fonts/Daydream.ttf").toExternalForm(), 48);
+            messageText.setFont(Font.font(messageFont.getFamily(), FontWeight.BOLD, 48));
+        } catch (Exception e) {
+            messageText.setFont(Font.font("System", FontWeight.BOLD, 48));
+        }
+
+        messageText.setFill(msg.color);
+        // Precisely center the message horizontally by measuring text width
+        messageText.applyCss();
+        double textWidth = messageText.getLayoutBounds().getWidth();
+        double centerX = ((double) GameConstants.WINDOW_WIDTH - textWidth) / 2.0;
+        messageText.setTranslateX(centerX);
         messageText.setTranslateY((double) GameConstants.WINDOW_HEIGHT / 2);
         getGameScene().addUINode(messageText);
 
+        // Remove the message after the requested display duration, then wait 3s gap
         getGameTimer().runOnceAfter(() -> {
             getGameScene().removeUINode(messageText);
-        }, javafx.util.Duration.seconds(durationSeconds));
+
+            // After removal, wait 3 seconds before showing the next message
+            getGameTimer().runOnceAfter(() -> {
+                // If this message has a completion callback, run it now
+                try {
+                    if (msg.onComplete != null) {
+                        msg.onComplete.run();
+                    }
+                } catch (Exception ignored) {}
+
+                messageActive = false;
+                processNextMessage();
+            }, javafx.util.Duration.seconds(3.0));
+
+        }, javafx.util.Duration.seconds(msg.durationSeconds));
     }
+
 }

@@ -184,14 +184,23 @@ public class Playfield {
      * Reset ball to center position
      */
     public void resetBall() {
+        // For versus mode we want the ball to re-attach to the player's paddle
         if (ball != null) {
-            double ballX = getCenterX() - GameConstants.BALL_SIZE / 2.0;
-            double ballY = getCenterY();
-            ball.setPosition(ballX, ballY);
-
             BallComponent ballComp = ball.getComponent(BallComponent.class);
+
+            // If we have both paddle and component, attach to paddle so
+            // BallComponent's onUpdate will position it on the paddle and
+            // prevent physics processing until launch.
             if (ballComp != null) {
-                ballComp.setVelocity(new Point2D(2.5, -2.5));
+                ballComp.attachToPaddle();
+            }
+
+            // Also immediately position the ball on top of the paddle to avoid
+            // any visual glitch before the next update/frame.
+            if (paddle != null) {
+                double ballX = paddle.getX() + (paddle.getWidth() - GameConstants.BALL_SIZE) / 2.0;
+                double ballY = paddle.getY() - GameConstants.BALL_SIZE - 2.0;
+                ball.setPosition(ballX, ballY);
             }
         }
     }
@@ -229,6 +238,13 @@ public class Playfield {
         if (lives <= 0) {
             gameOver = true;
         }
+    }
+
+    /**
+     * set per-player lives from world properties).
+     */
+    public void setLives(int lives) {
+        this.lives = lives;
     }
 
     // ==================== BOUNDARY HELPERS ====================

@@ -70,7 +70,7 @@ public class StoryModeGame extends GameManager {
         inc("level", 1);
 
         // Show level up message
-        displayMessage("LEVEL " + geti("level") + "!", Color.LIGHTBLUE, 2.0);
+        displayMessage("LEVEL " + geti("level") + "!", Color.LIGHTBLUE, 2.0, null);
 
         // Remove old entities (except frame and walls)
         getGameWorld().getEntitiesByType(com.birb_birb.blockbounce.constants.EntityType.BALL)

@@ -266,8 +266,23 @@ public class BallComponent extends Component {
             // Versus mode - playfield handles this in VersusModeGame
             return;
         } else {
-            // Single-player mode
-            resetBall();
+            // Single-player mode: attach the existing ball to the paddle instead
+            Entity paddle = getPaddle();
+
+            if (paddle != null) {
+                // Stop movement and mark as attached so onUpdate will position it
+                attachToPaddle();
+
+                // Immediately position it on top of the paddle to avoid visual jump
+                double ballX = paddle.getX() + (paddle.getWidth() - entity.getWidth()) / 2.0;
+                double ballY = paddle.getY() - entity.getHeight() - 2.0;
+                entity.setPosition(ballX, ballY);
+            } else {
+                // Fallback - if no paddle is found, reset to center as before
+                resetBall();
+            }
+
+            // Decrement lives and check for game over
             inc("lives", -1);
 
             if (geti("lives") <= 0) {
@@ -303,6 +318,17 @@ public class BallComponent extends Component {
 
     public void setVelocity(Point2D velocity) {
         this.velocity = velocity;
+    }
+
+    /**
+     * Attach the ball to the paddle (used when a life is lost)
+     */
+    public void attachToPaddle() {
+        this.isAttachedToPaddle = true;
+        this.hasLaunched = false;
+        this.velocity = new Point2D(0, 0);
+        this.hasCollidedThisFrame = false;
+        this.collisionCooldown = 0;
     }
 
     public void launch() {
