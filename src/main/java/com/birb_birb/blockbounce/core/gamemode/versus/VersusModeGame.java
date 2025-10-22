@@ -36,12 +36,12 @@ public class VersusModeGame extends GameManager {
 
         // Player 1 properties
         set("player1Score", 0);
-        set("player1Lives", 5);
+        set("player1Lives", 3);
         set("player1GameOver", false);
 
         // Player 2 properties
         set("player2Score", 0);
-        set("player2Lives", 5);
+        set("player2Lives", 3);
         set("player2GameOver", false);
     }
 
@@ -79,6 +79,54 @@ public class VersusModeGame extends GameManager {
         buttonPanel.setTranslateX((GameConstants.WINDOW_WIDTH / 2.0) - 26);
         buttonPanel.setTranslateY(10);
         getGameScene().addUINode(buttonPanel);
+    }
+
+    @Override
+    protected void setupUI() {
+        // Create frame first
+        createFrame();
+
+        // Player 1 UI (left)
+        javafx.scene.text.Text p1ScoreText = new javafx.scene.text.Text("P1 Score: 0");
+        p1ScoreText.setFont(gameFont);
+        p1ScoreText.setFill(Color.WHITE);
+        p1ScoreText.setTranslateX(GameConstants.OFFSET_LEFT + 20);
+        p1ScoreText.setTranslateY(30);
+        getGameScene().addUINode(p1ScoreText);
+
+        javafx.scene.text.Text p1LivesText = new javafx.scene.text.Text("Lives: 0");
+        p1LivesText.setFont(gameFont);
+        p1LivesText.setFill(Color.WHITE);
+        p1LivesText.setTranslateX(GameConstants.OFFSET_LEFT + 20);
+        p1LivesText.setTranslateY(60);
+        getGameScene().addUINode(p1LivesText);
+
+        // Player 2 UI (right)
+        javafx.scene.text.Text p2ScoreText = new javafx.scene.text.Text("P2 Score: 0");
+        p2ScoreText.setFont(gameFont);
+        p2ScoreText.setFill(Color.WHITE);
+        p2ScoreText.setTranslateX(GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 140);
+        p2ScoreText.setTranslateY(30);
+        getGameScene().addUINode(p2ScoreText);
+
+        javafx.scene.text.Text p2LivesText = new javafx.scene.text.Text("Lives: 0");
+        p2LivesText.setFont(gameFont);
+        p2LivesText.setFill(Color.WHITE);
+        p2LivesText.setTranslateX(GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 140);
+        p2LivesText.setTranslateY(60);
+        getGameScene().addUINode(p2LivesText);
+
+        // Bind to world properties so the UI updates automatically
+        getWorldProperties().addListener("player1Score", (prev, now) -> p1ScoreText.setText("P1 Score: " + now));
+        getWorldProperties().addListener("player1Lives", (prev, now) -> p1LivesText.setText("Lives: " + now));
+        getWorldProperties().addListener("player2Score", (prev, now) -> p2ScoreText.setText("P2 Score: " + now));
+        getWorldProperties().addListener("player2Lives", (prev, now) -> p2LivesText.setText("Lives: " + now));
+
+        // Initialize with current values
+        p1ScoreText.setText("P1 Score: " + geti("player1Score"));
+        p1LivesText.setText("Lives: " + geti("player1Lives"));
+        p2ScoreText.setText("P2 Score: " + geti("player2Score"));
+        p2LivesText.setText("Lives: " + geti("player2Lives"));
     }
 
     @Override
