@@ -9,6 +9,7 @@ import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.gamemode.score.ScoreModeGame;
 import com.birb_birb.blockbounce.core.gamemode.story.StoryModeGame;
+import com.birb_birb.blockbounce.entities.BallComponent;
 import com.birb_birb.blockbounce.ui.menus.MainMenu;
 import com.birb_birb.blockbounce.utils.CursorManager;
 import com.birb_birb.blockbounce.utils.SoundManager;
@@ -90,6 +91,13 @@ public class BlockBounceApp extends GameApplication {
             // Use addEventFilter instead of setOnKeyPressed to capture events BEFORE FXGL intercepts them
             getGameScene().getRoot().getScene().addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
                 pressedKeys.add(e.getCode());
+
+                // Handle spacebar to launch ball
+                if (e.getCode() == KeyCode.SPACE) {
+                    launchBall();
+                    e.consume();
+                }
+
                 // Consume the event to prevent FXGL from intercepting arrow keys (but NOT in Versus mode)
                 if (GameMode.getCurrentGameMode() != GameMode.VERSUS) {
                     if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT ||
@@ -128,6 +136,16 @@ public class BlockBounceApp extends GameApplication {
                 );
             }
         }
+    }
+
+    private void launchBall() {
+        getGameWorld().getEntitiesByType(EntityType.BALL).forEach(ball -> {
+            BallComponent ballComponent = ball.getComponent(BallComponent.class);
+            if (ballComponent != null && !ballComponent.hasLaunched()) {
+                ballComponent.launch();
+                SoundManager.playHitSound();
+            }
+        });
     }
 
     public static void main(String[] args) {
