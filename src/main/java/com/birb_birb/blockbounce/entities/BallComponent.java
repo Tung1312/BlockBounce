@@ -24,6 +24,10 @@ public class BallComponent extends Component {
     private boolean hasCollidedThisFrame = false;
     private double collisionCooldown = 0;
 
+    // Ball launch mechanism
+    private boolean isAttachedToPaddle = true;
+    private boolean hasLaunched = false;
+
     // Strategy: null for single-player, non-null for versus mode
     private final Playfield playfield;
 
@@ -39,6 +43,18 @@ public class BallComponent extends Component {
 
     @Override
     public void onUpdate(double tpf) {
+        // If ball is attached to paddle, follow paddle position
+        if (isAttachedToPaddle) {
+            Entity paddle = getPaddle();
+            if (paddle != null) {
+                // Center ball on top of paddle
+                double ballX = paddle.getX() + (paddle.getWidth() - entity.getWidth()) / 2;
+                double ballY = paddle.getY() - entity.getHeight() - 2;
+                entity.setPosition(ballX, ballY);
+            }
+            return; // Don't process physics while attached
+        }
+
         if (collisionCooldown > 0) {
             collisionCooldown -= tpf;
         }
@@ -261,13 +277,22 @@ public class BallComponent extends Component {
     }
 
     private void resetBall() {
+        // Reset position to center
         entity.setPosition(
             GameConstants.OFFSET_LEFT + GameConstants.PLAYABLE_WIDTH / 2.0,
             GameConstants.OFFSET_TOP + GameConstants.PLAYABLE_HEIGHT / 2.0
         );
+
+        // Reset velocity
         velocity = new Point2D(2.5, -2.5);
+
+        // Reset collision states
         hasCollidedThisFrame = false;
         collisionCooldown = 0;
+
+        // Attach ball back to paddle
+        isAttachedToPaddle = true;
+        hasLaunched = false;
     }
 
     // ==================== PUBLIC API ====================
@@ -278,5 +303,17 @@ public class BallComponent extends Component {
 
     public void setVelocity(Point2D velocity) {
         this.velocity = velocity;
+    }
+
+    public void launch() {
+        isAttachedToPaddle = false;
+        hasLaunched = true;
+
+        // Add initial upward velocity
+        velocity = new Point2D(velocity.getX(), -Math.abs(velocity.getY()));
+    }
+
+    public boolean hasLaunched() {
+        return hasLaunched;
     }
 }
