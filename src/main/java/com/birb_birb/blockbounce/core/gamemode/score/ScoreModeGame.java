@@ -70,6 +70,8 @@ public class ScoreModeGame extends GameManager {
             if (getGameWorld().getEntitiesByType(EntityType.BRICK).isEmpty()
                 && !getb("gameOver")) {
                 spawnMoreBricks();
+                // Show continue message (no completion callback)
+                displayMessage("CONTINUE!", Color.LIGHTGREEN, 1.5, null);
             }
         }, javafx.util.Duration.seconds(0.5));
     }
@@ -79,6 +81,6 @@ public class ScoreModeGame extends GameManager {
         GameFactory.createBricks();
 
         // Show continue message
-        displayMessage("CONTINUE!", Color.LIGHTGREEN, 1.5);
+        displayMessage("CONTINUE!", Color.LIGHTGREEN, 1.5, null);
     }
 }

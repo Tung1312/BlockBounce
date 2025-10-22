@@ -21,6 +21,9 @@ public class VersusModeGame extends GameManager {
     private Playfield player1Playfield;
     private Playfield player2Playfield;
 
+    // Guard to ensure end-of-match actions are scheduled only once
+    private boolean endScheduled = false;
+
     private VersusModeGame() {}
 
     public static void startGame() {
@@ -36,12 +39,12 @@ public class VersusModeGame extends GameManager {
 
         // Player 1 properties
         set("player1Score", 0);
-        set("player1Lives", 3);
+        set("player1Lives", 1);
         set("player1GameOver", false);
 
         // Player 2 properties
         set("player2Score", 0);
-        set("player2Lives", 3);
+        set("player2Lives", 1);
         set("player2GameOver", false);
     }
 
@@ -53,6 +56,22 @@ public class VersusModeGame extends GameManager {
         // Create two separate playfields
         player1Playfield = PlayfieldFactory.createLeftPlayfield();
         player2Playfield = PlayfieldFactory.createRightPlayfield();
+
+        // Initialize playfield lives from world properties so per-player
+        try {
+            player1Playfield.setLives(geti("player1Lives"));
+        } catch (Exception ignored) {
+            // If property missing, keep Playfield's default
+        }
+
+        try {
+            player2Playfield.setLives(geti("player2Lives"));
+        } catch (Exception ignored) {
+            // If property missing, keep Playfield's default
+        }
+
+        // Reset match-end guard
+        endScheduled = false;
     }
 
     public boolean isMovingLeft(int playerId) {
@@ -154,8 +173,9 @@ public class VersusModeGame extends GameManager {
 
             if (playfield.isGameOver()) {
                 set(propertyPrefix + "GameOver", true);
-                displayMessage(playerName + " LOSES!", Color.RED, 2.0);
-                checkGameEnd();
+                // Show the player's loss message, then check for match end after
+                // the message (and the configured 3s inter-message gap) finishes.
+                displayMessage(playerName + " LOSES!", Color.RED, 2.0, this::checkGameEnd);
             } else {
                 playfield.resetBall();
             }
@@ -163,30 +183,43 @@ public class VersusModeGame extends GameManager {
 
         if (!playfield.hasBricks()) {
             playfield.respawnBricks();
-            displayMessage(playerName + ": NEW WAVE!", Color.CYAN, 1.5);
+            displayMessage(playerName + ": NEW WAVE!", Color.CYAN, 1.5, null);
         }
     }
 
     private void checkGameEnd() {
+        // Only end the versus match when both players have exhausted their lives.
+        // At that point, compare scores and declare the winner (or tie).
         if (player1Playfield.isGameOver() && player2Playfield.isGameOver()) {
-            // Both players lost - compare scores
+            if (endScheduled) return;
+
             int score1 = player1Playfield.getScore();
             int score2 = player2Playfield.getScore();
 
+            String resultMsg;
+            Color msgColor;
+
             if (score1 > score2) {
-                displayMessage("PLAYER 1 WINS!", Color.GOLD, 3.0);
+                resultMsg = "PLAYER 1 WINS!";
+                msgColor = Color.GOLD;
             } else if (score2 > score1) {
-                displayMessage("PLAYER 2 WINS!", Color.GOLD, 3.0);
+                resultMsg = "PLAYER 2 WINS!";
+                msgColor = Color.GOLD;
             } else {
-                displayMessage("TIE GAME!", Color.ORANGE, 3.0);
+                resultMsg = "TIE GAME!";
+                msgColor = Color.ORANGE;
             }
-            set("gameOver", true);
-        } else if (player1Playfield.isGameOver()) {
-            displayMessage("PLAYER 2 WINS!", Color.GOLD, 3.0);
-            set("gameOver", true);
-        } else if (player2Playfield.isGameOver()) {
-            displayMessage("PLAYER 1 WINS!", Color.GOLD, 3.0);
-            set("gameOver", true);
+
+            // Enqueue the final result message and, when it finishes (including
+            // the 3s inter-message gap), set gameOver and return to main menu.
+            endScheduled = true;
+            displayMessage(resultMsg, msgColor, 3.0, () -> {
+                try {
+                    set("gameOver", true);
+                    getGameController().gotoMainMenu();
+                } catch (Exception ignored) {
+                }
+            });
         }
     }
 

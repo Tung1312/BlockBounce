@@ -240,6 +240,13 @@ public class Playfield {
         }
     }
 
+    /**
+     * set per-player lives from world properties).
+     */
+    public void setLives(int lives) {
+        this.lives = lives;
+    }
+
     // ==================== BOUNDARY HELPERS ====================
 
     public double getCenterX() {
