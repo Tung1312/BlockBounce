@@ -5,6 +5,7 @@ import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
+import com.birb_birb.blockbounce.entities.BallComponent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
@@ -16,6 +17,7 @@ public class ScoreModeGame extends GameManager {
     private Text highScoreText;
     private Text timerText;
     private double elapsedTime = 0;
+    private boolean timerStarted = false;
 
     private ScoreModeGame() {}
 
@@ -31,6 +33,7 @@ public class ScoreModeGame extends GameManager {
         super.setupProperties();
         getWorldProperties().setValue("highScore", 0);
         elapsedTime = 0;
+        timerStarted = false;
     }
 
     @Override
@@ -78,11 +81,25 @@ public class ScoreModeGame extends GameManager {
 
     @Override
     protected void setupGameLogic() {
-        // Update timer every frame
+        // Update timer every frame - only if ball has been launched
         getGameTimer().runAtInterval(() -> {
             if (!getb("gameOver")) {
-                elapsedTime += 0.016; // Approximately 60 FPS (1/60 second)
-                updateTimerDisplay();
+                // Check if ball has been launched
+                if (!timerStarted) {
+                    var balls = getGameWorld().getEntitiesByType(EntityType.BALL);
+                    if (!balls.isEmpty()) {
+                        BallComponent ballComponent = balls.get(0).getComponent(BallComponent.class);
+                        if (ballComponent != null && ballComponent.hasLaunched()) {
+                            timerStarted = true;
+                        }
+                    }
+                }
+
+                // Only update elapsed time if timer has started
+                if (timerStarted) {
+                    elapsedTime += 0.016; // Approximately 60 FPS (1/60 second)
+                    updateTimerDisplay();
+                }
             }
         }, javafx.util.Duration.millis(16));
 
