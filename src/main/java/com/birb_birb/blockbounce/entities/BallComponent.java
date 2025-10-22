@@ -104,23 +104,55 @@ public class BallComponent extends Component {
         Entity paddle = getPaddle();
         if (paddle == null || !entity.isColliding(paddle)) return;
 
-        double ballBottom = entity.getY() + entity.getHeight();
-        double paddleTop = paddle.getY();
+        // Calculate collision geometry
+        double ballCenterX = entity.getX() + entity.getWidth() / 2;
+        double ballCenterY = entity.getY() + entity.getHeight() / 2;
+        double paddleCenterX = paddle.getX() + paddle.getWidth() / 2;
+        double paddleCenterY = paddle.getY() + paddle.getHeight() / 2;
 
-        if (ballBottom > paddleTop && velocity.getY() > 0) {
-            // Push ball above paddle
-            entity.setY(paddleTop - entity.getHeight() - 1);
+        double deltaX = ballCenterX - paddleCenterX;
+        double deltaY = ballCenterY - paddleCenterY;
 
-            // Calculate bounce velocity using BallPhysics
-            double paddleCenter = paddle.getX() + paddle.getWidth() / 2;
-            double ballCenter = entity.getX() + entity.getWidth() / 2;
+        // Calculate which side was hit
+        double ratioX = Math.abs(deltaX) / (paddle.getWidth() / 2);
+        double ratioY = Math.abs(deltaY) / (paddle.getHeight() / 2);
 
-            velocity = BallPhysics.calculatePaddleBounce(
-                ballCenter,
-                paddleCenter,
-                paddle.getWidth(),
-                BASE_SPEED
-            );
+        if (ratioY > ratioX) {
+            // Hit from top or bottom
+            double ballBottom = entity.getY() + entity.getHeight();
+            double paddleTop = paddle.getY();
+
+            if (ballBottom > paddleTop && velocity.getY() > 0 && deltaY < 0) {
+                // Hit from TOP - normal bounce
+                entity.setY(paddleTop - entity.getHeight() - 1);
+
+                // Calculate bounce velocity using BallPhysics
+                velocity = BallPhysics.calculatePaddleBounce(
+                    ballCenterX,
+                    paddleCenterX,
+                    paddle.getWidth(),
+                    BASE_SPEED
+                );
+
+                hasCollidedThisFrame = true;
+                collisionCooldown = 0.05;
+                SoundManager.playHitSound();
+            }
+        } else {
+            // Hit from LEFT or RIGHT side - bounce horizontally only
+            if (deltaX > 0) {
+                // Hit from right side - push ball to the right
+                entity.setX(paddle.getX() + paddle.getWidth() + 1);
+            } else {
+                // Hit from left side - push ball to the left
+                entity.setX(paddle.getX() - entity.getWidth() - 1);
+            }
+
+            // Reverse horizontal velocity, keep vertical velocity
+            velocity = new Point2D(-velocity.getX(), velocity.getY());
+
+            // Normalize velocity to ensure valid angle
+            velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED);
 
             hasCollidedThisFrame = true;
             collisionCooldown = 0.05;
@@ -248,4 +280,3 @@ public class BallComponent extends Component {
         this.velocity = velocity;
     }
 }
-
