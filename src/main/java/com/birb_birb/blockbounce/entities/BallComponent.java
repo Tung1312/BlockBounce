@@ -309,8 +309,15 @@ public class BallComponent extends Component {
         isAttachedToPaddle = false;
         hasLaunched = true;
 
-        // Add initial upward velocity
-        velocity = new Point2D(velocity.getX(), -Math.abs(velocity.getY()));
+        // Launch ball straight up with slight randomness for variety
+        // X velocity is very small or zero for straight launch
+        double launchAngle = Math.random() * 30 - 15; // Random angle between -15 and +15 degrees
+        double launchSpeed = BASE_SPEED;
+
+        velocity = new Point2D(
+            launchSpeed * Math.sin(Math.toRadians(launchAngle)),
+            -launchSpeed * Math.cos(Math.toRadians(launchAngle))
+        );
     }
 
     public boolean hasLaunched() {
