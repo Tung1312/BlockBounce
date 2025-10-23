@@ -37,6 +37,7 @@ public class GameConstants {
     public static final String BACKGROUND_TEXTURE = "/entities/background.png";
 
     public static final String FONT_PATH = "/assets/fonts/Daydream.ttf";
+    public static final String FONT_COLOR = "rgb(62, 32, 31)";
     public static final int DEFAULT_FONT_SIZE = 18;
     public static final String FALLBACK_FONT = null;
 

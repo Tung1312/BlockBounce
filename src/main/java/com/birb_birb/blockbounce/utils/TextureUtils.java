@@ -6,13 +6,10 @@ import static com.almasb.fxgl.dsl.FXGLForKtKt.getAssetLoader;
 
 /**
  * Utility class for texture loading operations.
- * Centralizes texture loading logic to avoid code duplication across the project.
  */
 public class TextureUtils {
 
-    private TextureUtils() {
-        // Private constructor to prevent instantiation
-    }
+    private TextureUtils() {}
 
     /**
      * Load and configure a texture with standard settings

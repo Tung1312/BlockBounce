@@ -12,6 +12,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.FontWeight;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
+import static javafx.scene.paint.Color.rgb;
 
 public abstract class GameManager {
 
@@ -77,29 +78,29 @@ public abstract class GameManager {
         }
 
         // Score display
-        scoreText = new Text("Score: 0");
+        scoreText = new Text("0");
         scoreText.setFont(gameFont);
-        scoreText.setFill(Color.WHITE);
-        scoreText.setTranslateX(GameConstants.OFFSET_LEFT + 20);
-        scoreText.setTranslateY(30);
+        scoreText.setFill(rgb(62, 32, 31));
+        scoreText.setTranslateX(GameConstants.OFFSET_LEFT + 64);
+        scoreText.setTranslateY(56);
         getGameScene().addUINode(scoreText);
 
         // Lives display
-        livesText = new Text("Lives: 3");
+        livesText = new Text("3");
         livesText.setFont(gameFont);
-        livesText.setFill(Color.WHITE);
-        livesText.setTranslateX(GameConstants.OFFSET_LEFT + 20);
-        livesText.setTranslateY(60);
+        livesText.setFill(rgb(62, 32, 31));
+        livesText.setTranslateX(GameConstants.OFFSET_LEFT + 253);
+        livesText.setTranslateY(56);
         getGameScene().addUINode(livesText);
 
         // Bind UI to properties
         getWorldProperties().addListener("score", (prev, now) -> {
-            scoreText.setText("Score: " + now);
+            scoreText.setText(String.valueOf(now));
             onScoreChanged((Integer) prev, (Integer) now);
         });
 
         getWorldProperties().addListener("lives", (prev, now) -> {
-            livesText.setText("Lives: " + now);
+            livesText.setText(String.valueOf(now));
             onLivesChanged((Integer) prev, (Integer) now);
         });
 
