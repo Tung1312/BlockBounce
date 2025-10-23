@@ -31,10 +31,14 @@ public class ScoreModeGame extends GameManager {
         // Check if we should load save after initialization
         if (GameMode.shouldLoadSave()) {
             GameMode.setShouldLoadSave(false); // Reset flag
-            // Delay load slightly to ensure game is fully initialized
+
+            // Show loading message immediately
+            INSTANCE.displayMessage("Loading...", javafx.scene.paint.Color.CYAN, 0.5, null);
+
+            // Delay load to ensure game is fully initialized and loading message is visible
             getGameTimer().runOnceAfter(() -> {
                 INSTANCE.loadGame(1);
-            }, javafx.util.Duration.millis(100));
+            }, javafx.util.Duration.millis(500));
         }
     }
 
