@@ -166,6 +166,74 @@ public abstract class GameManager {
         }
     }
 
+    /**
+     * Display countdown 3-2-1-GO before running onComplete callback
+     */
+    protected void displayCountdown(Runnable onComplete) {
+        displayCountdownNumber(3, () -> {
+            displayCountdownNumber(2, () -> {
+                displayCountdownNumber(1, () -> {
+                    // After showing 1, show GO! then run callback
+                    displayCountdownGo(onComplete);
+                });
+            });
+        });
+    }
+
+    private void displayCountdownNumber(int number, Runnable onComplete) {
+        Text countdownText = new Text(String.valueOf(number));
+        try {
+            Font messageFont = Font.loadFont(
+                getAssetLoader().getURL("fonts/Daydream.ttf").toExternalForm(), 80);
+            countdownText.setFont(Font.font(messageFont.getFamily(), FontWeight.BOLD, 80));
+        } catch (Exception e) {
+            countdownText.setFont(Font.font("System", FontWeight.BOLD, 80));
+        }
+
+        countdownText.setFill(Color.YELLOW);
+        countdownText.applyCss();
+        double textWidth = countdownText.getLayoutBounds().getWidth();
+        double centerX = ((double) GameConstants.WINDOW_WIDTH - textWidth) / 2.0;
+        countdownText.setTranslateX(centerX);
+        countdownText.setTranslateY((double) GameConstants.WINDOW_HEIGHT / 2);
+        getGameScene().addUINode(countdownText);
+
+        // Show for 0.8 seconds then remove and call next
+        getGameTimer().runOnceAfter(() -> {
+            getGameScene().removeUINode(countdownText);
+            if (onComplete != null) {
+                onComplete.run();
+            }
+        }, javafx.util.Duration.millis(800));
+    }
+
+    private void displayCountdownGo(Runnable onComplete) {
+        Text goText = new Text("GO!");
+        try {
+            Font messageFont = Font.loadFont(
+                getAssetLoader().getURL("fonts/Daydream.ttf").toExternalForm(), 80);
+            goText.setFont(Font.font(messageFont.getFamily(), FontWeight.BOLD, 80));
+        } catch (Exception e) {
+            goText.setFont(Font.font("System", FontWeight.BOLD, 80));
+        }
+
+        goText.setFill(Color.LIGHTGREEN);
+        goText.applyCss();
+        double textWidth = goText.getLayoutBounds().getWidth();
+        double centerX = ((double) GameConstants.WINDOW_WIDTH - textWidth) / 2.0;
+        goText.setTranslateX(centerX);
+        goText.setTranslateY((double) GameConstants.WINDOW_HEIGHT / 2);
+        getGameScene().addUINode(goText);
+
+        // Show for 0.5 seconds then remove and run callback
+        getGameTimer().runOnceAfter(() -> {
+            getGameScene().removeUINode(goText);
+            if (onComplete != null) {
+                onComplete.run();
+            }
+        }, javafx.util.Duration.millis(500));
+    }
+
     // Process next message from the queue (internal)
     private void processNextMessage() {
         Message msg = messageQueue.pollFirst();

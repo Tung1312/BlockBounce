@@ -94,7 +94,39 @@ public class ScoreModeGame extends GameManager {
                 timerStarted = result.isTimerStarted();
                 updateTimerDisplay();
                 currentSaveSlot = slot;
-                displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
+
+                // If ball was launched when saved, pause it and show countdown
+                if (result.isTimerStarted()) {
+                    // Temporarily pause ball movement
+                    var balls = getGameWorld().getEntitiesByType(EntityType.BALL);
+                    if (!balls.isEmpty()) {
+                        com.birb_birb.blockbounce.entities.BallComponent ballComponent =
+                            balls.get(0).getComponent(com.birb_birb.blockbounce.entities.BallComponent.class);
+                        if (ballComponent != null) {
+                            // Save current velocity
+                            final javafx.geometry.Point2D savedVelocity = ballComponent.getVelocity();
+                            // Temporarily stop the ball
+                            ballComponent.setVelocity(new javafx.geometry.Point2D(0, 0));
+
+                            // Show countdown 3-2-1-GO
+                            displayCountdown(() -> {
+                                // After countdown, restore ball velocity
+                                if (ballComponent != null) {
+                                    ballComponent.setVelocity(savedVelocity);
+                                }
+                                displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.0, null);
+                            });
+                        } else {
+                            displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
+                        }
+                    } else {
+                        displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
+                    }
+                } else {
+                    // Ball wasn't launched, just show normal message
+                    displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
+                }
+
                 return true;
             }
         }

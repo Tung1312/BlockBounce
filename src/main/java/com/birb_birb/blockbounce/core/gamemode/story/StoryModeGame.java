@@ -76,7 +76,39 @@ public class StoryModeGame extends GameManager {
         if (saveData != null) {
             GameStateCapture.restoreStoryModeState(saveData);
             currentSaveSlot = slot;
-            displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
+
+            // Check if ball was launched when saved
+            if (saveData.isBallLaunched()) {
+                // Temporarily pause ball movement
+                var balls = getGameWorld().getEntitiesByType(com.birb_birb.blockbounce.constants.EntityType.BALL);
+                if (!balls.isEmpty()) {
+                    com.birb_birb.blockbounce.entities.BallComponent ballComponent =
+                        balls.get(0).getComponent(com.birb_birb.blockbounce.entities.BallComponent.class);
+                    if (ballComponent != null) {
+                        // Save current velocity
+                        final javafx.geometry.Point2D savedVelocity = ballComponent.getVelocity();
+                        // Temporarily stop the ball
+                        ballComponent.setVelocity(new javafx.geometry.Point2D(0, 0));
+
+                        // Show countdown 3-2-1-GO
+                        displayCountdown(() -> {
+                            // After countdown, restore ball velocity
+                            if (ballComponent != null) {
+                                ballComponent.setVelocity(savedVelocity);
+                            }
+                            displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.0, null);
+                        });
+                    } else {
+                        displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
+                    }
+                } else {
+                    displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
+                }
+            } else {
+                // Ball wasn't launched, just show normal message
+                displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
+            }
+
             return true;
         } else {
             displayMessage("Load Failed!", Color.RED, 1.5, null);
