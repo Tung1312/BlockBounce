@@ -128,10 +128,18 @@ public class BlockBounceApp extends GameApplication {
                 // Handle S key for Save in Story Mode
                 if (e.getCode() == KeyCode.S) {
                     if (GameMode.getCurrentGameMode() == GameMode.STORY) {
-                        StoryModeGame.getInstance().saveGame(1);
+                        boolean success = StoryModeGame.getInstance().saveGame(1);
+                        if (success) {
+                            // Return to main menu after saving
+                            getGameController().gotoMainMenu();
+                        }
                         e.consume();
                     } else if (GameMode.getCurrentGameMode() == GameMode.ENDLESS) {
-                        ScoreModeGame.getInstance().saveGame(1);
+                        boolean success = ScoreModeGame.getInstance().saveGame(1);
+                        if (success) {
+                            // Return to main menu after saving
+                            getGameController().gotoMainMenu();
+                        }
                         e.consume();
                     }
                 }
