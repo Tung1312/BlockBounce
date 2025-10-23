@@ -105,6 +105,28 @@ public final class GameFactory {
         }
     }
 
+    /**
+     * Create a single brick at specified position with color
+     * Used for restoring saved game state
+     */
+    public static Entity createBrick(double x, double y, Color color) {
+        Texture baseTexture = getAssetLoader().loadTexture(GameConstants.BRICK_TEXTURE);
+        Texture texture = baseTexture.copy();
+        texture.setPreserveRatio(false);
+        texture.setSmooth(false);
+        texture.setFitWidth(BRICK_SIZE);
+        texture.setFitHeight(BRICK_SIZE);
+
+        return entityBuilder()
+                .type(EntityType.BRICK)
+                .at(x, y)
+                .view(texture)
+                .bbox(new HitBox(BoundingShape.box(BRICK_SIZE, BRICK_SIZE)))
+                .with(new BrickComponent())
+                .collidable()
+                .buildAndAttach();
+    }
+
     public static void createWalls() {
         entityBuilder()
                 .type(EntityType.WALL)
