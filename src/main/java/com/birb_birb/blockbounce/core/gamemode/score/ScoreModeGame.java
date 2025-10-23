@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
+import static javafx.scene.paint.Color.rgb;
 
 public class ScoreModeGame extends GameManager {
 
@@ -18,6 +19,7 @@ public class ScoreModeGame extends GameManager {
     private Text timerText;
     private double elapsedTime = 0;
     private boolean timerStarted = false;
+    private int currentSaveSlot = 1; // Default save slot
 
     private ScoreModeGame() {}
 
@@ -26,6 +28,139 @@ public class ScoreModeGame extends GameManager {
             System.err.println("Warning: ScoreModeGame.start() called but current mode is " + GameMode.getCurrentGameMode());
         }
         INSTANCE.initialize();
+
+        // Check if we should load save after initialization
+        if (GameMode.shouldLoadSave()) {
+            GameMode.setShouldLoadSave(false); // Reset flag
+
+            // Show loading message immediately
+            INSTANCE.displayMessage("Loading...", javafx.scene.paint.Color.CYAN, 0.5, null);
+
+            // Delay load to ensure game is fully initialized and loading message is visible
+            getGameTimer().runOnceAfter(() -> {
+                INSTANCE.loadGame(1);
+            }, javafx.util.Duration.millis(500));
+        }
+    }
+
+    /**
+     * Start game from a saved state
+     * @param slot Save slot to load from (1-3)
+     */
+    public static void startFromSave(int slot) {
+        if (GameMode.getCurrentGameMode() != GameMode.ENDLESS) {
+            System.err.println("Warning: ScoreModeGame.startFromSave() called but current mode is " + GameMode.getCurrentGameMode());
+        }
+        INSTANCE.currentSaveSlot = slot;
+        INSTANCE.initialize();
+        INSTANCE.loadGame(slot);
+    }
+
+    /**
+     * Get the singleton instance
+     */
+    public static ScoreModeGame getInstance() {
+        return INSTANCE;
+    }
+
+    /**
+     * Save current game state to a slot
+     * @param slot Save slot number (1-3)
+     */
+    public boolean saveGame(int slot) {
+        com.birb_birb.blockbounce.saveload.GameSaveData saveData =
+            com.birb_birb.blockbounce.saveload.GameStateCapture.captureScoreModeState(elapsedTime);
+        boolean success = com.birb_birb.blockbounce.saveload.SaveGameManager.saveScoreGame(slot, saveData);
+
+        if (success) {
+            currentSaveSlot = slot;
+            displayMessage("Game Saved!", Color.LIGHTGREEN, 1.5, null);
+        } else {
+            displayMessage("Save Failed!", Color.RED, 1.5, null);
+        }
+
+        return success;
+    }
+
+    /**
+     * Load game state from a slot
+     * @param slot Save slot number (1-3)
+     */
+    public boolean loadGame(int slot) {
+        com.birb_birb.blockbounce.saveload.GameSaveData saveData =
+            com.birb_birb.blockbounce.saveload.SaveGameManager.loadScoreGame(slot);
+
+        if (saveData != null) {
+            com.birb_birb.blockbounce.saveload.GameStateCapture.RestoreResult result =
+                com.birb_birb.blockbounce.saveload.GameStateCapture.restoreScoreModeState(saveData);
+
+            if (result != null) {
+                elapsedTime = result.getElapsedTime();
+                timerStarted = result.isTimerStarted();
+                updateTimerDisplay();
+                currentSaveSlot = slot;
+
+                // If ball was launched when saved, pause it and show countdown
+                if (result.isTimerStarted()) {
+                    // Temporarily pause ball movement
+                    var balls = getGameWorld().getEntitiesByType(EntityType.BALL);
+                    if (!balls.isEmpty()) {
+                        com.birb_birb.blockbounce.entities.BallComponent ballComponent =
+                            balls.get(0).getComponent(com.birb_birb.blockbounce.entities.BallComponent.class);
+                        if (ballComponent != null) {
+                            // Save current velocity
+                            final javafx.geometry.Point2D savedVelocity = ballComponent.getVelocity();
+                            // Temporarily stop the ball
+                            ballComponent.setVelocity(new javafx.geometry.Point2D(0, 0));
+
+                            // Show countdown 3-2-1-GO
+                            displayCountdown(() -> {
+                                // After countdown, restore ball velocity
+                                if (ballComponent != null) {
+                                    ballComponent.setVelocity(savedVelocity);
+                                }
+                                displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.0, null);
+                            });
+                        } else {
+                            displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
+                        }
+                    } else {
+                        displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
+                    }
+                } else {
+                    // Ball wasn't launched, just show normal message
+                    displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
+                }
+
+                return true;
+            }
+        }
+
+        displayMessage("Load Failed!", Color.RED, 1.5, null);
+        return false;
+    }
+
+    /**
+     * Auto-save to current slot
+     */
+    public void autoSave() {
+        saveGame(currentSaveSlot);
+    }
+
+    /**
+     * Get current save slot
+     */
+    public int getCurrentSaveSlot() {
+        return currentSaveSlot;
+    }
+
+    /**
+     * Set current save slot
+     */
+    public void setCurrentSaveSlot(int slot) {
+        if (slot >= 1 && slot <= 3) {
+            this.currentSaveSlot = slot;
+        }
     }
 
     @Override
@@ -63,9 +198,9 @@ public class ScoreModeGame extends GameManager {
     }
 
     private void createTimerDisplay() {
-        timerText = new Text("Time: 00:00");
+        timerText = new Text("00:00");
         timerText.setFont(gameFont);
-        timerText.setFill(Color.CYAN);
+        timerText.setFill(rgb(62, 32, 31));
         timerText.setTranslateX(GameConstants.WINDOW_WIDTH - 200);
         timerText.setTranslateY(30);
         getGameScene().addUINode(timerText);

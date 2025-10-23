@@ -349,4 +349,12 @@ public class BallComponent extends Component {
     public boolean hasLaunched() {
         return hasLaunched;
     }
+
+    /**
+     * Set the launched state (used when loading saved game)
+     */
+    public void setLaunched(boolean launched) {
+        this.hasLaunched = launched;
+        this.isAttachedToPaddle = !launched;
+    }
 }

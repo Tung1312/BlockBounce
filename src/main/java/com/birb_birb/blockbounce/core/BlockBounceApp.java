@@ -125,6 +125,40 @@ public class BlockBounceApp extends GameApplication {
                     }
                 }
 
+                // Handle S key for Save in Story Mode
+                if (e.getCode() == KeyCode.S) {
+                    if (GameMode.getCurrentGameMode() == GameMode.STORY) {
+                        boolean success = StoryModeGame.getInstance().saveGame(1);
+                        if (success) {
+                            // Add delay before returning to menu for smoother transition
+                            getGameTimer().runOnceAfter(() -> {
+                                getGameController().gotoMainMenu();
+                            }, javafx.util.Duration.millis(500));
+                        }
+                        e.consume();
+                    } else if (GameMode.getCurrentGameMode() == GameMode.ENDLESS) {
+                        boolean success = ScoreModeGame.getInstance().saveGame(1);
+                        if (success) {
+                            // Add delay before returning to menu for smoother transition
+                            getGameTimer().runOnceAfter(() -> {
+                                getGameController().gotoMainMenu();
+                            }, javafx.util.Duration.millis(500));
+                        }
+                        e.consume();
+                    }
+                }
+
+                // Handle L key for Load in Story Mode (changed from D to L to avoid conflict)
+                if (e.getCode() == KeyCode.L) {
+                    if (GameMode.getCurrentGameMode() == GameMode.STORY) {
+                        StoryModeGame.getInstance().loadGame(1);
+                        e.consume();
+                    } else if (GameMode.getCurrentGameMode() == GameMode.ENDLESS) {
+                        ScoreModeGame.getInstance().loadGame(1);
+                        e.consume();
+                    }
+                }
+
                 // Consume the event to prevent FXGL from intercepting arrow keys (but NOT in Versus mode)
                 if (GameMode.getCurrentGameMode() != GameMode.VERSUS) {
                     if (e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT ||
