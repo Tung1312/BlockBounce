@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
+import static javafx.scene.paint.Color.rgb;
 
 public class ScoreModeGame extends GameManager {
 
@@ -63,9 +64,9 @@ public class ScoreModeGame extends GameManager {
     }
 
     private void createTimerDisplay() {
-        timerText = new Text("Time: 00:00");
+        timerText = new Text("00:00");
         timerText.setFont(gameFont);
-        timerText.setFill(Color.CYAN);
+        timerText.setFill(rgb(62, 32, 31));
         timerText.setTranslateX(GameConstants.WINDOW_WIDTH - 200);
         timerText.setTranslateY(30);
         getGameScene().addUINode(timerText);

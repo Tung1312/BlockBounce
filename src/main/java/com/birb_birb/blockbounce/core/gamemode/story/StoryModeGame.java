@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
+import static javafx.scene.paint.Color.rgb;
 
 public class StoryModeGame extends GameManager {
 
@@ -44,9 +45,9 @@ public class StoryModeGame extends GameManager {
     private void createLevelDisplay() {
         levelText = new Text("Level: 1");
         levelText.setFont(gameFont);
-        levelText.setFill(Color.WHITE);
-        levelText.setTranslateX(GameConstants.WINDOW_WIDTH / 2.0 - 50);
-        levelText.setTranslateY(30);
+        levelText.setFill(rgb(62, 32, 31));
+        levelText.setTranslateX(GameConstants.WINDOW_WIDTH / 2.0 + 417);
+        levelText.setTranslateY(56);
         getGameScene().addUINode(levelText);
 
         // Bind level text to property
@@ -70,7 +71,7 @@ public class StoryModeGame extends GameManager {
         inc("level", 1);
 
         // Show level up message
-        displayMessage("LEVEL " + geti("level") + "!", Color.LIGHTBLUE, 2.0, null);
+        displayMessage("LEVEL " + geti("level") + "!", rgb(62, 32, 31), 2.0, null);
 
         // Remove old entities (except frame and walls)
         getGameWorld().getEntitiesByType(com.birb_birb.blockbounce.constants.EntityType.BALL)
