@@ -128,21 +128,33 @@ public class BlockBounceApp extends GameApplication {
                 // Handle S key for Save in Story Mode
                 if (e.getCode() == KeyCode.S) {
                     if (GameMode.getCurrentGameMode() == GameMode.STORY) {
+                        // Freeze all movement immediately
+                        freezeAllEntities();
+
                         boolean success = StoryModeGame.getInstance().saveGame(1);
                         if (success) {
                             // Add delay before returning to menu for smoother transition
                             getGameTimer().runOnceAfter(() -> {
                                 getGameController().gotoMainMenu();
                             }, javafx.util.Duration.millis(500));
+                        } else {
+                            // If save failed, unfreeze
+                            unfreezeAllEntities();
                         }
                         e.consume();
                     } else if (GameMode.getCurrentGameMode() == GameMode.ENDLESS) {
+                        // Freeze all movement immediately
+                        freezeAllEntities();
+
                         boolean success = ScoreModeGame.getInstance().saveGame(1);
                         if (success) {
                             // Add delay before returning to menu for smoother transition
                             getGameTimer().runOnceAfter(() -> {
                                 getGameController().gotoMainMenu();
                             }, javafx.util.Duration.millis(500));
+                        } else {
+                            // If save failed, unfreeze
+                            unfreezeAllEntities();
                         }
                         e.consume();
                     }
@@ -205,6 +217,30 @@ public class BlockBounceApp extends GameApplication {
             if (ballComponent != null && !ballComponent.hasLaunched()) {
                 ballComponent.launch();
                 SoundManager.playHitSound();
+            }
+        });
+    }
+
+    /**
+     * Freeze all entity movement (for saving)
+     */
+    private void freezeAllEntities() {
+        getGameWorld().getEntitiesByType(EntityType.BALL).forEach(ball -> {
+            BallComponent ballComponent = ball.getComponent(BallComponent.class);
+            if (ballComponent != null) {
+                ballComponent.freeze();
+            }
+        });
+    }
+
+    /**
+     * Unfreeze all entity movement (after failed save)
+     */
+    private void unfreezeAllEntities() {
+        getGameWorld().getEntitiesByType(EntityType.BALL).forEach(ball -> {
+            BallComponent ballComponent = ball.getComponent(BallComponent.class);
+            if (ballComponent != null) {
+                ballComponent.unfreeze();
             }
         });
     }

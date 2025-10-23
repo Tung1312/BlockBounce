@@ -28,6 +28,9 @@ public class BallComponent extends Component {
     private boolean isAttachedToPaddle = true;
     private boolean hasLaunched = false;
 
+    // Freeze mechanism for save/load
+    private boolean isFrozen = false;
+
     // Strategy: null for single-player, non-null for versus mode
     private final Playfield playfield;
 
@@ -43,6 +46,11 @@ public class BallComponent extends Component {
 
     @Override
     public void onUpdate(double tpf) {
+        // If frozen, don't process any movement
+        if (isFrozen) {
+            return;
+        }
+
         // If ball is attached to paddle, follow paddle position
         if (isAttachedToPaddle) {
             Entity paddle = getPaddle();
@@ -356,5 +364,19 @@ public class BallComponent extends Component {
     public void setLaunched(boolean launched) {
         this.hasLaunched = launched;
         this.isAttachedToPaddle = !launched;
+    }
+
+    // ==================== FREEZE CONTROL ====================
+
+    public void freeze() {
+        isFrozen = true;
+    }
+
+    public void unfreeze() {
+        isFrozen = false;
+    }
+
+    public boolean isFrozen() {
+        return isFrozen;
     }
 }
