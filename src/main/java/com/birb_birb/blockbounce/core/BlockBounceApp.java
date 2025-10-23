@@ -130,6 +130,9 @@ public class BlockBounceApp extends GameApplication {
                     if (GameMode.getCurrentGameMode() == GameMode.STORY) {
                         StoryModeGame.getInstance().saveGame(1);
                         e.consume();
+                    } else if (GameMode.getCurrentGameMode() == GameMode.ENDLESS) {
+                        ScoreModeGame.getInstance().saveGame(1);
+                        e.consume();
                     }
                 }
 
@@ -137,6 +140,9 @@ public class BlockBounceApp extends GameApplication {
                 if (e.getCode() == KeyCode.L) {
                     if (GameMode.getCurrentGameMode() == GameMode.STORY) {
                         StoryModeGame.getInstance().loadGame(1);
+                        e.consume();
+                    } else if (GameMode.getCurrentGameMode() == GameMode.ENDLESS) {
+                        ScoreModeGame.getInstance().loadGame(1);
                         e.consume();
                     }
                 }

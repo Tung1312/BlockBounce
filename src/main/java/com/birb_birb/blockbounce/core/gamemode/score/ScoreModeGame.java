@@ -18,6 +18,7 @@ public class ScoreModeGame extends GameManager {
     private Text timerText;
     private double elapsedTime = 0;
     private boolean timerStarted = false;
+    private int currentSaveSlot = 1; // Default save slot
 
     private ScoreModeGame() {}
 
@@ -26,6 +27,94 @@ public class ScoreModeGame extends GameManager {
             System.err.println("Warning: ScoreModeGame.start() called but current mode is " + GameMode.getCurrentGameMode());
         }
         INSTANCE.initialize();
+    }
+
+    /**
+     * Start game from a saved state
+     * @param slot Save slot to load from (1-3)
+     */
+    public static void startFromSave(int slot) {
+        if (GameMode.getCurrentGameMode() != GameMode.ENDLESS) {
+            System.err.println("Warning: ScoreModeGame.startFromSave() called but current mode is " + GameMode.getCurrentGameMode());
+        }
+        INSTANCE.currentSaveSlot = slot;
+        INSTANCE.initialize();
+        INSTANCE.loadGame(slot);
+    }
+
+    /**
+     * Get the singleton instance
+     */
+    public static ScoreModeGame getInstance() {
+        return INSTANCE;
+    }
+
+    /**
+     * Save current game state to a slot
+     * @param slot Save slot number (1-3)
+     */
+    public boolean saveGame(int slot) {
+        com.birb_birb.blockbounce.saveload.GameSaveData saveData =
+            com.birb_birb.blockbounce.saveload.GameStateCapture.captureScoreModeState(elapsedTime);
+        boolean success = com.birb_birb.blockbounce.saveload.SaveGameManager.saveScoreGame(slot, saveData);
+
+        if (success) {
+            currentSaveSlot = slot;
+            displayMessage("Game Saved!", Color.LIGHTGREEN, 1.5, null);
+        } else {
+            displayMessage("Save Failed!", Color.RED, 1.5, null);
+        }
+
+        return success;
+    }
+
+    /**
+     * Load game state from a slot
+     * @param slot Save slot number (1-3)
+     */
+    public boolean loadGame(int slot) {
+        com.birb_birb.blockbounce.saveload.GameSaveData saveData =
+            com.birb_birb.blockbounce.saveload.SaveGameManager.loadScoreGame(slot);
+
+        if (saveData != null) {
+            com.birb_birb.blockbounce.saveload.GameStateCapture.RestoreResult result =
+                com.birb_birb.blockbounce.saveload.GameStateCapture.restoreScoreModeState(saveData);
+
+            if (result != null) {
+                elapsedTime = result.getElapsedTime();
+                timerStarted = result.isTimerStarted();
+                updateTimerDisplay();
+                currentSaveSlot = slot;
+                displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
+                return true;
+            }
+        }
+
+        displayMessage("Load Failed!", Color.RED, 1.5, null);
+        return false;
+    }
+
+    /**
+     * Auto-save to current slot
+     */
+    public void autoSave() {
+        saveGame(currentSaveSlot);
+    }
+
+    /**
+     * Get current save slot
+     */
+    public int getCurrentSaveSlot() {
+        return currentSaveSlot;
+    }
+
+    /**
+     * Set current save slot
+     */
+    public void setCurrentSaveSlot(int slot) {
+        if (slot >= 1 && slot <= 3) {
+            this.currentSaveSlot = slot;
+        }
     }
 
     @Override
