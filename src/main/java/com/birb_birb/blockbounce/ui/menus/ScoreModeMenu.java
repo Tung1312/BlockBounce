@@ -3,6 +3,7 @@ package com.birb_birb.blockbounce.ui.menus;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.GameMode;
+import com.birb_birb.blockbounce.core.gamemode.score.ScoreModeGame;
 import com.birb_birb.blockbounce.saveload.SaveGameManager;
 import com.birb_birb.blockbounce.utils.MenuManager;
 import com.birb_birb.blockbounce.utils.SoundManager;
@@ -71,10 +72,9 @@ public class ScoreModeMenu extends MenuManager {
         } else {
             loadGameButton.setOnAction(e -> {
                 SoundManager.playClickSound();
-                // For now, load from slot 1
-                // In future, could show another menu to select slot
                 GameMode.setCurrentGameMode(GameMode.ENDLESS);
-                com.birb_birb.blockbounce.core.gamemode.score.ScoreModeGame.startFromSave(1);
+                GameMode.setShouldLoadSave(true); // Set flag to load save
+                fireNewGame();
             });
         }
 

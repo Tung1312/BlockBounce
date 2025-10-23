@@ -27,6 +27,15 @@ public class ScoreModeGame extends GameManager {
             System.err.println("Warning: ScoreModeGame.start() called but current mode is " + GameMode.getCurrentGameMode());
         }
         INSTANCE.initialize();
+
+        // Check if we should load save after initialization
+        if (GameMode.shouldLoadSave()) {
+            GameMode.setShouldLoadSave(false); // Reset flag
+            // Delay load slightly to ensure game is fully initialized
+            getGameTimer().runOnceAfter(() -> {
+                INSTANCE.loadGame(1);
+            }, javafx.util.Duration.millis(100));
+        }
     }
 
     /**

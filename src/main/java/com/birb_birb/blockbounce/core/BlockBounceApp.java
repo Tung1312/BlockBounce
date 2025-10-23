@@ -130,15 +130,19 @@ public class BlockBounceApp extends GameApplication {
                     if (GameMode.getCurrentGameMode() == GameMode.STORY) {
                         boolean success = StoryModeGame.getInstance().saveGame(1);
                         if (success) {
-                            // Return to main menu after saving
-                            getGameController().gotoMainMenu();
+                            // Add delay before returning to menu for smoother transition
+                            getGameTimer().runOnceAfter(() -> {
+                                getGameController().gotoMainMenu();
+                            }, javafx.util.Duration.millis(500));
                         }
                         e.consume();
                     } else if (GameMode.getCurrentGameMode() == GameMode.ENDLESS) {
                         boolean success = ScoreModeGame.getInstance().saveGame(1);
                         if (success) {
-                            // Return to main menu after saving
-                            getGameController().gotoMainMenu();
+                            // Add delay before returning to menu for smoother transition
+                            getGameTimer().runOnceAfter(() -> {
+                                getGameController().gotoMainMenu();
+                            }, javafx.util.Duration.millis(500));
                         }
                         e.consume();
                     }
