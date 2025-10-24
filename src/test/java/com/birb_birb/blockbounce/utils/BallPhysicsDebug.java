@@ -4,7 +4,7 @@ import javafx.geometry.Point2D;
 
 public class BallPhysicsDebug {
     public static void main(String[] args) {
-        Point2D velocity = new Point2D(10, 0.5); // Góc ~2.86° (quá ngang)
+        Point2D velocity = new Point2D(10, 0.5); // Angle ~2.86° (too flat)
         System.out.println("Original velocity: " + velocity);
         System.out.println("Original angle: " + BallPhysics.calculateAngle(velocity.getX(), velocity.getY()));
 
@@ -17,4 +17,3 @@ public class BallPhysicsDebug {
         System.out.println("Is >= 15? " + (Math.abs(angle) >= 15.0));
     }
 }
-
