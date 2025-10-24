@@ -1,5 +1,6 @@
 package com.birb_birb.blockbounce.saveload;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
  * Data structure for saving game state in Story Mode
  */
 public class GameSaveData implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     // Game metadata
@@ -168,6 +170,7 @@ public class GameSaveData implements Serializable {
      * Data structure for individual block state
      */
     public static class BlockData implements Serializable {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private double x;

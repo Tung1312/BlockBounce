@@ -81,7 +81,7 @@ public abstract class GameManager {
         scoreText = new Text("0");
         scoreText.setFont(gameFont);
         scoreText.setFill(rgb(62, 32, 31));
-        scoreText.setTranslateX(GameConstants.OFFSET_LEFT + 64);
+        scoreText.setTranslateX(GameConstants.OFFSET_LEFT + 57);
         scoreText.setTranslateY(56);
         getGameScene().addUINode(scoreText);
 
@@ -89,7 +89,7 @@ public abstract class GameManager {
         livesText = new Text("3");
         livesText.setFont(gameFont);
         livesText.setFill(rgb(62, 32, 31));
-        livesText.setTranslateX(GameConstants.OFFSET_LEFT + 253);
+        livesText.setTranslateX(GameConstants.OFFSET_LEFT + 220);
         livesText.setTranslateY(56);
         getGameScene().addUINode(livesText);
 
@@ -185,7 +185,7 @@ public abstract class GameManager {
         Text countdownText = new Text(String.valueOf(number));
         try {
             Font messageFont = Font.loadFont(
-                getAssetLoader().getURL("fonts/Daydream.ttf").toExternalForm(), 80);
+                getClass().getResourceAsStream(GameConstants.FONT_PATH), 80);
             countdownText.setFont(Font.font(messageFont.getFamily(), FontWeight.BOLD, 80));
         } catch (Exception e) {
             countdownText.setFont(Font.font("System", FontWeight.BOLD, 80));
@@ -212,7 +212,7 @@ public abstract class GameManager {
         Text goText = new Text("GO!");
         try {
             Font messageFont = Font.loadFont(
-                getAssetLoader().getURL("fonts/Daydream.ttf").toExternalForm(), 80);
+                getClass().getResourceAsStream(GameConstants.FONT_PATH), 80);
             goText.setFont(Font.font(messageFont.getFamily(), FontWeight.BOLD, 80));
         } catch (Exception e) {
             goText.setFont(Font.font("System", FontWeight.BOLD, 80));
@@ -249,7 +249,7 @@ public abstract class GameManager {
         try {
             // Load custom font if available, otherwise use default
             Font messageFont = Font.loadFont(
-                getAssetLoader().getURL("fonts/Daydream.ttf").toExternalForm(), 48);
+                    getClass().getResourceAsStream(GameConstants.FONT_PATH), 80);
             messageText.setFont(Font.font(messageFont.getFamily(), FontWeight.BOLD, 48));
         } catch (Exception e) {
             messageText.setFont(Font.font("System", FontWeight.BOLD, 48));

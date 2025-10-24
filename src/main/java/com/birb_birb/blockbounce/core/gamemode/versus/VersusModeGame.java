@@ -1,5 +1,6 @@
 package com.birb_birb.blockbounce.core.gamemode.versus;
 
+import com.almasb.fxgl.dsl.FXGLForKtKt;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.BlockBounceApp;
@@ -106,46 +107,46 @@ public class VersusModeGame extends GameManager {
         createFrame();
 
         // Player 1 UI (left)
-        javafx.scene.text.Text p1ScoreText = new javafx.scene.text.Text("P1 Score: 0");
+        javafx.scene.text.Text p1ScoreText = new javafx.scene.text.Text("0");
         p1ScoreText.setFont(gameFont);
-        p1ScoreText.setFill(Color.WHITE);
-        p1ScoreText.setTranslateX(GameConstants.OFFSET_LEFT + 20);
-        p1ScoreText.setTranslateY(30);
+        p1ScoreText.setFill(GameConstants.FONT_COLOR);
+        p1ScoreText.setTranslateX(GameConstants.OFFSET_LEFT + 57);
+        p1ScoreText.setTranslateY(56);
         getGameScene().addUINode(p1ScoreText);
 
-        javafx.scene.text.Text p1LivesText = new javafx.scene.text.Text("Lives: 0");
+        javafx.scene.text.Text p1LivesText = new javafx.scene.text.Text("0");
         p1LivesText.setFont(gameFont);
-        p1LivesText.setFill(Color.WHITE);
-        p1LivesText.setTranslateX(GameConstants.OFFSET_LEFT + 20);
-        p1LivesText.setTranslateY(60);
+        p1LivesText.setFill(GameConstants.FONT_COLOR);
+        p1LivesText.setTranslateX(GameConstants.OFFSET_LEFT + 220);
+        p1LivesText.setTranslateY(56);
         getGameScene().addUINode(p1LivesText);
 
         // Player 2 UI (right)
-        javafx.scene.text.Text p2ScoreText = new javafx.scene.text.Text("P2 Score: 0");
+        javafx.scene.text.Text p2ScoreText = new javafx.scene.text.Text("0");
         p2ScoreText.setFont(gameFont);
-        p2ScoreText.setFill(Color.WHITE);
-        p2ScoreText.setTranslateX(GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 140);
-        p2ScoreText.setTranslateY(30);
+        p2ScoreText.setFill(GameConstants.FONT_COLOR);
+        p2ScoreText.setTranslateX(GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 450);
+        p2ScoreText.setTranslateY(56);
         getGameScene().addUINode(p2ScoreText);
 
-        javafx.scene.text.Text p2LivesText = new javafx.scene.text.Text("Lives: 0");
+        javafx.scene.text.Text p2LivesText = new javafx.scene.text.Text("0");
         p2LivesText.setFont(gameFont);
-        p2LivesText.setFill(Color.WHITE);
-        p2LivesText.setTranslateX(GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 140);
-        p2LivesText.setTranslateY(60);
+        p2LivesText.setFill(GameConstants.FONT_COLOR);
+        p2LivesText.setTranslateX(GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 287);
+        p2LivesText.setTranslateY(56);
         getGameScene().addUINode(p2LivesText);
 
         // Bind to world properties so the UI updates automatically
-        getWorldProperties().addListener("player1Score", (prev, now) -> p1ScoreText.setText("P1 Score: " + now));
-        getWorldProperties().addListener("player1Lives", (prev, now) -> p1LivesText.setText("Lives: " + now));
-        getWorldProperties().addListener("player2Score", (prev, now) -> p2ScoreText.setText("P2 Score: " + now));
-        getWorldProperties().addListener("player2Lives", (prev, now) -> p2LivesText.setText("Lives: " + now));
+        getWorldProperties().addListener("player1Score", (prev, now) -> p1ScoreText.setText(String.valueOf(now)));
+        getWorldProperties().addListener("player1Lives", (prev, now) -> p1LivesText.setText(String.valueOf(now)));
+        getWorldProperties().addListener("player2Score", (prev, now) -> p2ScoreText.setText(String.valueOf(now)));
+        getWorldProperties().addListener("player2Lives", (prev, now) -> p2LivesText.setText(String.valueOf(now)));
 
         // Initialize with current values
-        p1ScoreText.setText("P1 Score: " + geti("player1Score"));
-        p1LivesText.setText("Lives: " + geti("player1Lives"));
-        p2ScoreText.setText("P2 Score: " + geti("player2Score"));
-        p2LivesText.setText("Lives: " + geti("player2Lives"));
+        p1ScoreText.setText(String.valueOf(FXGLForKtKt.geti("player1Score")));
+        p1LivesText.setText(String.valueOf(FXGLForKtKt.geti("player1Lives")));
+        p2ScoreText.setText(String.valueOf(FXGLForKtKt.geti("player2Score")));
+        p2LivesText.setText(String.valueOf(FXGLForKtKt.geti("player2Lives")));
     }
 
     @Override

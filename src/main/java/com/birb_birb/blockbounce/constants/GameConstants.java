@@ -1,5 +1,9 @@
 package com.birb_birb.blockbounce.constants;
 
+import javafx.scene.paint.Paint;
+
+import static javafx.scene.paint.Color.rgb;
+
 public class GameConstants {
     public static final int WINDOW_WIDTH = 1280;
     public static final int WINDOW_HEIGHT = 720;
@@ -37,7 +41,7 @@ public class GameConstants {
     public static final String BACKGROUND_TEXTURE = "/entities/background.png";
 
     public static final String FONT_PATH = "/assets/fonts/Daydream.ttf";
-    public static final String FONT_COLOR = "rgb(62, 32, 31)";
+    public static final Paint FONT_COLOR = rgb(62, 32, 31);
     public static final int DEFAULT_FONT_SIZE = 18;
     public static final String FALLBACK_FONT = null;
 

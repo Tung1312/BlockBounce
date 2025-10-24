@@ -10,7 +10,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
-import static javafx.scene.paint.Color.rgb;
 
 public class ScoreModeGame extends GameManager {
 
@@ -184,25 +183,25 @@ public class ScoreModeGame extends GameManager {
     }
 
     private void createHighScoreDisplay() {
-        highScoreText = new Text("High: 0");
+        highScoreText = new Text("0");
         highScoreText.setFont(gameFont);
         highScoreText.setFill(Color.YELLOW);
-        highScoreText.setTranslateX(GameConstants.WINDOW_WIDTH / 2.0 - 60);
-        highScoreText.setTranslateY(30);
+        highScoreText.setTranslateX(GameConstants.WINDOW_WIDTH - 200);
+        highScoreText.setTranslateY(56);
         getGameScene().addUINode(highScoreText);
 
         // Bind high score text to property
         getWorldProperties().addListener("highScore", (prev, now) -> {
-            highScoreText.setText("High: " + now);
+            highScoreText.setText(String.valueOf(now));
         });
     }
 
     private void createTimerDisplay() {
-        timerText = new Text("00:00");
+        timerText = new Text("Time: 00:00");
         timerText.setFont(gameFont);
-        timerText.setFill(rgb(62, 32, 31));
-        timerText.setTranslateX(GameConstants.WINDOW_WIDTH - 200);
-        timerText.setTranslateY(30);
+        timerText.setFill(Color.WHITE);
+        timerText.setTranslateX(GameConstants.WINDOW_WIDTH / 2.0 - 126);
+        timerText.setTranslateY(56);
         getGameScene().addUINode(timerText);
     }
 
