@@ -8,13 +8,13 @@ import javafx.geometry.Point2D;
  */
 public class BallPhysics {
 
-    // Giới hạn góc để tránh bóng rơi quá dốc (75 độ)
+    // Limit angle to avoid the ball falling too steeply (75 degrees)
     private static final double MAX_VERTICAL_ANGLE = 75.0;
 
-    // Góc tối thiểu để tránh bóng bay quá ngang (15 độ)
+    // Minimum angle to avoid the ball traveling too flat (15 degrees)
     private static final double MIN_VERTICAL_ANGLE = 15.0;
 
-    // Tốc độ tối đa cho phép
+    // Maximum allowed speed multiplier
     private static final double MAX_SPEED_MULTIPLIER = 1.2;
 
     private BallPhysics() {
@@ -22,45 +22,40 @@ public class BallPhysics {
     }
 
     /**
-     * Tính góc từ vận tốc hiện tại
-     * @param velocityX vận tốc theo trục X
-     * @param velocityY vận tốc theo trục Y
-     * @return góc tính bằng độ (-180 đến 180)
+     * Calculate angle from current velocity.
      */
     public static double calculateAngle(double velocityX, double velocityY) {
         return Math.toDegrees(Math.atan2(velocityY, velocityX));
     }
 
     /**
-     * Chuẩn hóa góc để tránh bóng rơi quá dốc hoặc bay quá ngang
-     * @param angle góc hiện tại (độ)
-     * @return góc đã được điều chỉnh
+     * Normalize angle to avoid the ball falling too steeply or traveling too flat.
      */
     public static double normalizeAngle(double angle) {
         double normalizedAngle = angle;
 
-        // Xử lý góc trong phạm vi -180 đến 180
+        // Handle angles in the range -180 to 180
         while (normalizedAngle > 180) normalizedAngle -= 360;
         while (normalizedAngle < -180) normalizedAngle += 360;
 
         double absAngle = Math.abs(normalizedAngle);
 
-        // Xử lý góc 0° (hoàn toàn ngang)
+        // Handle 0° (completely horizontal)
         if (absAngle < 0.01) {
-            return MIN_VERTICAL_ANGLE; // Mặc định trả về góc dương
+            return MIN_VERTICAL_ANGLE; // Default to a small positive angle
         }
 
-        // Nếu góc quá dốc (> 75° và < 105°), giới hạn về 75°
+        // If angle is too steep (> 75° and < 105°), clamp to 75°
         if (absAngle > MAX_VERTICAL_ANGLE && absAngle < 180 - MAX_VERTICAL_ANGLE) {
             normalizedAngle = Math.signum(normalizedAngle) * MAX_VERTICAL_ANGLE;
         }
 
-        // Nếu góc quá ngang (< 15° hoặc > 165°), đẩy về góc tối thiểu
+        // If angle is too flat (< 15° or > 165°), push to the minimum angle
         if (absAngle < MIN_VERTICAL_ANGLE && absAngle > 0.01) {
             normalizedAngle = Math.signum(normalizedAngle) * MIN_VERTICAL_ANGLE;
         }
 
-        // Xử lý góc gần 180° (bay ngang về phía sau)
+        // Handle angles near 180° (traveling horizontally backwards)
         if (absAngle > 180 - MIN_VERTICAL_ANGLE) {
             normalizedAngle = Math.signum(normalizedAngle) * (180 - MIN_VERTICAL_ANGLE);
         }
@@ -69,10 +64,7 @@ public class BallPhysics {
     }
 
     /**
-     * Tính vận tốc từ góc và tốc độ
-     * @param angle góc (độ)
-     * @param speed tốc độ
-     * @return Point2D chứa (velocityX, velocityY)
+     * Calculate velocity from angle and speed.
      */
     public static Point2D calculateVelocity(double angle, double speed) {
         double radians = Math.toRadians(angle);
@@ -83,79 +75,69 @@ public class BallPhysics {
     }
 
     /**
-     * Chuẩn hóa vận tốc để đảm bảo góc hợp lý và tốc độ không vượt quá giới hạn
-     * @param velocity vận tốc hiện tại
-     * @param baseSpeed tốc độ cơ bản
-     * @return vận tốc đã được điều chỉnh
+     * Normalize velocity to ensure a reasonable angle and limit maximum speed.
      */
     public static Point2D normalizeVelocity(Point2D velocity, double baseSpeed) {
-        // Tính góc hiện tại
+        // Calculate current angle
         double angle = calculateAngle(velocity.getX(), velocity.getY());
 
-        // Chuẩn hóa góc
+        // Normalize angle
         double normalizedAngle = normalizeAngle(angle);
 
-        // Tính tốc độ hiện tại
+        // Calculate current speed
         double currentSpeed = velocity.magnitude();
 
-        // Giới hạn tốc độ tối đa
+        // Limit maximum speed
         double targetSpeed = Math.min(currentSpeed, baseSpeed * MAX_SPEED_MULTIPLIER);
 
-        // Tạo vận tốc mới với góc đã chuẩn hóa
+        // Create a new velocity with the normalized angle
         return calculateVelocity(normalizedAngle, targetSpeed);
     }
 
     /**
-     * Tính vận tốc bật lại từ paddle dựa trên vị trí va chạm
-     * @param ballCenterX vị trí X tâm bóng
-     * @param paddleCenterX vị trí X tâm paddle
-     * @param paddleWidth độ rộng paddle
-     * @param baseSpeed tốc độ cơ bản
-     * @return vận tốc mới sau khi bật
+     * Calculate bounce velocity from paddle based on collision position.
      */
     public static Point2D calculatePaddleBounce(double ballCenterX, double paddleCenterX,
                                                 double paddleWidth, double baseSpeed) {
-        // Tính độ lệch so với tâm paddle (-1 đến 1)
+        // Compute offset from paddle center (-1 to 1)
         double hitOffset = (ballCenterX - paddleCenterX) / (paddleWidth / 2);
 
-        // Giới hạn hitOffset trong khoảng [-0.75, 0.75]
+        // Clamp hitOffset to [-0.75, 0.75]
         hitOffset = Math.max(-0.75, Math.min(0.75, hitOffset));
 
-        // Tính góc bật (±60 độ tương ứng ±π/3)
+        // Calculate bounce angle (±60 degrees corresponding to ±π/3)
         double bounceAngle = hitOffset * Math.PI / 3;
 
-        // Tạo vận tốc: X theo hướng offset, Y luôn hướng lên
+        // Create velocity: X follows the offset direction, Y always points upward
         double newVelX = baseSpeed * Math.sin(bounceAngle);
         double newVelY = -baseSpeed * Math.cos(bounceAngle);
 
-        // Đảm bảo vận tốc Y luôn hướng lên và đủ mạnh (tối thiểu -2.0)
+        // Ensure Y velocity points upward and is strong enough (minimum -2.0)
         newVelY = Math.min(newVelY, -2.0);
 
         return new Point2D(newVelX, newVelY);
     }
 
     /**
-     * Kiểm tra góc có hợp lệ hay không
-     * @param angle góc (độ)
-     * @return true nếu góc trong giới hạn cho phép
+     * Check whether an angle is valid.
      */
     public static boolean isAngleValid(double angle) {
         double absAngle = Math.abs(angle);
 
-        // Góc hợp lệ nếu nằm trong khoảng [15°, 75°] hoặc [105°, 165°]
+        // Angle is valid if it lies within [15°, 75°] or [105°, 165°]
         return (absAngle >= MIN_VERTICAL_ANGLE && absAngle <= MAX_VERTICAL_ANGLE) ||
                 (absAngle >= 180 - MAX_VERTICAL_ANGLE && absAngle <= 180 - MIN_VERTICAL_ANGLE);
     }
 
     /**
-     * Lấy giới hạn góc dọc tối đa
+     * Get maximum vertical angle limit
      */
     public static double getMaxVerticalAngle() {
         return MAX_VERTICAL_ANGLE;
     }
 
     /**
-     * Lấy giới hạn góc dọc tối thiểu
+     * Get minimum vertical angle limit
      */
     public static double getMinVerticalAngle() {
         return MIN_VERTICAL_ANGLE;
