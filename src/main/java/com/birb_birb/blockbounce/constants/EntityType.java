@@ -4,6 +4,6 @@ public enum EntityType {
     BALL,
     PADDLE,
     BRICK,
-    WALL
+    WALL,
+    POWERUP
 }
-

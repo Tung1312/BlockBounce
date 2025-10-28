@@ -20,7 +20,9 @@ public class PaddleComponent extends Component {
 
     @Override
     public void onUpdate(double tpf) {
-        double paddleWidth = entity.getBoundingBoxComponent().getWidth();
+        // Use logical paddle width when available (power-ups change this property)
+        double paddleWidth = getPaddleWidth(entity);
+
         double minX, maxX;
         double x = entity.getX();
         if (GameMode.getCurrentGameMode() == GameMode.VERSUS) {
@@ -43,5 +45,13 @@ public class PaddleComponent extends Component {
         }
         double clampedX = Math.max(minX, Math.min(x, maxX));
         entity.setX(clampedX);
+    }
+
+    private double getPaddleWidth(com.almasb.fxgl.entity.Entity paddle) {
+        try {
+            return paddle.getDouble("paddleWidth");
+        } catch (Exception ignored) {
+            return paddle.getBoundingBoxComponent().getWidth();
+        }
     }
 }
