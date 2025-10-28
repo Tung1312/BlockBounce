@@ -124,6 +124,12 @@ public class Playfield {
                 .with(new PaddleComponent(playerId))
                 .collidable()
                 .buildAndAttach();
+
+        // Set properties for power-up system
+        try {
+            paddle.setProperty("playerId", playerId);
+            paddle.setProperty("paddleWidth", GameConstants.PADDLE_WIDTH);
+        } catch (Exception ignored) {}
     }
 
     private void createBall() {

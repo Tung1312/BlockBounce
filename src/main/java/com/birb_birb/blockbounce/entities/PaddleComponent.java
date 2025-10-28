@@ -51,7 +51,8 @@ public class PaddleComponent extends Component {
         try {
             return paddle.getDouble("paddleWidth");
         } catch (Exception ignored) {
-            return paddle.getBoundingBoxComponent().getWidth();
+            // Fallback to global constant to avoid accessing bounding box internals
+            return GameConstants.PADDLE_WIDTH;
         }
     }
 }
