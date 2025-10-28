@@ -432,18 +432,11 @@ public class BallComponent extends Component {
             // Versus mode - playfield handles this in VersusModeGame
         } else {
             // Single-player mode: only lose life if this is the LAST ball
-            // Check how many balls are still alive (including this one)
+            // Simply count total balls - if more than 1, just remove this one
             List<Entity> allBalls = getGameWorld().getEntitiesByType(EntityType.BALL);
-            int aliveBalls = 0;
-            for (Entity b : allBalls) {
-                // Count balls that are not out of bounds yet
-                if (b.getY() <= GameConstants.WINDOW_HEIGHT - GameConstants.OFFSET_BOTTOM) {
-                    aliveBalls++;
-                }
-            }
 
-            // If this is NOT the last ball, just remove it silently
-            if (aliveBalls > 1) {
+            // If there's more than one ball, just remove this one silently
+            if (allBalls.size() > 1) {
                 entity.removeFromWorld();
                 return;
             }
