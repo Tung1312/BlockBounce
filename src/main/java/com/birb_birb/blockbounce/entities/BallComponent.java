@@ -31,6 +31,9 @@ public class BallComponent extends Component {
     // Freeze mechanism for save/load
     private boolean isFrozen = false;
 
+    // Speed multiplier for power-ups (1.0 = normal, 1.6 = fast ball)
+    private double speedMultiplier = 1.0;
+
     // Strategy: null for single-player, non-null for versus mode
     private final Playfield playfield;
 
@@ -120,8 +123,8 @@ public class BallComponent extends Component {
                 entity.setY(topBound);
             }
 
-            // Normalize velocity using BallPhysics to ensure valid angle
-            velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED);
+            // Normalize velocity using BallPhysics with current speed multiplier
+            velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED * speedMultiplier);
 
             SoundManager.playHitSound();
         }
@@ -168,12 +171,12 @@ public class BallComponent extends Component {
                 // Hit from TOP - normal bounce
                 entity.setY(paddleTop - entity.getHeight() - 1);
 
-                // Calculate bounce velocity using BallPhysics
+                // Calculate bounce velocity using BallPhysics with current speed multiplier
                 velocity = BallPhysics.calculatePaddleBounce(
                     ballCenterX,
                     paddleCenterX,
                     paddleWidth,
-                    BASE_SPEED
+                    BASE_SPEED * speedMultiplier
                 );
 
                 hasCollidedThisFrame = true;
@@ -190,11 +193,10 @@ public class BallComponent extends Component {
                 entity.setX(paddle.getX() - entity.getWidth() - 1);
             }
 
-            // Reverse horizontal velocity, keep vertical velocity
             velocity = new Point2D(-velocity.getX(), velocity.getY());
 
-            // Normalize velocity to ensure valid angle
-            velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED);
+            // Normalize velocity with current speed multiplier
+            velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED * speedMultiplier);
 
             hasCollidedThisFrame = true;
             collisionCooldown = 0.05;
@@ -237,8 +239,8 @@ public class BallComponent extends Component {
                     }
                 }
 
-                // Normalize velocity using BallPhysics to ensure valid angle and speed
-                velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED);
+                // Normalize velocity with current speed multiplier
+                velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED * speedMultiplier);
 
                 // Destroy brick using appropriate strategy
                 destroyBrick(brick);
@@ -276,7 +278,7 @@ public class BallComponent extends Component {
             playfield.destroyBrick(brick);
 
             double chance = Math.random();
-            if (chance < 0.12) {
+            if (chance < 0.30) {  // 30% chance to spawn power-up
                 // pick a random power-up
                 int r = (int) (Math.random() * 3);
                 com.birb_birb.blockbounce.entities.PowerUp.PowerUpType type = r == 0 ? com.birb_birb.blockbounce.entities.PowerUp.PowerUpType.DOUBLE_BALL
@@ -296,7 +298,7 @@ public class BallComponent extends Component {
 
             // Small chance to spawn a power-up in single-player
             double chance = Math.random();
-            if (chance < 0.12) {
+            if (chance < 0.30) {  // 30% chance to spawn power-up
                 // pick a random power-up
                 int r = (int) (Math.random() * 3);
                 com.birb_birb.blockbounce.entities.PowerUp.PowerUpType type = r == 0 ? com.birb_birb.blockbounce.entities.PowerUp.PowerUpType.DOUBLE_BALL
@@ -389,6 +391,25 @@ public class BallComponent extends Component {
         return isFrozen;
     }
 
+    // ==================== SPEED CONTROL ====================
+
+    public double getSpeedMultiplier() {
+        return speedMultiplier;
+    }
+
+    public void setSpeedMultiplier(double multiplier) {
+        this.speedMultiplier = multiplier;
+        // Immediately apply to current velocity if ball is moving
+        if (velocity.magnitude() > 0.1) {
+            double currentAngle = Math.atan2(velocity.getY(), velocity.getX());
+            double newSpeed = BASE_SPEED * multiplier;
+            velocity = new Point2D(
+                Math.cos(currentAngle) * newSpeed,
+                Math.sin(currentAngle) * newSpeed
+            );
+        }
+    }
+
     // Helper to get paddle logical width (uses property if present)
     private double getPaddleWidth(Entity paddle) {
         try {
@@ -410,7 +431,24 @@ public class BallComponent extends Component {
         if (playfield != null) {
             // Versus mode - playfield handles this in VersusModeGame
         } else {
-            // Single-player mode: attach the existing ball to the paddle instead
+            // Single-player mode: only lose life if this is the LAST ball
+            // Check how many balls are still alive (including this one)
+            List<Entity> allBalls = getGameWorld().getEntitiesByType(EntityType.BALL);
+            int aliveBalls = 0;
+            for (Entity b : allBalls) {
+                // Count balls that are not out of bounds yet
+                if (b.getY() <= GameConstants.WINDOW_HEIGHT - GameConstants.OFFSET_BOTTOM) {
+                    aliveBalls++;
+                }
+            }
+
+            // If this is NOT the last ball, just remove it silently
+            if (aliveBalls > 1) {
+                entity.removeFromWorld();
+                return;
+            }
+
+            // This is the last ball - lose life and respawn on paddle
             Entity paddle = getPaddle();
 
             if (paddle != null) {
