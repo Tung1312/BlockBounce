@@ -18,6 +18,7 @@ import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getAssetLoader;
+import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
 
 /**
  * Represents a single playfield in Versus mode.
@@ -124,6 +125,12 @@ public class Playfield {
                 .with(new PaddleComponent(playerId))
                 .collidable()
                 .buildAndAttach();
+
+        // Set properties for power-up system
+        try {
+            paddle.setProperty("playerId", playerId);
+            paddle.setProperty("paddleWidth", GameConstants.PADDLE_WIDTH);
+        } catch (Exception ignored) {}
     }
 
     private void createBall() {
@@ -175,9 +182,22 @@ public class Playfield {
 
     /**
      * Check if ball is out of bounds
+     * This now checks ALL balls belonging to this player, not just the original ball reference
      */
     public boolean isBallOutOfBounds() {
-        return ball != null && ball.getY() > getBottomBoundary();
+        // Check all balls in the game world that belong to this player
+        List<Entity> allBalls = getGameWorld().getEntitiesByType(EntityType.BALL);
+        for (Entity b : allBalls) {
+            try {
+                int ballPlayerId = b.getInt("playerId");
+                if (ballPlayerId == playerId) {
+                    if (b.getY() > getBottomBoundary()) {
+                        return true;
+                    }
+                }
+            } catch (Exception ignored) {}
+        }
+        return false;
     }
 
     /**
