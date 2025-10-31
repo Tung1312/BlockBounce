@@ -109,7 +109,7 @@ public class ButtonManager {
     }
 
     public static void navigateBackToGameModeMenu(GameMode gameMode) {
-        // Exit the current game and return to the game mode menu
+        // Navigate back without confirmation (for use in menus)
         getGameController().gotoMainMenu();
 
         // Push the appropriate menu based on game mode
@@ -126,7 +126,40 @@ public class ButtonManager {
         }
     }
 
+    public static void navigateBackToGameModeMenuFromGame(GameMode gameMode) {
+        // Show confirmation dialog before exiting from game scene
+        getDialogService().showConfirmationBox("Are you sure you want to go back to previous menu?", answer -> {
+            if (answer) {
+                // Exit the current game and return to the game mode menu
+                getGameController().gotoMainMenu();
+
+                // Push the appropriate menu based on game mode
+                switch (gameMode) {
+                    case STORY:
+                        getSceneService().pushSubScene(new StoryModeMenu());
+                        break;
+                    case ENDLESS:
+                        getSceneService().pushSubScene(new ScoreModeMenu());
+                        break;
+                    case VERSUS:
+                        getSceneService().pushSubScene(new VersusModeMenu());
+                        break;
+                }
+            }
+        });
+    }
+
     public static void exitToMainMenu() {
+        // Exit without confirmation (for use in menus)
         getGameController().gotoMainMenu();
+    }
+
+    public static void exitToMainMenuFromGame() {
+        // Show confirmation dialog before exiting from game scene to main menu
+        getDialogService().showConfirmationBox("Are you sure you want to exit to the main menu?", answer -> {
+            if (answer) {
+                getGameController().gotoMainMenu();
+            }
+        });
     }
 }

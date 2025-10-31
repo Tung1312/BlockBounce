@@ -18,9 +18,9 @@ public class GameplayButtons {
         Button settingButton = ButtonManager.createButton();
         settingButton.setOnAction(e -> ButtonManager.openSettings());
         Button backButton = ButtonManager.createButton();
-        backButton.setOnAction(e -> ButtonManager.navigateBackToGameModeMenu(gameMode));
+        backButton.setOnAction(e -> ButtonManager.navigateBackToGameModeMenuFromGame(gameMode));
         Button homeButton = ButtonManager.createButton();
-        homeButton.setOnAction(e -> ButtonManager.exitToMainMenu());
+        homeButton.setOnAction(e -> ButtonManager.exitToMainMenuFromGame());
 
         Region spacer1 = new Region();
         spacer1.setPrefHeight(8);
