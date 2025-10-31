@@ -1,4 +1,4 @@
-package com.birb_birb.blockbounce.utils;
+package com.birb_birb.blockbounce.utils.physics;
 
 import javafx.geometry.Point2D;
 

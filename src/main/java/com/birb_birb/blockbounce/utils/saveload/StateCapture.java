@@ -1,9 +1,9 @@
-package com.birb_birb.blockbounce.saveload;
+package com.birb_birb.blockbounce.utils.saveload;
 
 import com.almasb.fxgl.entity.Entity;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.entities.BallComponent;
-import com.birb_birb.blockbounce.saveload.GameSaveData.BlockData;
+import com.birb_birb.blockbounce.utils.saveload.SaveData.BlockData;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
@@ -15,13 +15,13 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 /**
  * Helper class to capture and restore game state
  */
-public class GameStateCapture {
+public class StateCapture {
 
     /**
      * Capture current game state for Story Mode
      */
-    public static GameSaveData captureStoryModeState() {
-        GameSaveData data = new GameSaveData();
+    public static SaveData captureStoryModeState() {
+        SaveData data = new SaveData();
 
         // Set game mode
         data.setGameMode("STORY");
@@ -87,8 +87,8 @@ public class GameStateCapture {
     /**
      * Capture current game state for Score Mode
      */
-    public static GameSaveData captureScoreModeState(double elapsedTime) {
-        GameSaveData data = new GameSaveData();
+    public static SaveData captureScoreModeState(double elapsedTime) {
+        SaveData data = new SaveData();
 
         // Set game mode
         data.setGameMode("SCORE");
@@ -155,7 +155,7 @@ public class GameStateCapture {
     /**
      * Restore game state from save data
      */
-    public static void restoreStoryModeState(GameSaveData data) {
+    public static void restoreStoryModeState(SaveData data) {
         if (data == null) {
             System.err.println("Cannot restore null save data");
             return;
@@ -204,7 +204,7 @@ public class GameStateCapture {
     /**
      * Restore Score Mode game state from save data
      */
-    public static RestoreResult restoreScoreModeState(GameSaveData data) {
+    public static RestoreResult restoreScoreModeState(SaveData data) {
         if (data == null) {
             System.err.println("Cannot restore null save data");
             return null;

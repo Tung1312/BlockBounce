@@ -5,7 +5,7 @@ import com.almasb.fxgl.entity.component.Component;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.core.gamemode.versus.Playfield;
-import com.birb_birb.blockbounce.utils.BallPhysics;
+import com.birb_birb.blockbounce.utils.physics.BallPhysics;
 import com.birb_birb.blockbounce.utils.SoundManager;
 import javafx.geometry.Point2D;
 

@@ -1,5 +1,6 @@
 package com.birb_birb.blockbounce.utils;
 
+import com.birb_birb.blockbounce.utils.physics.BallPhysics;
 import javafx.geometry.Point2D;
 
 public class BallPhysicsDebug {

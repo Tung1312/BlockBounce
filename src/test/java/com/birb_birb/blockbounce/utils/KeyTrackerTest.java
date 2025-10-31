@@ -1,5 +1,6 @@
 package com.birb_birb.blockbounce.utils;
 
+import com.birb_birb.blockbounce.utils.tracker.KeyTracker;
 import javafx.scene.input.KeyCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,11 +1,11 @@
 package com.birb_birb.blockbounce.saveload;
 
+import com.birb_birb.blockbounce.utils.saveload.SaveData;
+import com.birb_birb.blockbounce.utils.saveload.SaveGameManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.time.LocalDateTime;
 
 /**
  * Unit tests for Save/Load system
@@ -30,7 +30,7 @@ public class SaveLoadSystemTest {
 
     @Test
     public void testCreateGameSaveData() {
-        GameSaveData data = new GameSaveData();
+        SaveData data = new SaveData();
         data.setGameMode("STORY");
         data.setCurrentLevel(5);
         data.setScore(1000);
@@ -46,7 +46,7 @@ public class SaveLoadSystemTest {
     @Test
     public void testSaveAndLoadGame() {
         // Create test save data
-        GameSaveData saveData = new GameSaveData();
+        SaveData saveData = new SaveData();
         saveData.setGameMode("STORY");
         saveData.setCurrentLevel(3);
         saveData.setScore(500);
@@ -67,7 +67,7 @@ public class SaveLoadSystemTest {
         assertTrue(SaveGameManager.hasSaveData(1), "Save data should exist in slot 1");
 
         // Load from slot 1
-        GameSaveData loadedData = SaveGameManager.loadGame(1);
+        SaveData loadedData = SaveGameManager.loadGame(1);
         assertNotNull(loadedData, "Loaded data should not be null");
 
         // Verify loaded data matches saved data
@@ -88,7 +88,7 @@ public class SaveLoadSystemTest {
     public void testMultipleSaveSlots() {
         // Create different save data for each slot
         for (int slot = 1; slot <= 3; slot++) {
-            GameSaveData data = new GameSaveData();
+            SaveData data = new SaveData();
             data.setGameMode("STORY");
             data.setCurrentLevel(slot);
             data.setScore(slot * 100);
@@ -106,7 +106,7 @@ public class SaveLoadSystemTest {
 
         // Load and verify each slot
         for (int slot = 1; slot <= 3; slot++) {
-            GameSaveData loaded = SaveGameManager.loadGame(slot);
+            SaveData loaded = SaveGameManager.loadGame(slot);
             assertNotNull(loaded);
             assertEquals(slot, loaded.getCurrentLevel());
             assertEquals(slot * 100, loaded.getScore());
@@ -117,7 +117,7 @@ public class SaveLoadSystemTest {
     @Test
     public void testDeleteSave() {
         // Create and save data
-        GameSaveData data = new GameSaveData();
+        SaveData data = new SaveData();
         data.setGameMode("STORY");
         data.setCurrentLevel(1);
 
@@ -132,14 +132,14 @@ public class SaveLoadSystemTest {
         assertFalse(SaveGameManager.hasSaveData(1), "Save should not exist after deletion");
 
         // Try to load deleted save
-        GameSaveData loaded = SaveGameManager.loadGame(1);
+        SaveData loaded = SaveGameManager.loadGame(1);
         assertNull(loaded, "Loading deleted save should return null");
     }
 
     @Test
     public void testSavePreview() {
         // Create and save data
-        GameSaveData data = new GameSaveData();
+        SaveData data = new SaveData();
         data.setGameMode("STORY");
         data.setCurrentLevel(7);
         data.setScore(2500);
@@ -166,7 +166,7 @@ public class SaveLoadSystemTest {
 
     @Test
     public void testInvalidSlotNumber() {
-        GameSaveData data = new GameSaveData();
+        SaveData data = new SaveData();
 
         // Test invalid slot numbers
         assertFalse(SaveGameManager.saveGame(0, data), "Slot 0 should be invalid");
@@ -182,29 +182,29 @@ public class SaveLoadSystemTest {
 
     @Test
     public void testBlockDataSerialization() {
-        GameSaveData data = new GameSaveData();
+        SaveData data = new SaveData();
 
         // Add some block data
-        GameSaveData.BlockData block1 = new GameSaveData.BlockData(100, 200, "RED", 1);
-        GameSaveData.BlockData block2 = new GameSaveData.BlockData(150, 250, "BLUE", 2);
+        SaveData.BlockData block1 = new SaveData.BlockData(100, 200, "RED", 1);
+        SaveData.BlockData block2 = new SaveData.BlockData(150, 250, "BLUE", 2);
 
         data.getBlocks().add(block1);
         data.getBlocks().add(block2);
 
         // Save and load
         SaveGameManager.saveGame(1, data);
-        GameSaveData loaded = SaveGameManager.loadGame(1);
+        SaveData loaded = SaveGameManager.loadGame(1);
 
         assertNotNull(loaded);
         assertEquals(2, loaded.getBlocks().size());
 
-        GameSaveData.BlockData loadedBlock1 = loaded.getBlocks().get(0);
+        SaveData.BlockData loadedBlock1 = loaded.getBlocks().get(0);
         assertEquals(100, loadedBlock1.getX(), 0.01);
         assertEquals(200, loadedBlock1.getY(), 0.01);
         assertEquals("RED", loadedBlock1.getColor());
         assertEquals(1, loadedBlock1.getHits());
 
-        GameSaveData.BlockData loadedBlock2 = loaded.getBlocks().get(1);
+        SaveData.BlockData loadedBlock2 = loaded.getBlocks().get(1);
         assertEquals(150, loadedBlock2.getX(), 0.01);
         assertEquals(250, loadedBlock2.getY(), 0.01);
         assertEquals("BLUE", loadedBlock2.getColor());
@@ -214,19 +214,19 @@ public class SaveLoadSystemTest {
     @Test
     public void testOverwriteExistingSave() {
         // Save initial data
-        GameSaveData data1 = new GameSaveData();
+        SaveData data1 = new SaveData();
         data1.setCurrentLevel(1);
         data1.setScore(100);
         SaveGameManager.saveGame(1, data1);
 
         // Overwrite with new data
-        GameSaveData data2 = new GameSaveData();
+        SaveData data2 = new SaveData();
         data2.setCurrentLevel(5);
         data2.setScore(500);
         SaveGameManager.saveGame(1, data2);
 
         // Load and verify it's the new data
-        GameSaveData loaded = SaveGameManager.loadGame(1);
+        SaveData loaded = SaveGameManager.loadGame(1);
         assertNotNull(loaded);
         assertEquals(5, loaded.getCurrentLevel());
         assertEquals(500, loaded.getScore());

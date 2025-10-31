@@ -5,9 +5,9 @@ import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
-import com.birb_birb.blockbounce.saveload.GameSaveData;
-import com.birb_birb.blockbounce.saveload.GameStateCapture;
-import com.birb_birb.blockbounce.saveload.SaveGameManager;
+import com.birb_birb.blockbounce.utils.saveload.SaveData;
+import com.birb_birb.blockbounce.utils.saveload.StateCapture;
+import com.birb_birb.blockbounce.utils.saveload.SaveGameManager;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
@@ -53,7 +53,7 @@ public class StoryModeGame extends GameManager {
      * @param slot Save slot number (1-3)
      */
     public boolean saveGame(int slot) {
-        GameSaveData saveData = GameStateCapture.captureStoryModeState();
+        SaveData saveData = StateCapture.captureStoryModeState();
         boolean success = SaveGameManager.saveGame(slot, saveData);
 
         if (success) {
@@ -71,10 +71,10 @@ public class StoryModeGame extends GameManager {
      * @param slot Save slot number (1-3)
      */
     public boolean loadGame(int slot) {
-        GameSaveData saveData = SaveGameManager.loadGame(slot);
+        SaveData saveData = SaveGameManager.loadGame(slot);
 
         if (saveData != null) {
-            GameStateCapture.restoreStoryModeState(saveData);
+            StateCapture.restoreStoryModeState(saveData);
             currentSaveSlot = slot;
 
             // Check if ball was launched when saved

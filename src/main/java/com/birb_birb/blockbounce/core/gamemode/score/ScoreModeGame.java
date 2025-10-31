@@ -6,6 +6,9 @@ import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
 import com.birb_birb.blockbounce.entities.BallComponent;
+import com.birb_birb.blockbounce.utils.saveload.SaveData;
+import com.birb_birb.blockbounce.utils.saveload.StateCapture;
+import com.birb_birb.blockbounce.utils.saveload.SaveGameManager;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
@@ -67,9 +70,9 @@ public class ScoreModeGame extends GameManager {
      * @param slot Save slot number (1-3)
      */
     public boolean saveGame(int slot) {
-        com.birb_birb.blockbounce.saveload.GameSaveData saveData =
-            com.birb_birb.blockbounce.saveload.GameStateCapture.captureScoreModeState(elapsedTime);
-        boolean success = com.birb_birb.blockbounce.saveload.SaveGameManager.saveScoreGame(slot, saveData);
+        SaveData saveData =
+            StateCapture.captureScoreModeState(elapsedTime);
+        boolean success = SaveGameManager.saveScoreGame(slot, saveData);
 
         if (success) {
             currentSaveSlot = slot;
@@ -86,12 +89,12 @@ public class ScoreModeGame extends GameManager {
      * @param slot Save slot number (1-3)
      */
     public boolean loadGame(int slot) {
-        com.birb_birb.blockbounce.saveload.GameSaveData saveData =
-            com.birb_birb.blockbounce.saveload.SaveGameManager.loadScoreGame(slot);
+        SaveData saveData =
+            SaveGameManager.loadScoreGame(slot);
 
         if (saveData != null) {
-            com.birb_birb.blockbounce.saveload.GameStateCapture.RestoreResult result =
-                com.birb_birb.blockbounce.saveload.GameStateCapture.restoreScoreModeState(saveData);
+            StateCapture.RestoreResult result =
+                StateCapture.restoreScoreModeState(saveData);
 
             if (result != null) {
                 elapsedTime = result.getElapsedTime();

@@ -1,4 +1,4 @@
-package com.birb_birb.blockbounce.saveload;
+package com.birb_birb.blockbounce.utils.saveload;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -35,7 +35,7 @@ public class SaveGameManager {
      * @param data Game save data
      * @return true if save was successful
      */
-    public static boolean saveGame(int slot, GameSaveData data) {
+    public static boolean saveGame(int slot, SaveData data) {
         if (slot < 1 || slot > MAX_SAVE_SLOTS) {
             System.err.println("Invalid save slot: " + slot);
             return false;
@@ -59,9 +59,9 @@ public class SaveGameManager {
     /**
      * Load game data from a specific slot
      * @param slot Save slot number (1-3)
-     * @return GameSaveData or null if load failed
+     * @return SaveData or null if load failed
      */
-    public static GameSaveData loadGame(int slot) {
+    public static SaveData loadGame(int slot) {
         if (slot < 1 || slot > MAX_SAVE_SLOTS) {
             System.err.println("Invalid save slot: " + slot);
             return null;
@@ -77,7 +77,7 @@ public class SaveGameManager {
 
         try (ObjectInputStream ois = new ObjectInputStream(
                 new FileInputStream(savePath.toFile()))) {
-            GameSaveData data = (GameSaveData) ois.readObject();
+            SaveData data = (SaveData) ois.readObject();
             System.out.println("Game loaded successfully from slot " + slot);
             return data;
         } catch (IOException | ClassNotFoundException e) {
@@ -93,7 +93,7 @@ public class SaveGameManager {
      * @param data Game save data
      * @return true if save was successful
      */
-    public static boolean saveScoreGame(int slot, GameSaveData data) {
+    public static boolean saveScoreGame(int slot, SaveData data) {
         if (slot < 1 || slot > MAX_SAVE_SLOTS) {
             System.err.println("Invalid save slot: " + slot);
             return false;
@@ -117,9 +117,9 @@ public class SaveGameManager {
     /**
      * Load Score Mode game data from a specific slot
      * @param slot Save slot number (1-3)
-     * @return GameSaveData or null if load failed
+     * @return SaveData or null if load failed
      */
-    public static GameSaveData loadScoreGame(int slot) {
+    public static SaveData loadScoreGame(int slot) {
         if (slot < 1 || slot > MAX_SAVE_SLOTS) {
             System.err.println("Invalid save slot: " + slot);
             return null;
@@ -135,7 +135,7 @@ public class SaveGameManager {
 
         try (ObjectInputStream ois = new ObjectInputStream(
                 new FileInputStream(savePath.toFile()))) {
-            GameSaveData data = (GameSaveData) ois.readObject();
+            SaveData data = (SaveData) ois.readObject();
             System.out.println("Score Mode game loaded successfully from slot " + slot);
             return data;
         } catch (IOException | ClassNotFoundException e) {
@@ -235,7 +235,7 @@ public class SaveGameManager {
      * @return SavePreview or null if no save exists
      */
     public static SavePreview getSavePreview(int slot) {
-        GameSaveData data = loadGame(slot);
+        SaveData data = loadGame(slot);
         if (data == null) {
             return null;
         }
@@ -255,7 +255,7 @@ public class SaveGameManager {
      * @return SavePreview or null if no save exists
      */
     public static SavePreview getScoreSavePreview(int slot) {
-        GameSaveData data = loadScoreGame(slot);
+        SaveData data = loadScoreGame(slot);
         if (data == null) {
             return null;
         }
