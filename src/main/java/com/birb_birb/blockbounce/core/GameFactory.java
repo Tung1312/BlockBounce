@@ -40,7 +40,7 @@ public final class GameFactory {
         ballTexture.setPreserveRatio(false);
         ballTexture.setSmooth(false);
 
-        return entityBuilder()
+        Entity e = entityBuilder()
                 .type(EntityType.BALL)
                 .at(GameConstants.OFFSET_LEFT + GameConstants.PLAYABLE_WIDTH / 2.0 - BALL_SIZE / 2,
                         GameConstants.OFFSET_TOP + GameConstants.PLAYABLE_HEIGHT / 2.0)
@@ -49,6 +49,10 @@ public final class GameFactory {
                 .with(new BallComponent())
                 .collidable()
                 .buildAndAttach();
+
+        // default paddle-less single-player ball
+        try { e.setProperty("playerId", 1); } catch (Exception ignored) {}
+        return e;
     }
 
     public static Entity createPaddle() {
@@ -66,7 +70,7 @@ public final class GameFactory {
         paddleTexture.setPreserveRatio(false);
         paddleTexture.setSmooth(false);
 
-        return entityBuilder()
+        Entity e = entityBuilder()
                 .type(EntityType.PADDLE)
                 .at(x, y)
                 .view(paddleTexture)
@@ -74,6 +78,11 @@ public final class GameFactory {
                 .with(new PaddleComponent(playerId))
                 .collidable()
                 .buildAndAttach();
+
+        // expose player id and current paddle width for power-ups
+        try { e.setProperty("playerId", playerId); } catch (Exception ignored) {}
+        try { e.setProperty("paddleWidth", GameConstants.PADDLE_WIDTH); } catch (Exception ignored) {}
+        return e;
     }
 
 
@@ -194,5 +203,29 @@ public final class GameFactory {
                 .view(frameTexture)
                 .zIndex(100)
                 .buildAndAttach();
+    }
+
+    /**
+     * Spawn a power-up entity at given position.
+     * playerId = 0 for neutral, >0 to target a specific player (useful in versus)
+     */
+    public static Entity createPowerUp(double x, double y, com.birb_birb.blockbounce.entities.PowerUp.PowerUpType type, int playerId) {
+        Texture tex = getAssetLoader().loadTexture(GameConstants.BALL_TEXTURE);
+        tex.setFitWidth(20);
+        tex.setFitHeight(20);
+        tex.setPreserveRatio(false);
+        tex.setSmooth(false);
+
+        Entity e = entityBuilder()
+                .type(EntityType.POWERUP)
+                .at(x, y)
+                .view(tex)
+                .bbox(new HitBox(BoundingShape.circle(10)))
+                .with(new PowerUp(type))
+                .collidable()
+                .buildAndAttach();
+
+        try { e.setProperty("playerId", playerId); } catch (Exception ignored) {}
+        return e;
     }
 }

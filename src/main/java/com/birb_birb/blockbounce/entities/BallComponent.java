@@ -31,6 +31,9 @@ public class BallComponent extends Component {
     // Freeze mechanism for save/load
     private boolean isFrozen = false;
 
+    // Speed multiplier for power-ups (1.0 = normal, 1.6 = fast ball)
+    private double speedMultiplier = 1.0;
+
     // Strategy: null for single-player, non-null for versus mode
     private final Playfield playfield;
 
@@ -55,8 +58,11 @@ public class BallComponent extends Component {
         if (isAttachedToPaddle) {
             Entity paddle = getPaddle();
             if (paddle != null) {
+                // Use paddleWidth property if present (power-ups may modify it)
+                double paddleWidth = getPaddleWidth(paddle);
+
                 // Center ball on top of paddle
-                double ballX = paddle.getX() + (paddle.getWidth() - entity.getWidth()) / 2;
+                double ballX = paddle.getX() + (paddleWidth - entity.getWidth()) / 2;
                 double ballY = paddle.getY() - entity.getHeight() - 2;
                 entity.setPosition(ballX, ballY);
             }
@@ -117,8 +123,8 @@ public class BallComponent extends Component {
                 entity.setY(topBound);
             }
 
-            // Normalize velocity using BallPhysics to ensure valid angle
-            velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED);
+            // Normalize velocity using BallPhysics with current speed multiplier
+            velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED * speedMultiplier);
 
             SoundManager.playHitSound();
         }
@@ -126,36 +132,51 @@ public class BallComponent extends Component {
 
     private void handlePaddleCollision() {
         Entity paddle = getPaddle();
-        if (paddle == null || !entity.isColliding(paddle)) return;
+        if (paddle == null) return;
+
+        // Use paddleWidth property if present (power-ups may modify it)
+        double paddleWidth = getPaddleWidth(paddle);
+        double paddleHeight = paddle.getHeight();
+
+        // Implement custom AABB collision to respect paddleWidth
+        double ballLeft = entity.getX();
+        double ballRight = entity.getX() + entity.getWidth();
+        double ballTop = entity.getY();
+        double ballBottom = entity.getY() + entity.getHeight();
+
+        double paddleLeft = paddle.getX();
+        double paddleRight = paddle.getX() + paddleWidth;
+        double paddleTop = paddle.getY();
+        double paddleBottom = paddle.getY() + paddleHeight;
+
+        boolean overlapping = ballRight >= paddleLeft && ballLeft <= paddleRight && ballBottom >= paddleTop && ballTop <= paddleBottom;
+        if (!overlapping) return;
 
         // Calculate collision geometry
-        double ballCenterX = entity.getX() + entity.getWidth() / 2;
-        double ballCenterY = entity.getY() + entity.getHeight() / 2;
-        double paddleCenterX = paddle.getX() + paddle.getWidth() / 2;
-        double paddleCenterY = paddle.getY() + paddle.getHeight() / 2;
+        double ballCenterX = (ballLeft + ballRight) / 2.0;
+        double ballCenterY = (ballTop + ballBottom) / 2.0;
+        double paddleCenterX = paddle.getX() + paddleWidth / 2.0;
+        double paddleCenterY = paddle.getY() + paddleHeight / 2.0;
 
         double deltaX = ballCenterX - paddleCenterX;
         double deltaY = ballCenterY - paddleCenterY;
 
         // Calculate which side was hit
-        double ratioX = Math.abs(deltaX) / (paddle.getWidth() / 2);
-        double ratioY = Math.abs(deltaY) / (paddle.getHeight() / 2);
+        double ratioX = Math.abs(deltaX) / (paddleWidth / 2);
+        double ratioY = Math.abs(deltaY) / (paddleHeight / 2);
 
         if (ratioY > ratioX) {
             // Hit from top or bottom
-            double ballBottom = entity.getY() + entity.getHeight();
-            double paddleTop = paddle.getY();
-
             if (ballBottom > paddleTop && velocity.getY() > 0 && deltaY < 0) {
                 // Hit from TOP - normal bounce
                 entity.setY(paddleTop - entity.getHeight() - 1);
 
-                // Calculate bounce velocity using BallPhysics
+                // Calculate bounce velocity using BallPhysics with current speed multiplier
                 velocity = BallPhysics.calculatePaddleBounce(
                     ballCenterX,
                     paddleCenterX,
-                    paddle.getWidth(),
-                    BASE_SPEED
+                    paddleWidth,
+                    BASE_SPEED * speedMultiplier
                 );
 
                 hasCollidedThisFrame = true;
@@ -166,17 +187,16 @@ public class BallComponent extends Component {
             // Hit from LEFT or RIGHT side - bounce horizontally only
             if (deltaX > 0) {
                 // Hit from right side - push ball to the right
-                entity.setX(paddle.getX() + paddle.getWidth() + 1);
+                entity.setX(paddle.getX() + paddleWidth + 1);
             } else {
                 // Hit from left side - push ball to the left
                 entity.setX(paddle.getX() - entity.getWidth() - 1);
             }
 
-            // Reverse horizontal velocity, keep vertical velocity
             velocity = new Point2D(-velocity.getX(), velocity.getY());
 
-            // Normalize velocity to ensure valid angle
-            velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED);
+            // Normalize velocity with current speed multiplier
+            velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED * speedMultiplier);
 
             hasCollidedThisFrame = true;
             collisionCooldown = 0.05;
@@ -219,8 +239,8 @@ public class BallComponent extends Component {
                     }
                 }
 
-                // Normalize velocity using BallPhysics to ensure valid angle and speed
-                velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED);
+                // Normalize velocity with current speed multiplier
+                velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED * speedMultiplier);
 
                 // Destroy brick using appropriate strategy
                 destroyBrick(brick);
@@ -240,7 +260,7 @@ public class BallComponent extends Component {
             return playfield.getPaddle();
         } else {
             var paddles = getGameWorld().getEntitiesByType(EntityType.PADDLE);
-            return paddles.isEmpty() ? null : paddles.get(0);
+            return paddles.isEmpty() ? null : paddles.getFirst();
         }
     }
 
@@ -254,47 +274,38 @@ public class BallComponent extends Component {
 
     private void destroyBrick(Entity brick) {
         if (playfield != null) {
+            // In versus mode, delegate destruction and spawn a power-up sometimes
             playfield.destroyBrick(brick);
+
+            double chance = Math.random();
+            if (chance < 0.30) {  // 30% chance to spawn power-up
+                // pick a random power-up
+                int r = (int) (Math.random() * 3);
+                com.birb_birb.blockbounce.entities.PowerUp.PowerUpType type = r == 0 ? com.birb_birb.blockbounce.entities.PowerUp.PowerUpType.DOUBLE_BALL
+                    : r == 1 ? com.birb_birb.blockbounce.entities.PowerUp.PowerUpType.SMALL_PADDLE
+                    : com.birb_birb.blockbounce.entities.PowerUp.PowerUpType.FAST_BALL;
+
+                // target the owner of this ball if available
+                int target = 0;
+                try { target = entity.getInt("playerId"); } catch (Exception ignored) {}
+
+                com.birb_birb.blockbounce.core.GameFactory.createPowerUp(brick.getX(), brick.getY(), type, target);
+            }
+
         } else {
             brick.removeFromWorld();
             inc("score", 10);
-        }
-    }
 
-    private boolean isOutOfBounds() {
-        if (playfield != null) {
-            return playfield.isBallOutOfBounds();
-        } else {
-            return entity.getY() > GameConstants.WINDOW_HEIGHT - GameConstants.OFFSET_BOTTOM;
-        }
-    }
+            // Small chance to spawn a power-up in single-player
+            double chance = Math.random();
+            if (chance < 0.30) {  // 30% chance to spawn power-up
+                // pick a random power-up
+                int r = (int) (Math.random() * 3);
+                com.birb_birb.blockbounce.entities.PowerUp.PowerUpType type = r == 0 ? com.birb_birb.blockbounce.entities.PowerUp.PowerUpType.DOUBLE_BALL
+                    : r == 1 ? com.birb_birb.blockbounce.entities.PowerUp.PowerUpType.SMALL_PADDLE
+                    : com.birb_birb.blockbounce.entities.PowerUp.PowerUpType.FAST_BALL;
 
-    private void handleOutOfBounds() {
-        if (playfield != null) {
-            // Versus mode - playfield handles this in VersusModeGame
-            return;
-        } else {
-            // Single-player mode: attach the existing ball to the paddle instead
-            Entity paddle = getPaddle();
-
-            if (paddle != null) {
-                // Stop movement and mark as attached so onUpdate will position it
-                attachToPaddle();
-
-                // Immediately position it on top of the paddle to avoid visual jump
-                double ballX = paddle.getX() + (paddle.getWidth() - entity.getWidth()) / 2.0;
-                double ballY = paddle.getY() - entity.getHeight() - 2.0;
-                entity.setPosition(ballX, ballY);
-            } else {
-                // Fallback - if no paddle is found, reset to center as before
-                resetBall();
-            }
-
-            // Decrement lives and check for game over
-            inc("lives", -1);
-
-            if (geti("lives") <= 0) {
-                set("gameOver", true);
+                com.birb_birb.blockbounce.core.GameFactory.createPowerUp(brick.getX(), brick.getY(), type, 1);
             }
         }
     }
@@ -378,5 +389,80 @@ public class BallComponent extends Component {
 
     public boolean isFrozen() {
         return isFrozen;
+    }
+
+    // ==================== SPEED CONTROL ====================
+
+    public double getSpeedMultiplier() {
+        return speedMultiplier;
+    }
+
+    public void setSpeedMultiplier(double multiplier) {
+        this.speedMultiplier = multiplier;
+        // Immediately apply to current velocity if ball is moving
+        if (velocity.magnitude() > 0.1) {
+            double currentAngle = Math.atan2(velocity.getY(), velocity.getX());
+            double newSpeed = BASE_SPEED * multiplier;
+            velocity = new Point2D(
+                Math.cos(currentAngle) * newSpeed,
+                Math.sin(currentAngle) * newSpeed
+            );
+        }
+    }
+
+    // Helper to get paddle logical width (uses property if present)
+    private double getPaddleWidth(Entity paddle) {
+        try {
+            return paddle.getDouble("paddleWidth");
+        } catch (Exception ignored) {
+            return paddle.getWidth();
+        }
+    }
+
+    private boolean isOutOfBounds() {
+        if (playfield != null) {
+            return playfield.isBallOutOfBounds();
+        } else {
+            return entity.getY() > GameConstants.WINDOW_HEIGHT - GameConstants.OFFSET_BOTTOM;
+        }
+    }
+
+    private void handleOutOfBounds() {
+        if (playfield != null) {
+            // Versus mode - playfield handles this in VersusModeGame
+        } else {
+            // Single-player mode: only lose life if this is the LAST ball
+            // Simply count total balls - if more than 1, just remove this one
+            List<Entity> allBalls = getGameWorld().getEntitiesByType(EntityType.BALL);
+
+            // If there's more than one ball, just remove this one silently
+            if (allBalls.size() > 1) {
+                entity.removeFromWorld();
+                return;
+            }
+
+            // This is the last ball - lose life and respawn on paddle
+            Entity paddle = getPaddle();
+
+            if (paddle != null) {
+                // Stop movement and mark as attached so onUpdate will position it
+                attachToPaddle();
+
+                // Immediately position it on top of the paddle to avoid visual jump
+                double ballX = paddle.getX() + (getPaddleWidth(paddle) - entity.getWidth()) / 2.0;
+                double ballY = paddle.getY() - entity.getHeight() - 2.0;
+                entity.setPosition(ballX, ballY);
+            } else {
+                // Fallback - if no paddle is found, reset to center as before
+                resetBall();
+            }
+
+            // Decrement lives and check for game over
+            inc("lives", -1);
+
+            if (geti("lives") <= 0) {
+                set("gameOver", true);
+            }
+        }
     }
 }
