@@ -4,6 +4,7 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.gamemode.versus.Playfield;
 import com.birb_birb.blockbounce.utils.physics.BallPhysics;
 import com.birb_birb.blockbounce.utils.SoundManager;
@@ -13,47 +14,27 @@ import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
-import com.birb_birb.blockbounce.api.Movable;
-import com.birb_birb.blockbounce.api.Collidable;
+public class BallComponent extends Component {
 
-/**
- * Unified Ball component that works for both single-player and versus modes.
- * Uses Strategy Pattern to handle different game modes.
- */
-
-public class BallComponent extends Component implements Movable, Collidable {
-
-    private static final double BASE_SPEED = 5.0;
     private Point2D velocity = new Point2D(2.5, -2.5);
     private boolean hasCollidedThisFrame = false;
     private double collisionCooldown = 0;
-
-    // Ball launch mechanism
     private boolean isAttachedToPaddle = true;
     private boolean hasLaunched = false;
-
-    // Freeze mechanism for save/load
     private boolean isFrozen = false;
-
-    // Speed multiplier for power-ups (1.0 = normal, 1.6 = fast ball)
     private double speedMultiplier = 1.0;
-
-    // Strategy: null for single-player, non-null for versus mode
     private final Playfield playfield;
 
-    // Constructor for single-player modes
     public BallComponent() {
         this.playfield = null;
     }
 
-    // Constructor for versus mode
     public BallComponent(Playfield playfield) {
         this.playfield = playfield;
     }
 
     @Override
     public void onUpdate(double tpf) {
-        // If frozen, don't process any movement
         if (isFrozen) {
             return;
         }
@@ -62,7 +43,6 @@ public class BallComponent extends Component implements Movable, Collidable {
         if (isAttachedToPaddle) {
             Entity paddle = getPaddle();
             if (paddle != null) {
-                // Use paddleWidth property if present (power-ups may modify it)
                 double paddleWidth = getPaddleWidth(paddle);
 
                 // Center ball on top of paddle
@@ -70,7 +50,8 @@ public class BallComponent extends Component implements Movable, Collidable {
                 double ballY = paddle.getY() - entity.getHeight() - 2;
                 entity.setPosition(ballX, ballY);
             }
-            return; // Don't process physics while attached
+            // skip applying physics when attached to paddle
+            return;
         }
 
         if (collisionCooldown > 0) {
@@ -80,7 +61,7 @@ public class BallComponent extends Component implements Movable, Collidable {
         hasCollidedThisFrame = false;
         entity.translate(velocity);
 
-        // Wall collision - strategy based
+        // Wall collision
         handleWallCollision();
 
         // Paddle collision
@@ -99,18 +80,18 @@ public class BallComponent extends Component implements Movable, Collidable {
         }
     }
 
-    // ==================== COLLISION HANDLERS ====================
+    // COLLIDE HANDLERS
 
     private void handleWallCollision() {
         double leftBound, rightBound, topBound;
 
         if (playfield != null) {
-            // Versus mode - use playfield boundaries
+            // when in Versus mode - use playfield bounds
             leftBound = playfield.getLeftBoundary();
             rightBound = playfield.getRightBoundary(entity.getWidth());
             topBound = playfield.getTopBoundary();
         } else {
-            // Single-player mode - use global boundaries
+            // when in Single-player mode - use global bounds
             leftBound = GameConstants.OFFSET_LEFT + 10;
             rightBound = GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_RIGHT - 10;
             topBound = GameConstants.OFFSET_TOP + 10;
@@ -127,8 +108,8 @@ public class BallComponent extends Component implements Movable, Collidable {
                 entity.setY(topBound);
             }
 
-            // Normalize velocity using BallPhysics with current speed multiplier
-            velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED * speedMultiplier);
+            // normalize velocity
+            velocity = BallPhysics.normalizeVelocity(velocity, GameConstants.BASE_SPEED * speedMultiplier);
 
             SoundManager.playHitSound();
         }
@@ -138,7 +119,6 @@ public class BallComponent extends Component implements Movable, Collidable {
         Entity paddle = getPaddle();
         if (paddle == null) return;
 
-        // Use paddleWidth property if present (power-ups may modify it)
         double paddleWidth = getPaddleWidth(paddle);
         double paddleHeight = paddle.getHeight();
 
@@ -180,7 +160,7 @@ public class BallComponent extends Component implements Movable, Collidable {
                     ballCenterX,
                     paddleCenterX,
                     paddleWidth,
-                    BASE_SPEED * speedMultiplier
+                    GameConstants.BASE_SPEED * speedMultiplier
                 );
 
                 hasCollidedThisFrame = true;
@@ -199,8 +179,8 @@ public class BallComponent extends Component implements Movable, Collidable {
 
             velocity = new Point2D(-velocity.getX(), velocity.getY());
 
-            // Normalize velocity with current speed multiplier
-            velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED * speedMultiplier);
+            // normalize velocity
+            velocity = BallPhysics.normalizeVelocity(velocity, GameConstants.BASE_SPEED * speedMultiplier);
 
             hasCollidedThisFrame = true;
             collisionCooldown = 0.05;
@@ -244,7 +224,7 @@ public class BallComponent extends Component implements Movable, Collidable {
                 }
 
                 // Normalize velocity with current speed multiplier
-                velocity = BallPhysics.normalizeVelocity(velocity, BASE_SPEED * speedMultiplier);
+                velocity = BallPhysics.normalizeVelocity(velocity, GameConstants.BASE_SPEED * speedMultiplier);
 
                 // Destroy brick using appropriate strategy
                 destroyBrick(brick);
@@ -285,9 +265,9 @@ public class BallComponent extends Component implements Movable, Collidable {
             if (chance < 0.30) {  // 30% chance to spawn power-up
                 // pick a random power-up
                 int r = (int) (Math.random() * 3);
-                com.birb_birb.blockbounce.entities.PowerUp.PowerUpType type = r == 0 ? com.birb_birb.blockbounce.entities.PowerUp.PowerUpType.DOUBLE_BALL
-                    : r == 1 ? com.birb_birb.blockbounce.entities.PowerUp.PowerUpType.SMALL_PADDLE
-                    : com.birb_birb.blockbounce.entities.PowerUp.PowerUpType.FAST_BALL;
+                PowerUpComponent.PowerUpType type = r == 0 ? PowerUpComponent.PowerUpType.DOUBLE_BALL
+                    : r == 1 ? PowerUpComponent.PowerUpType.SMALL_PADDLE
+                    : PowerUpComponent.PowerUpType.FAST_BALL;
 
                 // target the owner of this ball if available
                 int target = 0;
@@ -300,16 +280,17 @@ public class BallComponent extends Component implements Movable, Collidable {
             brick.removeFromWorld();
             inc("score", 10);
 
+            // TODO: random power-ups after 10-12 bricks destroyed
             // Small chance to spawn a power-up in single-player
             double chance = Math.random();
             if (chance < 0.30) {  // 30% chance to spawn power-up
                 // pick a random power-up
                 int r = (int) (Math.random() * 3);
-                com.birb_birb.blockbounce.entities.PowerUp.PowerUpType type = r == 0 ? com.birb_birb.blockbounce.entities.PowerUp.PowerUpType.DOUBLE_BALL
-                    : r == 1 ? com.birb_birb.blockbounce.entities.PowerUp.PowerUpType.SMALL_PADDLE
-                    : com.birb_birb.blockbounce.entities.PowerUp.PowerUpType.FAST_BALL;
+                PowerUpComponent.PowerUpType type = r == 0 ? PowerUpComponent.PowerUpType.DOUBLE_BALL
+                    : r == 1 ? PowerUpComponent.PowerUpType.SMALL_PADDLE
+                    : PowerUpComponent.PowerUpType.FAST_BALL;
 
-                com.birb_birb.blockbounce.core.GameFactory.createPowerUp(brick.getX(), brick.getY(), type, 1);
+                GameFactory.createPowerUp(brick.getX(), brick.getY(), type, 1);
             }
         }
     }
@@ -335,14 +316,6 @@ public class BallComponent extends Component implements Movable, Collidable {
 
     // ==================== PUBLIC API ====================
 
-    public Point2D getVelocity() {
-        return velocity;
-    }
-
-    public void setVelocity(Point2D velocity) {
-        this.velocity = velocity;
-    }
-
     /**
      * Attach the ball to the paddle (used when a life is lost)
      */
@@ -361,7 +334,7 @@ public class BallComponent extends Component implements Movable, Collidable {
         // Launch ball straight up with slight randomness for variety
         // X velocity is very small or zero for straight launch
         double launchAngle = Math.random() * 30 - 15; // Random angle between -15 and +15 degrees
-        double launchSpeed = BASE_SPEED;
+        double launchSpeed = GameConstants.BASE_SPEED;
 
         velocity = new Point2D(
             launchSpeed * Math.sin(Math.toRadians(launchAngle)),
@@ -406,13 +379,62 @@ public class BallComponent extends Component implements Movable, Collidable {
         // Immediately apply to current velocity if ball is moving
         if (velocity.magnitude() > 0.1) {
             double currentAngle = Math.atan2(velocity.getY(), velocity.getX());
-            double newSpeed = BASE_SPEED * multiplier;
+            double newSpeed = GameConstants.BASE_SPEED * multiplier;
             velocity = new Point2D(
                 Math.cos(currentAngle) * newSpeed,
                 Math.sin(currentAngle) * newSpeed
             );
         }
     }
+
+    // ==================== MOVABLE INTERFACE IMPLEMENTATION ====================
+
+    public Point2D getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(Point2D velocity) {
+        this.velocity = velocity;
+    }
+
+    // ==================== COLLIDABLE INTERFACE IMPLEMENTATION ====================
+
+    public boolean canCollideWith(EntityType type) {
+        // Balls don't collide with other balls
+        if (type == EntityType.BALL) return false;
+
+        // Can collide with paddles, bricks, and walls
+        return type == EntityType.PADDLE ||
+               type == EntityType.BRICK ||
+               type == EntityType.WALL;
+    }
+
+    public javafx.geometry.Bounds getCollisionBounds() {
+        return new javafx.geometry.BoundingBox(
+            entity.getX(),
+            entity.getY(),
+            entity.getWidth(),
+            entity.getHeight()
+        );
+    }
+
+    public void onCollision(Entity other, Point2D collisionPoint) {
+        EntityType otherType = (EntityType) other.getType();
+
+        switch (otherType) {
+            case PADDLE:
+                // Paddle collision already handled in handlePaddleCollision()
+                break;
+            case BRICK:
+                // Brick collision already handled in handleBrickCollision()
+                break;
+            case WALL:
+                // Wall collision already handled in handleWallCollision()
+                break;
+        }
+    }
+
+    // ==================== HELPER METHODS ====================
 
     // Helper to get paddle logical width (uses property if present)
     private double getPaddleWidth(Entity paddle) {

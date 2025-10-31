@@ -3,8 +3,6 @@ package com.birb_birb.blockbounce.entities;
 import com.almasb.fxgl.entity.component.Component;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.GameMode;
-import com.birb_birb.blockbounce.core.gamemode.versus.VersusModeGame;
-
 
 public class PaddleComponent extends Component {
     private final int playerId;

@@ -209,7 +209,7 @@ public final class GameFactory {
      * Spawn a power-up entity at given position.
      * playerId = 0 for neutral, >0 to target a specific player (useful in versus)
      */
-    public static Entity createPowerUp(double x, double y, com.birb_birb.blockbounce.entities.PowerUp.PowerUpType type, int playerId) {
+    public static Entity createPowerUp(double x, double y, PowerUpComponent.PowerUpType type, int playerId) {
         Texture tex = getAssetLoader().loadTexture(GameConstants.BALL_TEXTURE);
         tex.setFitWidth(20);
         tex.setFitHeight(20);
@@ -221,7 +221,7 @@ public final class GameFactory {
                 .at(x, y)
                 .view(tex)
                 .bbox(new HitBox(BoundingShape.circle(10)))
-                .with(new PowerUp(type))
+                .with(new PowerUpComponent(type))
                 .collidable()
                 .buildAndAttach();
 

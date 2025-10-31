@@ -2,9 +2,12 @@ package com.birb_birb.blockbounce.entities;
 
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.physics.*;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.core.GameFactory;
+import com.birb_birb.blockbounce.core.gamemode.versus.Playfield;
+import com.birb_birb.blockbounce.utils.TextureUtils;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.util.Duration;
@@ -15,11 +18,7 @@ import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameTimer;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
 
-/**
- * PowerUp entity - falls downward and applies an effect when collected by a paddle.
- * Types: DOUBLE_BALL, SMALL_PADDLE, FAST_BALL
- */
-public class PowerUp extends Component {
+public class PowerUpComponent extends Component {
 
     public enum PowerUpType {
         DOUBLE_BALL,
@@ -28,16 +27,15 @@ public class PowerUp extends Component {
     }
 
     private final PowerUpType type;
-    private static final double SPEED = 2.0;
 
-    public PowerUp(PowerUpType type) {
+    public PowerUpComponent(PowerUpType type) {
         this.type = type;
     }
 
     @Override
     public void onUpdate(double tpf) {
         // fall straight down
-        entity.translateY(SPEED);
+        entity.translateY(GameConstants.POWER_UP_FALL_SPEED);
 
         // check out of bounds
         if (entity.getY() > GameConstants.WINDOW_HEIGHT - GameConstants.OFFSET_BOTTOM) {
@@ -112,7 +110,7 @@ public class PowerUp extends Component {
 
         // Duplicate each ball
         for (Entity reference : ballsToDuplicate) {
-            com.birb_birb.blockbounce.entities.BallComponent refComp = reference.getComponent(com.birb_birb.blockbounce.entities.BallComponent.class);
+            BallComponent refComp = reference.getComponent(BallComponent.class);
             if (refComp == null) continue;
 
             Point2D vel = refComp.getVelocity();
@@ -123,12 +121,12 @@ public class PowerUp extends Component {
 
             // Create ball - use the reference ball's playfield if in versus mode
             Entity newBall;
-            com.birb_birb.blockbounce.core.gamemode.versus.Playfield playfield = null;
+            Playfield playfield = null;
             try {
                 // Get playfield from reference ball component via reflection
-                java.lang.reflect.Field field = com.birb_birb.blockbounce.entities.BallComponent.class.getDeclaredField("playfield");
+                java.lang.reflect.Field field = BallComponent.class.getDeclaredField("playfield");
                 field.setAccessible(true);
-                playfield = (com.birb_birb.blockbounce.core.gamemode.versus.Playfield) field.get(refComp);
+                playfield = (Playfield) field.get(refComp);
             } catch (Exception ignored) {}
 
             // Build the new ball with proper component
@@ -137,13 +135,13 @@ public class PowerUp extends Component {
                 newBall = entityBuilder()
                     .type(EntityType.BALL)
                     .at(bx, by)
-                    .view(com.birb_birb.blockbounce.utils.TextureUtils.loadTexture(
+                    .view(TextureUtils.loadTexture(
                         GameConstants.BALL_TEXTURE,
                         GameConstants.BALL_SIZE,
                         GameConstants.BALL_SIZE))
-                    .bbox(new com.almasb.fxgl.physics.HitBox(
-                        com.almasb.fxgl.physics.BoundingShape.circle(GameConstants.BALL_SIZE / 2)))
-                    .with(new com.birb_birb.blockbounce.entities.BallComponent(playfield))
+                    .bbox(new HitBox(
+                        BoundingShape.circle(GameConstants.BALL_SIZE / 2)))
+                    .with(new BallComponent(playfield))
                     .collidable()
                     .buildAndAttach();
             } else {
@@ -157,7 +155,7 @@ public class PowerUp extends Component {
                 newBall.setProperty("playerId", paddleId);
             } catch (Exception ignored) {}
 
-            com.birb_birb.blockbounce.entities.BallComponent newComp = newBall.getComponent(com.birb_birb.blockbounce.entities.BallComponent.class);
+            BallComponent newComp = newBall.getComponent(BallComponent.class);
             if (newComp != null) {
                 // Add slight variation to velocity so balls don't move identically
                 double angle = Math.random() * 20 - 10; // -10 to +10 degrees variation

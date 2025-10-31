@@ -18,7 +18,7 @@ public class GameplayButtons {
         Button settingButton = ButtonManager.createButton();
         settingButton.setOnAction(e -> ButtonManager.openSettings());
         Button backButton = ButtonManager.createButton();
-        backButton.setOnAction(e -> ButtonManager.navigateBackToGameModeMenuFromGame(gameMode));
+        backButton.setOnAction(e -> ButtonManager.navigateBackToGameModeMenu(gameMode));
         Button homeButton = ButtonManager.createButton();
         homeButton.setOnAction(e -> ButtonManager.exitToMainMenuFromGame());
 
