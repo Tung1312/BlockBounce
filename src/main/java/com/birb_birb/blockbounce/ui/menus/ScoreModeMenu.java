@@ -3,10 +3,15 @@ package com.birb_birb.blockbounce.ui.menus;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.GameMode;
+import com.birb_birb.blockbounce.utils.ButtonManager;
 import com.birb_birb.blockbounce.utils.saveload.SaveGameManager;
 import com.birb_birb.blockbounce.utils.MenuManager;
 import com.birb_birb.blockbounce.utils.SoundManager;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -24,22 +29,15 @@ public class ScoreModeMenu extends MenuManager {
 
     @Override
     protected String getBackgroundImagePath() {
-        return GameConstants.MAIN_MENU_BACKGROUND;
+        return GameConstants.SCORE_MODE_BACKGROUND;
     }
 
     @Override
     protected void setupContent() {
-        // Title
-        Text titleText = new Text("SCORE MODE");
-        titleText.setFont(Font.font("Arial", 48));
-        titleText.setFill(Color.CYAN);
-        titleText.setLayoutX(getAppWidth() / 2.0 - 150);
-        titleText.setLayoutY(150);
-        root.getChildren().add(titleText);
 
         // Calculate button positions
-        double buttonX = getButtonX();
-        double startY = getStartY();
+        double buttonX = getAppWidth() / 2.0 + 148;
+        double startY = getAppHeight() * 0.284;
 
         // New Game button
         Button newGameButton = createMenuButton("New Game");
@@ -54,7 +52,7 @@ public class ScoreModeMenu extends MenuManager {
         // Load Game button
         Button loadGameButton = createMenuButton("Load Game");
         loadGameButton.setLayoutX(buttonX);
-        loadGameButton.setLayoutY(startY + GameConstants.BUTTON_SPACING);
+        loadGameButton.setLayoutY(startY + 293);
 
         // Check if any save exists
         boolean hasSave = false;
@@ -77,15 +75,28 @@ public class ScoreModeMenu extends MenuManager {
             });
         }
 
-        // Back button
-        Button backButton = createMenuButton("Back");
-        backButton.setLayoutX(buttonX);
-        backButton.setLayoutY(startY + (GameConstants.BUTTON_SPACING * 2));
-        backButton.setOnAction(e -> {
-            SoundManager.playClickSound();
-            getGameController().gotoMainMenu();
-        });
+        VBox buttonPanel = createButtonPanel();
+        root.getChildren().add(buttonPanel);
 
-        root.getChildren().addAll(newGameButton, loadGameButton, backButton);
+        root.getChildren().addAll(newGameButton, loadGameButton);
+    }
+
+    public static VBox createButtonPanel() {
+        Button settingButton = ButtonManager.createButton();
+        settingButton.setOnAction(e -> ButtonManager.openSettings());
+        Button homeButton = ButtonManager.createButton();
+        homeButton.setOnAction(e -> ButtonManager.exitToMainMenu());
+
+        Region spacer = new Region();
+        spacer.setPrefHeight(601);
+        spacer.setMinHeight(601);
+        spacer.setMaxHeight(601);
+
+        VBox buttonPanel = new VBox();
+        buttonPanel.setAlignment(Pos.TOP_RIGHT);
+        buttonPanel.setPadding(new Insets(6.5, 0, 0, GameConstants.WINDOW_WIDTH - 60)); // top, right, bottom, left
+        buttonPanel.getChildren().addAll(settingButton, spacer, homeButton);
+
+        return buttonPanel;
     }
 }
