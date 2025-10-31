@@ -7,14 +7,22 @@ import com.birb_birb.blockbounce.utils.ButtonManager;
 import com.birb_birb.blockbounce.utils.saveload.SaveGameManager;
 import com.birb_birb.blockbounce.utils.MenuManager;
 import com.birb_birb.blockbounce.utils.SoundManager;
+import com.birb_birb.blockbounce.utils.highscore.HighScore;
+import com.birb_birb.blockbounce.utils.highscore.HighScoreManager;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.Button;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+
+import java.util.List;
+import java.util.stream.IntStream;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -78,7 +86,110 @@ public class ScoreModeMenu extends MenuManager {
         VBox buttonPanel = createButtonPanel();
         root.getChildren().add(buttonPanel);
 
+        // Highscores list on the left parchment
+        VBox highscoresBox = buildHighscoresBox();
+        // Position roughly under the "HIGHSCORES" title drawn on the parchment
+        highscoresBox.setLayoutX(92);   // tune if needed to fit your background image
+        highscoresBox.setLayoutY(170);
+        root.getChildren().add(highscoresBox);
+
         root.getChildren().addAll(newGameButton, loadGameButton);
+    }
+
+    private VBox buildHighscoresBox() {
+        // Load, sort (desc) and clamp to top 5
+        List<HighScore> scores = HighScoreManager.loadHighScores();
+        scores.sort(null); // HighScore implements Comparable descending by score
+        int limit = Math.min(5, scores.size());
+
+        // Prepare fonts
+        Font base = com.birb_birb.blockbounce.utils.FontManager.getCustomFont();
+        String family = base != null ? base.getFamily() : "Arial";
+        Font headerFont = Font.font(family, 28);
+        Font rowFont = Font.font(family, 26);
+        Color rowColor = Color.rgb(62, 32, 31);
+
+        VBox box = new VBox(12);
+        box.setAlignment(Pos.TOP_LEFT);
+        box.setPadding(new Insets(4, 0, 0, 0));
+
+        if (limit == 0) {
+            Text none = new Text("No high scores yet!");
+            none.setFill(rowColor);
+            none.setFont(rowFont);
+            box.getChildren().add(none);
+            return box;
+        }
+
+        // Grid with 3 columns: Rank | Name | Score
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        ColumnConstraints c0 = new ColumnConstraints();
+        c0.setPrefWidth(40); // rank
+        ColumnConstraints c1 = new ColumnConstraints();
+        c1.setMinWidth(250);
+        c1.setPrefWidth(250); // name column fixed width
+        c1.setMaxWidth(250);
+        c1.setHgrow(Priority.NEVER);
+        ColumnConstraints c2 = new ColumnConstraints();
+        c2.setPrefWidth(100); // score
+        c2.setHalignment(HPos.LEFT); // align score to left
+        grid.getColumnConstraints().addAll(c0, c1, c2);
+
+        // Header row
+        Text hRank = new Text("#");
+        hRank.setFont(headerFont);
+        hRank.setFill(Color.rgb(120, 80, 60));
+        Text hName = new Text("NAME");
+        hName.setFont(headerFont);
+        hName.setFill(Color.rgb(120, 80, 60));
+        Text hScore = new Text("SCORE");
+        hScore.setFont(headerFont);
+        hScore.setFill(Color.rgb(120, 80, 60));
+        grid.add(hRank, 0, 0);
+        grid.add(hName, 1, 0);
+        grid.add(hScore, 2, 0);
+        GridPane.setValignment(hRank, VPos.BASELINE);
+        GridPane.setValignment(hName, VPos.BASELINE);
+        GridPane.setValignment(hScore, VPos.BASELINE);
+
+        // Rows
+        IntStream.range(0, limit).forEach(i -> {
+            HighScore hs = scores.get(i);
+            String name = hs.getPlayerName();
+
+            Text rRank = new Text((i + 1) + ".");
+            rRank.setFont(rowFont);
+            rRank.setFill(rowColor);
+
+            // Name as Label with ellipsis when exceeding 250px column width
+            Label rName = new Label(name);
+            rName.setFont(rowFont);
+            rName.setStyle("-fx-text-fill: rgb(62, 32, 31);");
+            rName.setTextOverrun(OverrunStyle.ELLIPSIS);
+            rName.setAlignment(Pos.CENTER_LEFT);
+            rName.setMinWidth(250);
+            rName.setPrefWidth(250);
+            rName.setMaxWidth(250);
+            rName.setPadding(Insets.EMPTY);
+
+            Text rScore = new Text(String.format("%,d", hs.getScore()));
+            rScore.setFont(rowFont);
+            rScore.setFill(rowColor);
+
+            int row = i + 1;
+            grid.add(rRank, 0, row);
+            grid.add(rName, 1, row);
+            grid.add(rScore, 2, row);
+            GridPane.setValignment(rRank, VPos.BASELINE);
+            GridPane.setValignment(rName, VPos.BASELINE);
+            GridPane.setValignment(rScore, VPos.BASELINE);
+        });
+
+        box.getChildren().add(grid);
+        return box;
     }
 
     public static VBox createButtonPanel() {

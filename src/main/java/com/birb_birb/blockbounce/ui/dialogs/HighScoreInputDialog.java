@@ -1,0 +1,155 @@
+package com.birb_birb.blockbounce.ui.dialogs;
+
+import com.almasb.fxgl.scene.SubScene;
+import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.utils.SoundManager;
+import javafx.geometry.Pos;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+
+import java.util.function.Consumer;
+
+/**
+ * Dialog for entering player name for high score
+ */
+public class HighScoreInputDialog extends SubScene {
+    private static final int DIALOG_WIDTH = 500;
+    private static final int DIALOG_HEIGHT = 300;
+
+    private final TextField nameInput;
+    private final Consumer<String> onSubmit;
+    private final Runnable onCancel;
+
+    public HighScoreInputDialog(int score, int rank, Consumer<String> onSubmit, Runnable onCancel) {
+        this.onSubmit = onSubmit;
+        this.onCancel = onCancel;
+
+        // Create background overlay
+        Rectangle overlay = new Rectangle(GameConstants.WINDOW_WIDTH, GameConstants.WINDOW_HEIGHT);
+        overlay.setFill(Color.rgb(0, 0, 0, 0.7));
+
+        // Create dialog box
+        Rectangle dialogBox = new Rectangle(DIALOG_WIDTH, DIALOG_HEIGHT);
+        dialogBox.setFill(Color.rgb(40, 30, 20));
+        dialogBox.setStroke(Color.rgb(200, 150, 100));
+        dialogBox.setStrokeWidth(3);
+        dialogBox.setArcWidth(20);
+        dialogBox.setArcHeight(20);
+
+        // Load custom font
+        Font customFont;
+        try {
+            customFont = Font.loadFont(
+                getClass().getResourceAsStream("/assets/fonts/Daydream.ttf"), 24
+            );
+        } catch (Exception e) {
+            customFont = Font.font("Arial", 24);
+        }
+
+        Font smallFont = Font.font(customFont.getFamily(), 18);
+
+        // Create title text
+        Text titleText = new Text("NEW HIGH SCORE!");
+        titleText.setFont(customFont);
+        titleText.setFill(Color.GOLD);
+
+        // Create rank text
+        Text rankText = new Text("Rank #" + rank);
+        rankText.setFont(smallFont);
+        rankText.setFill(Color.LIGHTGREEN);
+
+        // Create score text
+        Text scoreText = new Text("Score: " + score);
+        scoreText.setFont(smallFont);
+        scoreText.setFill(Color.WHITE);
+
+        // Create instruction text
+        Text instructionText = new Text("Enter your name:");
+        instructionText.setFont(smallFont);
+        instructionText.setFill(Color.LIGHTGRAY);
+
+        // Create text input field
+        nameInput = new TextField();
+        nameInput.setPromptText("Player Name");
+        nameInput.setMaxWidth(300);
+        nameInput.setFont(Font.font(customFont.getFamily(), 20));
+        nameInput.setStyle(
+            "-fx-background-color: rgba(60, 50, 40, 0.9); " +
+            "-fx-text-fill: white; " +
+            "-fx-prompt-text-fill: gray; " +
+            "-fx-border-color: #C89664; " +
+            "-fx-border-width: 2; " +
+            "-fx-border-radius: 5; " +
+            "-fx-background-radius: 5; " +
+            "-fx-padding: 8;"
+        );
+
+        // Limit name length
+        nameInput.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.length() > 20) {
+                nameInput.setText(oldVal);
+            }
+        });
+
+        // Create submit instruction
+        Text submitText = new Text("Press ENTER to submit");
+        submitText.setFont(Font.font(customFont.getFamily(), 14));
+        submitText.setFill(Color.LIGHTBLUE);
+
+        // Layout
+        VBox contentBox = new VBox(15);
+        contentBox.setAlignment(Pos.CENTER);
+        contentBox.getChildren().addAll(
+            titleText, rankText, scoreText, instructionText, nameInput, submitText
+        );
+
+        StackPane dialogPane = new StackPane();
+        dialogPane.getChildren().addAll(dialogBox, contentBox);
+
+        StackPane root = new StackPane();
+        root.getChildren().addAll(overlay, dialogPane);
+
+        getContentRoot().getChildren().add(root);
+
+        // Handle input
+        nameInput.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER) {
+                submitName();
+            } else if (e.getCode() == KeyCode.ESCAPE) {
+                cancel();
+            }
+        });
+
+        // Auto-focus the text field
+        nameInput.requestFocus();
+    }
+
+    private void submitName() {
+        String name = nameInput.getText().trim();
+
+        if (name.isEmpty()) {
+            name = "Anonymous";
+        }
+
+        SoundManager.playClickSound();
+
+        if (onSubmit != null) {
+            onSubmit.accept(name);
+        }
+    }
+
+    private void cancel() {
+        SoundManager.playClickSound();
+
+        if (onCancel != null) {
+            onCancel.run();
+        }
+    }
+}
+
