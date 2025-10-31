@@ -8,8 +8,6 @@ import com.birb_birb.blockbounce.core.gamemode.versus.VersusModeGame;
 
 public class PaddleComponent extends Component {
     private final int playerId;
-    private static final double SPEED = 6;
-
     public PaddleComponent(int playerId) {
         this.playerId = playerId;
     }
@@ -36,8 +34,6 @@ public class PaddleComponent extends Component {
                 minX = GameConstants.OFFSET_LEFT + GameConstants.VERSUS_PLAYABLE_WIDTH / 2.0 + GameConstants.OFFSET_MIDDLE;
                 maxX = GameConstants.WINDOW_WIDTH - GameConstants.OFFSET_LEFT - paddleWidth;
             }
-            if (VersusModeGame.INSTANCE.isMovingLeft(playerId)) x -= SPEED;
-            if (VersusModeGame.INSTANCE.isMovingRight(playerId)) x += SPEED;
         } else {
             // Other modes: clamp to full play area
             minX = GameConstants.OFFSET_LEFT;
