@@ -9,6 +9,8 @@ import com.birb_birb.blockbounce.entities.BallComponent;
 import com.birb_birb.blockbounce.utils.saveload.SaveData;
 import com.birb_birb.blockbounce.utils.saveload.StateCapture;
 import com.birb_birb.blockbounce.utils.saveload.SaveGameManager;
+import com.birb_birb.blockbounce.utils.highscore.HighScoreManager;
+import com.birb_birb.blockbounce.ui.dialogs.HighScoreInputDialog;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
@@ -70,6 +72,11 @@ public class ScoreModeGame extends GameManager {
      * @param slot Save slot number (1-3)
      */
     public boolean saveGame(int slot) {
+        // Do not allow saving if game is over or lives <= 0
+        if (getb("gameOver") || geti("lives") <= 0) {
+            displayMessage("Cannot save after Game Over", Color.ORANGE, 1.5, null);
+            return false;
+        }
         SaveData saveData =
             StateCapture.captureScoreModeState(elapsedTime);
         boolean success = SaveGameManager.saveScoreGame(slot, saveData);
@@ -93,6 +100,11 @@ public class ScoreModeGame extends GameManager {
             SaveGameManager.loadScoreGame(slot);
 
         if (saveData != null) {
+            // Do not load saves that represent a finished game
+            if (saveData.getLives() <= 0) {
+                displayMessage("Cannot load: save is Game Over", Color.ORANGE, 1.8, null);
+                return false;
+            }
             StateCapture.RestoreResult result =
                 StateCapture.restoreScoreModeState(saveData);
 
@@ -273,8 +285,10 @@ public class ScoreModeGame extends GameManager {
         int minutes = totalSeconds / 60;
         int seconds = totalSeconds % 60;
 
+        int finalScore = geti("score");
+
         Text gameOverText = new Text("GAME OVER");
-        Text finalScoreText = new Text("Final Score: " + geti("score"));
+        Text finalScoreText = new Text("Final Score: " + finalScore);
         Text finalTimeText = new Text(String.format("Time: %02d:%02d", minutes, seconds));
 
         gameOverText.setFont(gameFont);
@@ -298,9 +312,33 @@ public class ScoreModeGame extends GameManager {
         getGameScene().addUINode(finalScoreText);
         getGameScene().addUINode(finalTimeText);
 
-        // Return to menu after 3 seconds
-        getGameTimer().runOnceAfter(() -> {
-            getGameController().gotoMainMenu();
-        }, javafx.util.Duration.seconds(3));
+        // If it's a high score, prompt for name; otherwise return to menu after a delay
+        if (HighScoreManager.isHighScore(finalScore)) {
+            int rank = HighScoreManager.getScoreRank(finalScore);
+
+            HighScoreInputDialog dialog = new HighScoreInputDialog(
+                finalScore,
+                rank,
+                name -> {
+                    HighScoreManager.addHighScore(name, finalScore);
+                    // Close dialog and go back to main menu shortly after
+                    com.almasb.fxgl.dsl.FXGL.getSceneService().popSubScene();
+                    getGameTimer().runOnceAfter(() -> getGameController().gotoMainMenu(), javafx.util.Duration.seconds(1));
+                },
+                () -> {
+                    // Cancelled: just close dialog and go back
+                    com.almasb.fxgl.dsl.FXGL.getSceneService().popSubScene();
+                    getGameTimer().runOnceAfter(() -> getGameController().gotoMainMenu(), javafx.util.Duration.seconds(1));
+                }
+            );
+
+            com.almasb.fxgl.dsl.FXGL.getSceneService().pushSubScene(dialog);
+        } else {
+            // Return to menu after 3 seconds
+            getGameTimer().runOnceAfter(() -> {
+                getGameController().gotoMainMenu();
+            }, javafx.util.Duration.seconds(3));
+        }
     }
 }
+
