@@ -13,13 +13,17 @@ import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
+import com.birb_birb.blockbounce.api.Movable;
+import com.birb_birb.blockbounce.api.Collidable;
+
 /**
  * Unified Ball component that works for both single-player and versus modes.
  * Uses Strategy Pattern to handle different game modes.
  */
-public class BallComponent extends Component {
 
-    private static final double BASE_SPEED = 3.0;
+public class BallComponent extends Component implements Movable, Collidable {
+
+    private static final double BASE_SPEED = 5.0;
     private Point2D velocity = new Point2D(2.5, -2.5);
     private boolean hasCollidedThisFrame = false;
     private double collisionCooldown = 0;
@@ -430,6 +434,8 @@ public class BallComponent extends Component {
     private void handleOutOfBounds() {
         if (playfield != null) {
             // Versus mode - playfield handles this in VersusModeGame
+            // No action here for individual ball; delegate to playfield/game mode.
+            // nothing to do here for the ball itself
         } else {
             // Single-player mode: only lose life if this is the LAST ball
             // Simply count total balls - if more than 1, just remove this one

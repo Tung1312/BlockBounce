@@ -199,13 +199,13 @@ public class BlockBounceApp extends GameApplication {
         if (GameMode.getCurrentGameMode() != GameMode.VERSUS) {
             if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
                 getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle ->
-                    paddle.translateX(-4)
+                    paddle.translateX(-6)
                 );
             }
 
             if (pressedKeys.contains(KeyCode.RIGHT) || pressedKeys.contains(KeyCode.D)) {
                 getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle ->
-                    paddle.translateX(4)
+                    paddle.translateX(6)
                 );
             }
         }
