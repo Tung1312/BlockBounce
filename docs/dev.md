@@ -29,50 +29,67 @@ BlockBounce/
 │   │   ├── java/
 │   │   │   └── com/birb_birb/blockbounce/
 │   │   │       ├── constants/
-│   │   │       │   ├── EntityType.java                     # Declare entity types
-│   │   │       │   └── GameConstants.java                  # Declare game constants
+│   │   │       │   ├── EntityType.java
+│   │   │       │   ├── GameConstants.java
+│   │   │       │   └── GameMode.java
 │   │   │       ├── core/
 │   │   │       │   ├── gamemode/
-│   │   │       │   │   ├── score                           # Score Mode
+│   │   │       │   │   ├── score/
 │   │   │       │   │   │   └── ScoreModeGame.java
-│   │   │       │   │   ├── story                           # Story Mode
+│   │   │       │   │   ├── story/
 │   │   │       │   │   │   └── StoryModeGame.java
-│   │   │       │   │   └── versus                          # Versus Mode
+│   │   │       │   │   └── versus/
+│   │   │       │   │       ├── Playfield.java
+│   │   │       │   │       ├── PlayfieldFactory.java
 │   │   │       │   │       └── VersusModeGame.java
-│   │   │       │   ├── BlockBounceApp.java                 # Start the game
-│   │   │       │   ├── GameFactory.java                    # Initialize game entities
-│   │   │       │   └── GameManager.java                    # Manage game modes
-│   │   │       ├── entites/
-│   │   │       │   ├── BallComponent.java                  # Game entities
+│   │   │       │   ├── BlockBounceApp.java
+│   │   │       │   ├── GameFactory.java
+│   │   │       │   └── GameManager.java
+│   │   │       ├── entities/
+│   │   │       │   ├── BallComponent.java
 │   │   │       │   ├── BrickComponent.java
 │   │   │       │   ├── PaddleComponent.java
+│   │   │       │   ├── PowerUpComponent.java
 │   │   │       │   └── WallComponent.java
 │   │   │       ├── ui/
-│   │   │       │   ├── menus/                              # Game menus
-│   │   │       │   │    ├── MainMenu.java
-│   │   │       │   │    ├── ScoreModeMenu.java
-│   │   │       │   │    ├── StoryModeMenu.java
-│   │   │       │   │    └── VersusModeMenu.java
-│   │   │       │   └── GameplayButton.java
-│   │   │       └── utils/                                  # Other managers
+│   │   │       │   ├── menus/
+│   │   │       │   │   ├── MainMenu.java
+│   │   │       │   │   ├── ScoreModeMenu.java
+│   │   │       │   │   ├── StoryModeMenu.java
+│   │   │       │   │   └── VersusModeMenu.java
+│   │   │       │   ├── GameplayButtons.java
+│   │   │       │   └── HighScoreInput.java
+│   │   │       └── utils/
 │   │   │           ├── ButtonManager.java
 │   │   │           ├── CursorManager.java
 │   │   │           ├── FontManager.java
 │   │   │           ├── MenuManager.java
-│   │   │           └── SoundManager.java
+│   │   │           ├── SoundManager.java
+│   │   │           ├── TextureManager.java
+│   │   │           ├── physics/
+│   │   │           │   └── BallPhysics.java
+│   │   │           ├── saveload/
+│   │   │           │   ├── SaveData.java
+│   │   │           │   ├── SaveGameManager.java
+│   │   │           │   └── StateCapture.java
+│   │   │           ├── tracker/
+│   │   │           │   └── KeyTracker.java
+│   │   │           └── highscore/
+│   │   │               ├── HighScore.java
+│   │   │               └── HighScoreManager.java
 │   │   └── resources/
 │   │       └── assets/
 │   └── test/
-│       └── java/                               # Unit tests
-├── build.gradle                                # Build configuration
-├── settings.gradle                             # Project settings
-└── gradlew.bat                                 # Gradle wrapper
+│       └── java/
+├── build.gradle
+├── settings.gradle
+└── gradlew.bat
 ```
 
 ### Available Gradle tasks
 
-- `./gradlew build` - Compile and build the project
-- `./gradlew run` - Run the game
-- `./gradlew test` - Run unit tests
-- `./gradlew clean` - Remove build files
-- `./gradlew tasks` - List all available tasks
+- `gradlew.bat build` - Compile and build the project
+- `gradlew.bat run` - Run the game
+- `gradlew.bat test` - Run unit tests
+- `gradlew.bat clean` - Remove build files
+- `gradlew.bat tasks` - List all available tasks
