@@ -449,6 +449,9 @@ public class BallComponent extends Component {
 
             // Decrement lives and check for game over
             inc("lives", -1);
+            if (geti("lives") > 0) {
+                SoundManager.playDeathSound();
+            }
 
             if (geti("lives") <= 0) {
                 set("gameOver", true);

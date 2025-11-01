@@ -6,6 +6,7 @@ import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
 import com.birb_birb.blockbounce.entities.BallComponent;
+import com.birb_birb.blockbounce.utils.SoundManager;
 import com.birb_birb.blockbounce.utils.saveload.SaveData;
 import com.birb_birb.blockbounce.utils.saveload.StateCapture;
 import com.birb_birb.blockbounce.utils.saveload.SaveGameManager;
@@ -272,6 +273,8 @@ public class ScoreModeGame extends GameManager {
 
     @Override
     protected void handleGameOver() {
+        SoundManager.playCompleteSound();
+
         // Add dimming overlay
         getGameScene().addUINode(MenuManager.createDimmingOverlay());
 

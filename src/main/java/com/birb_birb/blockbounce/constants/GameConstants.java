@@ -65,6 +65,11 @@ public class GameConstants {
     public static final String SOUND_CLICK = "click.wav";
     public static final String SOUND_HIT = "hit.wav";
     public static final String SOUND_BREAK = "break.wav";
+    public static final String SOUND_DEATH = "death.wav";
+    public static final String SOUND_LOOSE = "loose.wav";
+    public static final String SOUND_COMPLETE = "complete.wav";
+    public static final String SOUND_ORB = "orb.wav";
+    public static final String SOUND_ANVIL = "anvil.wav";
 
     public static final double BRICK_SIZE = 48;
     public static final double BALL_SIZE = 24;

@@ -5,6 +5,7 @@ import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
+import com.birb_birb.blockbounce.utils.SoundManager;
 import com.birb_birb.blockbounce.utils.saveload.SaveData;
 import com.birb_birb.blockbounce.utils.saveload.StateCapture;
 import com.birb_birb.blockbounce.utils.saveload.SaveGameManager;
@@ -178,6 +179,9 @@ public class StoryModeGame extends GameManager {
         // Auto-save when completing a level
         autoSave();
 
+        // Play complete sound when finishing a story mode level
+        SoundManager.playCompleteSound();
+
         // Show level up message
         displayMessage("LEVEL " + geti("level") + "!", (Color) GameConstants.FONT_COLOR, 2.0, null);
 
@@ -191,5 +195,11 @@ public class StoryModeGame extends GameManager {
         GameFactory.createBricks();
         GameFactory.createPaddle();
         GameFactory.createBall();
+    }
+
+    @Override
+    protected void handleGameOver() {
+        SoundManager.playLooseSound();
+        super.handleGameOver();
     }
 }
