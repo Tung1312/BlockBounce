@@ -6,6 +6,7 @@ import com.birb_birb.blockbounce.ui.menus.ScoreModeMenu;
 import com.birb_birb.blockbounce.ui.menus.StoryModeMenu;
 import com.birb_birb.blockbounce.ui.menus.VersusModeMenu;
 import javafx.scene.control.Button;
+import javafx.util.Duration;
 
 import java.awt.Desktop;
 import java.io.IOException;
@@ -24,32 +25,16 @@ public class ButtonManager {
         button.setMinSize(52, 52);
         button.setMaxSize(52, 52);
 
-        button.setStyle(GameConstants.BASE_STYLE);
+        button.getStyleClass().add("game-icon-button");
 
         button.setOnMouseEntered(e -> {
             if (!button.isPressed()) {
                 SoundManager.playHoverSound();
-                button.setStyle(GameConstants.HOVER_STYLE);
-            }
-        });
-
-        button.setOnMouseExited(e -> {
-            if (!button.isPressed()) {
-                button.setStyle(GameConstants.BASE_STYLE);
             }
         });
 
         button.setOnMousePressed(e -> {
             SoundManager.playClickSound();
-            button.setStyle(GameConstants.BASE_STYLE);
-        });
-
-        button.setOnMouseReleased(e -> {
-            if (button.isHover()) {
-                button.setStyle(GameConstants.HOVER_STYLE);
-            } else {
-                button.setStyle(GameConstants.BASE_STYLE);
-            }
         });
 
         return button;
@@ -75,12 +60,13 @@ public class ButtonManager {
         // ref: https://codingtechroom.com/question/-javafx-open-url-hyperlink-browser
         String githubUrl = "https://github.com/Tung1312/BlockBounce";
 
-        try {
-            Desktop.getDesktop().browse(new URI(githubUrl));
-        } catch (IOException | URISyntaxException e) {
-            getNotificationService().pushNotification("Could not open link. Please visit: " + githubUrl);
-            e.printStackTrace();
-        }
+        runOnce(() -> {
+            try {
+                Desktop.getDesktop().browse(new URI(githubUrl));
+            } catch (Exception e) {
+                getNotificationService().pushNotification("Could not open link");
+            }
+        }, Duration.seconds(0));
     }
 
     public static void goToPreviousScene() {
@@ -113,6 +99,7 @@ public class ButtonManager {
     }
 
     public static void exitToMainMenuFromGame() {
+        getGameController().pauseEngine();
         getDialogService().showConfirmationBox("Are you sure you want to exit to the main menu?", answer -> {
             if (answer) {
                 getGameController().gotoMainMenu();

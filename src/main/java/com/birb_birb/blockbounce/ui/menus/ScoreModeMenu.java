@@ -156,7 +156,7 @@ public class ScoreModeMenu extends MenuManager {
             // Name as Label with ellipsis when exceeding 250px column width
             Label rName = new Label(name);
             rName.setFont(rowFont);
-            rName.setStyle("-fx-text-fill: rgb(62, 32, 31);");
+            rName.getStyleClass().add("game-label");
             rName.setTextOverrun(OverrunStyle.ELLIPSIS);
             rName.setAlignment(Pos.CENTER_LEFT);
             rName.setMinWidth(250);

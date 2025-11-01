@@ -61,9 +61,6 @@ public class GameConstants {
     public static final double BUTTON_HEIGHT = 50;
     public static final double BUTTON_SPACING = 70;
 
-    public static final String BASE_STYLE = "-fx-background-color: rgba(255, 255, 255, 0);";
-    public static final String HOVER_STYLE = "-fx-background-color: rgba(255, 255, 255, 0.36);";
-
     public static final String SOUND_HOVER = "hover.wav";
     public static final String SOUND_CLICK = "click.wav";
     public static final String SOUND_HIT = "hit.wav";
