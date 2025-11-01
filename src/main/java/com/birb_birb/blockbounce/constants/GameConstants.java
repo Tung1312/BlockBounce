@@ -41,6 +41,9 @@ public class GameConstants {
     public static final String PADDLE_TEXTURE = "/entities/paddle.png";
     public static final String BALL_TEXTURE = "/entities/ball.png";
     public static final String BACKGROUND_TEXTURE = "/entities/background.png";
+    public static final String POWERUP_MULTIPLY_TEXTURE = "/entities/powerup/multiply.png";
+    public static final String POWERUP_SHRINK_TEXTURE = "/entities/powerup/shrink.png";
+    public static final String POWERUP_SPEED_TEXTURE = "/entities/powerup/speed.png";
 
     public static final String MAIN_FONT_PATH = "/assets/fonts/Daydream.ttf";
     public static final String SECONDARY_FONT_PATH = "/assets/fonts/MinecraftTen.ttf";

@@ -210,7 +210,24 @@ public final class GameFactory {
      * playerId = 0 for neutral, >0 to target a specific player (useful in versus)
      */
     public static Entity createPowerUp(double x, double y, PowerUpComponent.PowerUpType type, int playerId) {
-        Texture tex = getAssetLoader().loadTexture(GameConstants.BALL_TEXTURE);
+        // Select texture based on power-up type
+        String texturePath;
+        switch (type) {
+            case DOUBLE_BALL:
+                texturePath = GameConstants.POWERUP_MULTIPLY_TEXTURE;
+                break;
+            case SMALL_PADDLE:
+                texturePath = GameConstants.POWERUP_SHRINK_TEXTURE;
+                break;
+            case FAST_BALL:
+                texturePath = GameConstants.POWERUP_SPEED_TEXTURE;
+                break;
+            default:
+                texturePath = GameConstants.BALL_TEXTURE;
+                break;
+        }
+
+        Texture tex = getAssetLoader().loadTexture(texturePath);
         tex.setFitWidth(20);
         tex.setFitHeight(20);
         tex.setPreserveRatio(false);
