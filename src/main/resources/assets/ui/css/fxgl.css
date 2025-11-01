@@ -1,0 +1,63 @@
+/* ref: https://github.com/AlmasB/FXGL/wiki/Assets */
+/* ===== Game Icon Buttons ===== */
+.game-icon-button {
+    -fx-background-color: rgba(255, 255, 255, 0);
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-cursor: hand;
+    -fx-pref-width: 52;
+    -fx-pref-height: 52;
+    -fx-min-width: 52;
+    -fx-min-height: 52;
+    -fx-max-width: 52;
+    -fx-max-height: 52;
+}
+
+.game-icon-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.36);
+}
+
+.game-icon-button:pressed {
+    -fx-background-color: rgba(255, 255, 255, 0);
+}
+
+/* ===== Menu Buttons ===== */
+.game-menu-button {
+    -fx-background-color: rgba(255, 255, 255, 0);
+    -fx-background-radius: 6;
+    -fx-text-fill: rgb(62, 32, 31);
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+    -fx-cursor: hand;
+}
+
+.game-menu-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0);
+    -fx-text-fill: white;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.game-menu-button:pressed {
+    -fx-background-color: rgba(255, 255, 255, 0);
+    -fx-text-fill: rgb(62, 32, 31);
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+}
+
+/* ===== Labels ===== */
+.game-label {
+    -fx-text-fill: rgb(62, 32, 31);
+}
+
+/* ===== Dimming Overlay ===== */
+.dimming-overlay {
+    -fx-fill: rgba(0, 0, 0, 0.7);
+}
+
+/* ===== Background Pane ===== */
+.game-background-fallback {
+    -fx-background-color: #2c3e50;
+}

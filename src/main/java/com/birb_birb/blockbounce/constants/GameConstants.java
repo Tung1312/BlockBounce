@@ -41,6 +41,9 @@ public class GameConstants {
     public static final String PADDLE_TEXTURE = "/entities/paddle.png";
     public static final String BALL_TEXTURE = "/entities/ball.png";
     public static final String BACKGROUND_TEXTURE = "/entities/background.png";
+    public static final String POWERUP_MULTIPLY_TEXTURE = "/entities/powerup/multiply.png";
+    public static final String POWERUP_SHRINK_TEXTURE = "/entities/powerup/shrink.png";
+    public static final String POWERUP_SPEED_TEXTURE = "/entities/powerup/speed.png";
 
     public static final String MAIN_FONT_PATH = "/assets/fonts/Daydream.ttf";
     public static final String SECONDARY_FONT_PATH = "/assets/fonts/MinecraftTen.ttf";
@@ -58,13 +61,15 @@ public class GameConstants {
     public static final double BUTTON_HEIGHT = 50;
     public static final double BUTTON_SPACING = 70;
 
-    public static final String BASE_STYLE = "-fx-background-color: rgba(255, 255, 255, 0);";
-    public static final String HOVER_STYLE = "-fx-background-color: rgba(255, 255, 255, 0.36);";
-
     public static final String SOUND_HOVER = "hover.wav";
     public static final String SOUND_CLICK = "click.wav";
     public static final String SOUND_HIT = "hit.wav";
     public static final String SOUND_BREAK = "break.wav";
+    public static final String SOUND_DEATH = "death.wav";
+    public static final String SOUND_LOOSE = "loose.wav";
+    public static final String SOUND_COMPLETE = "complete.wav";
+    public static final String SOUND_ORB = "orb.wav";
+    public static final String SOUND_ANVIL = "anvil.wav";
 
     public static final double BRICK_SIZE = 48;
     public static final double BALL_SIZE = 24;

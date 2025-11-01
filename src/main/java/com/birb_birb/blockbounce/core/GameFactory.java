@@ -7,11 +7,11 @@ import com.almasb.fxgl.texture.Texture;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.entities.*;
+import com.birb_birb.blockbounce.utils.TextureManager;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
-import static com.almasb.fxgl.dsl.FXGLForKtKt.getAssetLoader;
 import static com.birb_birb.blockbounce.constants.GameConstants.*;
 
 public final class GameFactory {
@@ -19,11 +19,11 @@ public final class GameFactory {
     private GameFactory() {}
 
     public static Entity createBackground() {
-        Texture backgroundTexture = getAssetLoader().loadTexture(GameConstants.BACKGROUND_TEXTURE);
-        backgroundTexture.setFitWidth(GameConstants.WINDOW_WIDTH);
-        backgroundTexture.setFitHeight(GameConstants.WINDOW_HEIGHT);
-        backgroundTexture.setPreserveRatio(false);
-        backgroundTexture.setSmooth(false);
+        Texture backgroundTexture = TextureManager.loadTexture(
+                GameConstants.BACKGROUND_TEXTURE,
+                GameConstants.WINDOW_WIDTH,
+                GameConstants.WINDOW_HEIGHT
+        );
 
         return entityBuilder()
                 .type(EntityType.WALL)
@@ -34,11 +34,11 @@ public final class GameFactory {
     }
 
     public static Entity createBall() {
-        Texture ballTexture = getAssetLoader().loadTexture(GameConstants.BALL_TEXTURE);
-        ballTexture.setFitWidth(GameConstants.BALL_SIZE);
-        ballTexture.setFitHeight(GameConstants.BALL_SIZE);
-        ballTexture.setPreserveRatio(false);
-        ballTexture.setSmooth(false);
+        Texture ballTexture = TextureManager.loadTexture(
+                GameConstants.BALL_TEXTURE,
+                GameConstants.BALL_SIZE,
+                GameConstants.BALL_SIZE
+        );
 
         Entity e = entityBuilder()
                 .type(EntityType.BALL)
@@ -64,11 +64,11 @@ public final class GameFactory {
     }
 
     public static Entity createPaddle(double x, double y, int playerId) {
-        Texture paddleTexture = getAssetLoader().loadTexture(GameConstants.PADDLE_TEXTURE);
-        paddleTexture.setFitWidth(GameConstants.PADDLE_WIDTH);
-        paddleTexture.setFitHeight(GameConstants.PADDLE_HEIGHT);
-        paddleTexture.setPreserveRatio(false);
-        paddleTexture.setSmooth(false);
+        Texture paddleTexture = TextureManager.loadTexture(
+                GameConstants.PADDLE_TEXTURE,
+                GameConstants.PADDLE_WIDTH,
+                GameConstants.PADDLE_HEIGHT
+        );
 
         Entity e = entityBuilder()
                 .type(EntityType.PADDLE)
@@ -96,11 +96,7 @@ public final class GameFactory {
 
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
-                Texture texture = baseTexture.copy();
-                texture.setPreserveRatio(false);
-                texture.setSmooth(false);
-                texture.setFitWidth(BRICK_SIZE);
-                texture.setFitHeight(BRICK_SIZE);
+                Texture texture = TextureManager.loadTextureCopy(baseTexture, BRICK_SIZE, BRICK_SIZE);
 
                 entityBuilder()
                         .type(EntityType.BRICK)
@@ -120,11 +116,7 @@ public final class GameFactory {
      */
     public static Entity createBrick(double x, double y, Color color) {
         Texture baseTexture = getAssetLoader().loadTexture(GameConstants.BRICK_TEXTURE);
-        Texture texture = baseTexture.copy();
-        texture.setPreserveRatio(false);
-        texture.setSmooth(false);
-        texture.setFitWidth(BRICK_SIZE);
-        texture.setFitHeight(BRICK_SIZE);
+        Texture texture = TextureManager.loadTextureCopy(baseTexture, BRICK_SIZE, BRICK_SIZE);
 
         return entityBuilder()
                 .type(EntityType.BRICK)
@@ -161,11 +153,11 @@ public final class GameFactory {
     }
 
     public static Entity createStoryModeFrame() {
-        Texture frameTexture = getAssetLoader().loadTexture(STORY_MODE_FRAME);
-        frameTexture.setFitWidth(WINDOW_WIDTH);
-        frameTexture.setFitHeight(WINDOW_HEIGHT);
-        frameTexture.setPreserveRatio(false);
-        frameTexture.setSmooth(false);
+        Texture frameTexture = TextureManager.loadTexture(
+                STORY_MODE_FRAME,
+                WINDOW_WIDTH,
+                WINDOW_HEIGHT
+        );
 
         return entityBuilder()
                 .type(EntityType.WALL)
@@ -176,11 +168,11 @@ public final class GameFactory {
     }
 
     public static Entity createScoreModeFrame() {
-        Texture frameTexture = getAssetLoader().loadTexture(SCORE_MODE_FRAME);
-        frameTexture.setFitWidth(WINDOW_WIDTH);
-        frameTexture.setFitHeight(WINDOW_HEIGHT);
-        frameTexture.setPreserveRatio(false);
-        frameTexture.setSmooth(false);
+        Texture frameTexture = TextureManager.loadTexture(
+                SCORE_MODE_FRAME,
+                WINDOW_WIDTH,
+                WINDOW_HEIGHT
+        );
 
         return entityBuilder()
                 .type(EntityType.WALL)
@@ -191,11 +183,11 @@ public final class GameFactory {
     }
 
     public static Entity createVersusModeFrame() {
-        Texture frameTexture = getAssetLoader().loadTexture(VERSUS_MODE_FRAME);
-        frameTexture.setFitWidth(WINDOW_WIDTH);
-        frameTexture.setFitHeight(WINDOW_HEIGHT);
-        frameTexture.setPreserveRatio(false);
-        frameTexture.setSmooth(false);
+        Texture frameTexture = TextureManager.loadTexture(
+                VERSUS_MODE_FRAME,
+                WINDOW_WIDTH,
+                WINDOW_HEIGHT
+        );
 
         return entityBuilder()
                 .type(EntityType.WALL)
@@ -210,11 +202,24 @@ public final class GameFactory {
      * playerId = 0 for neutral, >0 to target a specific player (useful in versus)
      */
     public static Entity createPowerUp(double x, double y, PowerUpComponent.PowerUpType type, int playerId) {
-        Texture tex = getAssetLoader().loadTexture(GameConstants.BALL_TEXTURE);
-        tex.setFitWidth(20);
-        tex.setFitHeight(20);
-        tex.setPreserveRatio(false);
-        tex.setSmooth(false);
+        // Select texture based on power-up type
+        String texturePath;
+        switch (type) {
+            case DOUBLE_BALL:
+                texturePath = GameConstants.POWERUP_MULTIPLY_TEXTURE;
+                break;
+            case SMALL_PADDLE:
+                texturePath = GameConstants.POWERUP_SHRINK_TEXTURE;
+                break;
+            case FAST_BALL:
+                texturePath = GameConstants.POWERUP_SPEED_TEXTURE;
+                break;
+            default:
+                texturePath = GameConstants.BALL_TEXTURE;
+                break;
+        }
+
+        Texture tex = TextureManager.loadTexture(texturePath, 32, 32);
 
         Entity e = entityBuilder()
                 .type(EntityType.POWERUP)

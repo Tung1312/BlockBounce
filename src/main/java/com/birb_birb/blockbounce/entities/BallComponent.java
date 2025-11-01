@@ -433,6 +433,9 @@ public class BallComponent extends Component {
 
             // This is the last ball - lose life and reset everything
             inc("lives", -1);
+            if (geti("lives") > 0) {
+                SoundManager.playDeathSound();
+            }
 
             if (geti("lives") <= 0) {
                 set("gameOver", true);

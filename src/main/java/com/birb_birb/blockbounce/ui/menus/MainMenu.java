@@ -77,7 +77,7 @@ public class MainMenu extends MenuManager {
 
         // How to play button
         Button howToPlayButton = createButton();
-        howToPlayButton.setOnAction(e -> ButtonManager.showHowToPlay());
+        howToPlayButton.setOnAction(e -> ButtonManager.showGithub());
 
         hbox.getChildren().addAll(settingButton, howToPlayButton);
 
@@ -92,32 +92,16 @@ public class MainMenu extends MenuManager {
         button.setPrefWidth(ICON_BUTTON_SIZE);
         button.setPrefHeight(ICON_BUTTON_SIZE);
 
-        button.setStyle(GameConstants.BASE_STYLE);
+        button.getStyleClass().add("game-icon-button");
 
         button.setOnMouseEntered(e -> {
             if (!button.isPressed()) {
                 SoundManager.playHoverSound();
-                button.setStyle(GameConstants.HOVER_STYLE);
-            }
-        });
-
-        button.setOnMouseExited(e -> {
-            if (!button.isPressed()) {
-                button.setStyle(GameConstants.BASE_STYLE);
             }
         });
 
         button.setOnMousePressed(e -> {
             SoundManager.playClickSound();
-            button.setStyle(GameConstants.BASE_STYLE);
-        });
-
-        button.setOnMouseReleased(e -> {
-            if (button.isHover()) {
-                button.setStyle(GameConstants.HOVER_STYLE);
-            } else {
-                button.setStyle(GameConstants.BASE_STYLE);
-            }
         });
 
         return button;
