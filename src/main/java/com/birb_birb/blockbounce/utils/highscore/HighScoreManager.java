@@ -18,9 +18,30 @@ public class HighScoreManager {
 
     /**
      * Add a new high score entry
+     * If the player name already exists, only replace it if the new score is higher
      */
     public static boolean addHighScore(String playerName, int score) {
         List<HighScore> highScores = loadHighScores();
+
+        // Check if player already has a score
+        HighScore existingScore = null;
+        for (HighScore hs : highScores) {
+            if (hs.getPlayerName().equalsIgnoreCase(playerName)) {
+                existingScore = hs;
+                break;
+            }
+        }
+
+        // If player exists and new score is higher, remove the old entry
+        // If player exists but new score is lower or equal, don't add it
+        if (existingScore != null) {
+            if (score > existingScore.getScore()) {
+                highScores.remove(existingScore);
+            } else {
+                // New score is not better, don't save it
+                return false;
+            }
+        }
 
         // Add new score
         highScores.add(new HighScore(playerName, score));
