@@ -77,7 +77,7 @@ public class MainMenu extends MenuManager {
 
         // How to play button
         Button howToPlayButton = createButton();
-        howToPlayButton.setOnAction(e -> ButtonManager.showHowToPlay());
+        howToPlayButton.setOnAction(e -> ButtonManager.showGithub());
 
         hbox.getChildren().addAll(settingButton, howToPlayButton);
 

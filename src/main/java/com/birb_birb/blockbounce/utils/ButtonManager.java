@@ -5,15 +5,12 @@ import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.ui.menus.ScoreModeMenu;
 import com.birb_birb.blockbounce.ui.menus.StoryModeMenu;
 import com.birb_birb.blockbounce.ui.menus.VersusModeMenu;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 
-import java.util.Objects;
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -74,34 +71,16 @@ public class ButtonManager {
         getGameController().gotoGameMenu();
     }
 
-    public static void showHowToPlay() {
-        Stage howToPlayStage = new Stage();
-        howToPlayStage.setTitle("How to Play");
-
-        StackPane layout = new StackPane();
-        layout.setStyle("-fx-background-color: #2c3e50;");
+    public static void showGithub() {
+        // ref: https://codingtechroom.com/question/-javafx-open-url-hyperlink-browser
+        String githubUrl = "https://github.com/Tung1312/BlockBounce";
 
         try {
-            Image howToPlayImage = new Image(
-                Objects.requireNonNull(
-                    ButtonManager.class.getResourceAsStream(GameConstants.HOW_TO_PLAY)
-                )
-            );
-            ImageView imageView = new ImageView(howToPlayImage);
-            imageView.setPreserveRatio(true);
-            imageView.setFitWidth(1080);
-            layout.getChildren().add(imageView);
-        } catch (Exception e) {
-            // Fallback if image not found
-            javafx.scene.text.Text text = new javafx.scene.text.Text("How to Play image not found");
-            text.setFill(Color.WHITE);
-            text.setStyle("-fx-font-size: 24px;");
-            layout.getChildren().add(text);
+            Desktop.getDesktop().browse(new URI(githubUrl));
+        } catch (IOException | URISyntaxException e) {
+            getNotificationService().pushNotification("Could not open link. Please visit: " + githubUrl);
+            e.printStackTrace();
         }
-
-        Scene scene = new Scene(layout, 1080, 720);
-        howToPlayStage.setScene(scene);
-        howToPlayStage.show();
     }
 
     public static void goToPreviousScene() {
