@@ -1,5 +1,6 @@
 package com.birb_birb.blockbounce.core.gamemode.score;
 
+import com.almasb.fxgl.dsl.FXGL;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.EntityType;
@@ -310,32 +311,85 @@ public class ScoreModeGame extends GameManager {
         getGameScene().addUINode(finalScoreText);
         getGameScene().addUINode(finalTimeText);
 
+        getGameController().pauseEngine();
+
         // If it's a high score, prompt for name; otherwise return to menu after a delay
         if (HighScoreManager.isHighScore(finalScore)) {
             int rank = HighScoreManager.getScoreRank(finalScore);
 
-            HighScoreInput dialog = new HighScoreInput(
-                finalScore,
-                rank,
-                name -> {
-                    HighScoreManager.addHighScore(name, finalScore);
-                    // Close dialog and go back to main menu shortly after
-                    com.almasb.fxgl.dsl.FXGL.getSceneService().popSubScene();
-                    getGameTimer().runOnceAfter(() -> getGameController().gotoMainMenu(), javafx.util.Duration.seconds(1));
-                },
-                () -> {
-                    // Cancelled: just close dialog and go back
-                    com.almasb.fxgl.dsl.FXGL.getSceneService().popSubScene();
-                    getGameTimer().runOnceAfter(() -> getGameController().gotoMainMenu(), javafx.util.Duration.seconds(1));
+            // display score for 3s then open dialog to enter name
+            new Thread(() -> {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
-            );
 
-            com.almasb.fxgl.dsl.FXGL.getSceneService().pushSubScene(dialog);
+                javafx.application.Platform.runLater(() -> {
+                    HighScoreInput dialog = new HighScoreInput(
+                        finalScore,
+                        rank,
+                        name -> {
+                            HighScoreManager.addHighScore(name, finalScore);
+                            FXGL.getSceneService().popSubScene();
+
+                            Text savedText = new Text("High Score Saved!");
+                            savedText.setFont(displayFont);
+                            savedText.setFill(Color.LIGHTGREEN);
+                            savedText.setTranslateX((double) GameConstants.WINDOW_WIDTH / 2 - 150);
+                            savedText.setTranslateY((double) GameConstants.WINDOW_HEIGHT / 2 + 120);
+                            getGameScene().addUINode(savedText);
+
+                            // wait 3s then return to menu
+                            new Thread(() -> {
+                                try {
+                                    Thread.sleep(3000);
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                }
+
+                                javafx.application.Platform.runLater(() -> {
+                                    getGameController().resumeEngine();
+                                    getGameController().gotoMainMenu();
+                                });
+                            }).start();
+                        },
+                        () -> {
+                            // if cancelled: close dialog and wait 1s before going back
+                            FXGL.getSceneService().popSubScene();
+
+                            new Thread(() -> {
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                }
+
+                                javafx.application.Platform.runLater(() -> {
+                                    getGameController().resumeEngine();
+                                    getGameController().gotoMainMenu();
+                                });
+                            }).start();
+                        }
+                    );
+
+                    FXGL.getSceneService().pushSubScene(dialog);
+                });
+            }).start();
         } else {
-            // Return to menu after 3 seconds
-            getGameTimer().runOnceAfter(() -> {
-                getGameController().gotoMainMenu();
-            }, javafx.util.Duration.seconds(3));
+            // Non-high score: wait 3 seconds then return to menu
+            new Thread(() -> {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+
+                javafx.application.Platform.runLater(() -> {
+                    getGameController().resumeEngine();
+                    getGameController().gotoMainMenu();
+                });
+            }).start();
         }
     }
 }

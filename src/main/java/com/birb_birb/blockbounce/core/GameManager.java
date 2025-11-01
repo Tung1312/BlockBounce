@@ -12,6 +12,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.FontWeight;
 
+import static com.almasb.fxgl.dsl.FXGL.getGameController;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 import static javafx.scene.paint.Color.rgb;
 
