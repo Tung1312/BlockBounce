@@ -205,8 +205,8 @@ public class BlockBounceApp extends GameApplication {
         }
 
         // Handle paddle movement based on manually tracked keys - reduced speed to 4 for smoother control
-        // Skip this in Versus mode - paddles are controlled independently there
         if (GameMode.getCurrentGameMode() != GameMode.VERSUS) {
+            // Single player modes - move all paddles
             if (pressedKeys.contains(KeyCode.LEFT) || pressedKeys.contains(KeyCode.A)) {
                 getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle ->
                     paddle.translateX(-6)
@@ -218,6 +218,35 @@ public class BlockBounceApp extends GameApplication {
                     paddle.translateX(6)
                 );
             }
+        } else {
+            // Versus mode - move paddles independently based on player ID
+            getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(paddle -> {
+                int paddleId = 1; // default
+                try {
+                    paddleId = paddle.getInt("playerId");
+                } catch (Exception e) {
+                    // Use default
+                }
+
+                // Player 1 controls: A and D
+                if (paddleId == 1) {
+                    if (pressedKeys.contains(KeyCode.A)) {
+                        paddle.translateX(-6);
+                    }
+                    if (pressedKeys.contains(KeyCode.D)) {
+                        paddle.translateX(6);
+                    }
+                }
+                // Player 2 controls: LEFT and RIGHT arrow keys
+                else if (paddleId == 2) {
+                    if (pressedKeys.contains(KeyCode.LEFT)) {
+                        paddle.translateX(-6);
+                    }
+                    if (pressedKeys.contains(KeyCode.RIGHT)) {
+                        paddle.translateX(6);
+                    }
+                }
+            });
         }
     }
 

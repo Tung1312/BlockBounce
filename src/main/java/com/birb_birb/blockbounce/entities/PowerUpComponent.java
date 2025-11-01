@@ -254,3 +254,4 @@ public class PowerUpComponent extends Component {
         }, Duration.seconds(8));
     }
 }
+
