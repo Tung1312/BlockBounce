@@ -78,60 +78,20 @@ public abstract class MenuManager extends FXGLMenu {
         final Font customFont = FontManager.getMainFont();
         button.setFont(customFont);
         button.getStyleClass().clear();
+        button.getStyleClass().add("game-menu-button");
 
         String fontFamily = customFont != null ? customFont.getFamily() : "Arial";
-
-        // Declare custom button styles:
-        String baseStyle = "-fx-font-family: '" + fontFamily + "';" +
-                "-fx-font-size: " + (customFont != null ? customFont.getSize() : 16) + "px;" +
-                "-fx-background-color: rgba(255,255,255,0);" +
-                "-fx-background-radius: 6;" +
-                "-fx-text-fill: rgb(62, 32, 31);" +
-                "-fx-font-weight: bold;" +
-                "-fx-alignment: center;" +
-                "-fx-text-alignment: center;";
-
-        String hoverStyle = "-fx-font-family: '" + fontFamily + "';" +
-                "-fx-font-size: " + (customFont != null ? customFont.getSize() : 16) + "px;" +
-                "-fx-background-color: rgba(255,255,255,0);" +
-                "-fx-background-radius: 6;" +
-                "-fx-text-fill: white;" +
-                "-fx-font-weight: bold;" +
-                "-fx-alignment: center;" +
-                "-fx-text-alignment: center;" +
-                "-fx-scale-x: 1.05;" +  // Scale when
-                "-fx-scale-y: 1.05;";    // hovered
-
-        button.setStyle(baseStyle);
+        double fontSize = customFont != null ? customFont.getSize() : 16;
+        button.setStyle("-fx-font-family: '" + fontFamily + "'; -fx-font-size: " + fontSize + "px;");
 
         button.setOnMouseEntered(e -> {
             if (!button.isPressed()) {
                 SoundManager.playHoverSound();
-                button.setStyle(hoverStyle);
-                button.setFont(customFont);
-            }
-        });
-
-        button.setOnMouseExited(e -> {
-            if (!button.isPressed()) {
-                button.setStyle(baseStyle);
-                button.setFont(customFont);
             }
         });
 
         button.setOnMousePressed(e -> {
             SoundManager.playClickSound();
-            button.setStyle(baseStyle);
-            button.setFont(customFont);
-        });
-
-        button.setOnMouseReleased(e -> {
-            if (button.isHover()) {
-                button.setStyle(hoverStyle);
-            } else {
-                button.setStyle(baseStyle);
-            }
-            button.setFont(customFont);
         });
 
         return button;

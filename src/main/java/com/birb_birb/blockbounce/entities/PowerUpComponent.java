@@ -7,7 +7,8 @@ import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.gamemode.versus.Playfield;
-import com.birb_birb.blockbounce.utils.TextureUtils;
+import com.birb_birb.blockbounce.utils.SoundManager;
+import com.birb_birb.blockbounce.utils.TextureManager;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.util.Duration;
@@ -70,6 +71,9 @@ public class PowerUpComponent extends Component {
     }
 
     private void applyEffect(Entity paddle, int paddleId) {
+        // Play orb sound when catching a power-up
+        SoundManager.playOrbSound();
+
         switch (type) {
             case DOUBLE_BALL:
                 applyDoubleBall(paddleId);
@@ -135,7 +139,7 @@ public class PowerUpComponent extends Component {
                 newBall = entityBuilder()
                     .type(EntityType.BALL)
                     .at(bx, by)
-                    .view(TextureUtils.loadTexture(
+                    .view(TextureManager.loadTexture(
                         GameConstants.BALL_TEXTURE,
                         GameConstants.BALL_SIZE,
                         GameConstants.BALL_SIZE))

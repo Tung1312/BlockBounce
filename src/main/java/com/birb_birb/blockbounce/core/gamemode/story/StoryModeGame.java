@@ -5,6 +5,8 @@ import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
+import com.birb_birb.blockbounce.utils.MenuManager;
+import com.birb_birb.blockbounce.utils.SoundManager;
 import com.birb_birb.blockbounce.utils.saveload.SaveData;
 import com.birb_birb.blockbounce.utils.saveload.StateCapture;
 import com.birb_birb.blockbounce.utils.saveload.SaveGameManager;
@@ -178,6 +180,9 @@ public class StoryModeGame extends GameManager {
         // Auto-save when completing a level
         autoSave();
 
+        // Play complete sound when finishing a story mode level
+        SoundManager.playCompleteSound();
+
         // Show level up message
         displayMessage("LEVEL " + geti("level") + "!", (Color) GameConstants.FONT_COLOR, 2.0, null);
 
@@ -191,5 +196,52 @@ public class StoryModeGame extends GameManager {
         GameFactory.createBricks();
         GameFactory.createPaddle();
         GameFactory.createBall();
+    }
+
+    @Override
+    protected void handleGameOver() {
+        SoundManager.playLooseSound();
+        getGameScene().addUINode(MenuManager.createDimmingOverlay());
+
+        javafx.scene.text.Text gameOverText = new javafx.scene.text.Text("GAME OVER");
+        javafx.scene.text.Text finalScoreText = new javafx.scene.text.Text("Final Score: " + geti("score"));
+        javafx.scene.text.Text finalLevelText = new javafx.scene.text.Text("Level Reached: " + geti("level"));
+
+        gameOverText.setFont(displayFont);
+        finalScoreText.setFont(displayFont);
+        finalLevelText.setFont(displayFont);
+
+        gameOverText.setFill(Color.RED);
+        finalScoreText.setFill(Color.WHITE);
+        finalLevelText.setFill(Color.CYAN);
+
+        gameOverText.setTranslateX((double) GameConstants.WINDOW_WIDTH / 2 - 150);
+        gameOverText.setTranslateY((double) GameConstants.WINDOW_HEIGHT / 2 - 50);
+
+        finalScoreText.setTranslateX((double) GameConstants.WINDOW_WIDTH / 2 - 150);
+        finalScoreText.setTranslateY((double) GameConstants.WINDOW_HEIGHT / 2);
+
+        finalLevelText.setTranslateX((double) GameConstants.WINDOW_WIDTH / 2 - 150);
+        finalLevelText.setTranslateY((double) GameConstants.WINDOW_HEIGHT / 2 + 50);
+
+        getGameScene().addUINode(gameOverText);
+        getGameScene().addUINode(finalScoreText);
+        getGameScene().addUINode(finalLevelText);
+
+        getGameController().pauseEngine();
+
+        // wait 3s before return to menu
+        new Thread(() -> {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            javafx.application.Platform.runLater(() -> {
+                getGameController().resumeEngine();
+                getGameController().gotoMainMenu();
+            });
+        }).start();
     }
 }

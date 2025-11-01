@@ -7,9 +7,9 @@ import static com.almasb.fxgl.dsl.FXGLForKtKt.getAssetLoader;
 /**
  * Utility class for texture loading operations.
  */
-public class TextureUtils {
+public class TextureManager {
 
-    private TextureUtils() {}
+    private TextureManager() {}
 
     /**
      * Load and configure a texture with standard settings
@@ -43,4 +43,3 @@ public class TextureUtils {
         return texture;
     }
 }
-

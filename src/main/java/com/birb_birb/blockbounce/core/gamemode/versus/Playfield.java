@@ -8,8 +8,7 @@ import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.entities.BallComponent;
 import com.birb_birb.blockbounce.entities.BrickComponent;
 import com.birb_birb.blockbounce.entities.PaddleComponent;
-import com.birb_birb.blockbounce.utils.TextureUtils;
-import javafx.geometry.Point2D;
+import com.birb_birb.blockbounce.utils.TextureManager;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -117,7 +116,7 @@ public class Playfield {
         this.paddle = entityBuilder()
                 .type(EntityType.PADDLE)
                 .at(paddleX, paddleY)
-                .view(TextureUtils.loadTexture(GameConstants.PADDLE_TEXTURE,
+                .view(TextureManager.loadTexture(GameConstants.PADDLE_TEXTURE,
                         GameConstants.PADDLE_WIDTH,
                         GameConstants.PADDLE_HEIGHT))
                 .bbox(new HitBox(BoundingShape.box(GameConstants.PADDLE_WIDTH,
@@ -140,7 +139,7 @@ public class Playfield {
         this.ball = entityBuilder()
                 .type(EntityType.BALL)
                 .at(ballX, ballY)
-                .view(TextureUtils.loadTexture(GameConstants.BALL_TEXTURE,
+                .view(TextureManager.loadTexture(GameConstants.BALL_TEXTURE,
                         GameConstants.BALL_SIZE,
                         GameConstants.BALL_SIZE))
                 .bbox(new HitBox(BoundingShape.circle(GameConstants.BALL_SIZE / 2)))
@@ -163,7 +162,7 @@ public class Playfield {
                         .type(EntityType.BRICK)
                         .at(offsetX + col * GameConstants.BRICK_SIZE,
                                 offsetY + row * GameConstants.BRICK_SIZE)
-                        .view(TextureUtils.loadTextureCopy(baseTexture,
+                        .view(TextureManager.loadTextureCopy(baseTexture,
                                 GameConstants.BRICK_SIZE,
                                 GameConstants.BRICK_SIZE))
                         .bbox(new HitBox(BoundingShape.box(GameConstants.BRICK_SIZE,

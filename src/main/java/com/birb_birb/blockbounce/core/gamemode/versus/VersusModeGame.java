@@ -251,16 +251,29 @@ public class VersusModeGame extends GameManager {
                 msgColor = Color.ORANGE;
             }
 
-            // Enqueue the final result message and, when it finishes (including
-            // the 3s inter-message gap), set gameOver and return to main menu.
             endScheduled = true;
-            displayMessage(resultMsg, msgColor, 3.0, () -> {
+
+            getGameController().pauseEngine();
+
+            displayMessage(resultMsg, msgColor, 3.0, null);
+
+            //wait then return to menu
+            new Thread(() -> {
                 try {
-                    set("gameOver", true);
-                    getGameController().gotoMainMenu();
-                } catch (Exception ignored) {
+                    Thread.sleep(6000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
-            });
+
+                javafx.application.Platform.runLater(() -> {
+                    try {
+                        set("gameOver", true);
+                        getGameController().resumeEngine();
+                        getGameController().gotoMainMenu();
+                    } catch (Exception ignored) {
+                    }
+                });
+            }).start();
         }
     }
 

@@ -110,7 +110,7 @@ public class HighScoreInput extends SubScene {
             }
         });
 
-        // Auto-focus the text field
+        // Autofocus the text field
         nameInput.requestFocus();
     }
 
@@ -118,10 +118,10 @@ public class HighScoreInput extends SubScene {
         String name = nameInput.getText().trim();
 
         if (name.isEmpty()) {
-            name = "Anonymous";
+            name = "Player";
         }
 
-        SoundManager.playClickSound();
+        SoundManager.playAnvilSound();
 
         if (onSubmit != null) {
             onSubmit.accept(name);

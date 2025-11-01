@@ -43,6 +43,7 @@ public class BlockBounceApp extends GameApplication {
         settings.setFullScreenFromStart(false);
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
+        settings.getCSSList().add("fxgl.css");
 
         settings.setSceneFactory(new SceneFactory() {
             @NotNull
