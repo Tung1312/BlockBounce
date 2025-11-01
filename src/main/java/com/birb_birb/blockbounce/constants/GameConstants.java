@@ -10,7 +10,7 @@ public class GameConstants {
     public static final int DIALOG_WIDTH = 400;
     public static final int DIALOG_HEIGHT = 220;
     public static final String GAME_TITLE = "BlockBounce";
-    public static final String GAME_VERSION = "(beta 0.2)";
+    public static final String GAME_VERSION = "(beta 0.3)";
 
     public static final int OFFSET_TOP = 20;
     public static final int OFFSET_BOTTOM = 20;
