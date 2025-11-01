@@ -431,28 +431,65 @@ public class BallComponent extends Component {
                 return;
             }
 
-            // This is the last ball - lose life and respawn on paddle
-            Entity paddle = getPaddle();
-
-            if (paddle != null) {
-                // Stop movement and mark as attached so onUpdate will position it
-                attachToPaddle();
-
-                // Immediately position it on top of the paddle to avoid visual jump
-                double ballX = paddle.getX() + (getPaddleWidth(paddle) - entity.getWidth()) / 2.0;
-                double ballY = paddle.getY() - entity.getHeight() - 2.0;
-                entity.setPosition(ballX, ballY);
-            } else {
-                // Fallback - if no paddle is found, reset to center as before
-                resetBall();
-            }
-
-            // Decrement lives and check for game over
+            // This is the last ball - lose life and reset everything
             inc("lives", -1);
 
             if (geti("lives") <= 0) {
                 set("gameOver", true);
+            } else {
+                // Reset paddle, ball, and remove power-up effects
+                resetGameState();
             }
+        }
+    }
+
+    /**
+     * Reset paddle position, ball state, and remove power-up effects when a life is lost
+     */
+    private void resetGameState() {
+        Entity paddle = getPaddle();
+
+        if (paddle != null) {
+            // Reset paddle width to normal (remove SMALL_PADDLE power-up effect)
+            try {
+                paddle.setProperty("paddleWidth", GameConstants.PADDLE_WIDTH);
+            } catch (Exception ignored) {}
+
+            // Reset paddle visual scale
+            try {
+                if (!paddle.getViewComponent().getChildren().isEmpty()) {
+                    javafx.scene.Node view = paddle.getViewComponent().getChildren().getFirst();
+                    if (view != null) {
+                        view.setScaleX(1.0);
+                    }
+                }
+            } catch (Exception ignored) {}
+        }
+
+        // Remove all extra balls (from DOUBLE_BALL power-up)
+        List<Entity> allBalls = getGameWorld().getEntitiesByType(EntityType.BALL);
+        for (Entity ball : allBalls) {
+            if (ball != entity) {
+                ball.removeFromWorld();
+            }
+        }
+
+        // Remove all falling power-ups
+        List<Entity> powerUps = getGameWorld().getEntitiesByType(EntityType.POWERUP);
+        for (Entity powerUp : powerUps) {
+            powerUp.removeFromWorld();
+        }
+
+        // Reset ball speed multiplier to normal (remove FAST_BALL power-up effect)
+        this.speedMultiplier = 1.0;
+
+        // Attach ball to paddle and position it
+        attachToPaddle();
+
+        if (paddle != null) {
+            double ballX = paddle.getX() + (getPaddleWidth(paddle) - entity.getWidth()) / 2.0;
+            double ballY = paddle.getY() - entity.getHeight() - 2.0;
+            entity.setPosition(ballX, ballY);
         }
     }
 }
