@@ -280,7 +280,6 @@ public class BallComponent extends Component {
             brick.removeFromWorld();
             inc("score", 10);
 
-            // TODO: random power-ups after 10-12 bricks destroyed
             // Small chance to spawn a power-up in single-player
             double chance = Math.random();
             if (chance < 0.30) {  // 30% chance to spawn power-up
@@ -395,43 +394,6 @@ public class BallComponent extends Component {
 
     public void setVelocity(Point2D velocity) {
         this.velocity = velocity;
-    }
-
-    // ==================== COLLIDABLE INTERFACE IMPLEMENTATION ====================
-
-    public boolean canCollideWith(EntityType type) {
-        // Balls don't collide with other balls
-        if (type == EntityType.BALL) return false;
-
-        // Can collide with paddles, bricks, and walls
-        return type == EntityType.PADDLE ||
-               type == EntityType.BRICK ||
-               type == EntityType.WALL;
-    }
-
-    public javafx.geometry.Bounds getCollisionBounds() {
-        return new javafx.geometry.BoundingBox(
-            entity.getX(),
-            entity.getY(),
-            entity.getWidth(),
-            entity.getHeight()
-        );
-    }
-
-    public void onCollision(Entity other, Point2D collisionPoint) {
-        EntityType otherType = (EntityType) other.getType();
-
-        switch (otherType) {
-            case PADDLE:
-                // Paddle collision already handled in handlePaddleCollision()
-                break;
-            case BRICK:
-                // Brick collision already handled in handleBrickCollision()
-                break;
-            case WALL:
-                // Wall collision already handled in handleWallCollision()
-                break;
-        }
     }
 
     // ==================== HELPER METHODS ====================

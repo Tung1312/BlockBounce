@@ -7,6 +7,8 @@ import static javafx.scene.paint.Color.rgb;
 public class GameConstants {
     public static final int WINDOW_WIDTH = 1280;
     public static final int WINDOW_HEIGHT = 720;
+    public static final int DIALOG_WIDTH = 400;
+    public static final int DIALOG_HEIGHT = 220;
     public static final String GAME_TITLE = "BlockBounce";
     public static final String GAME_VERSION = "(beta 0.2)";
 
@@ -40,7 +42,8 @@ public class GameConstants {
     public static final String BALL_TEXTURE = "/entities/ball.png";
     public static final String BACKGROUND_TEXTURE = "/entities/background.png";
 
-    public static final String FONT_PATH = "/assets/fonts/Daydream.ttf";
+    public static final String MAIN_FONT_PATH = "/assets/fonts/Daydream.ttf";
+    public static final String SECONDARY_FONT_PATH = "/assets/fonts/MinecraftTen.ttf";
     public static final Paint FONT_COLOR = rgb(62, 32, 31);
     public static final int DEFAULT_FONT_SIZE = 18;
     public static final String FALLBACK_FONT = null;

@@ -1,7 +1,9 @@
-package com.birb_birb.blockbounce.ui.dialogs;
+package com.birb_birb.blockbounce.ui;
 
 import com.almasb.fxgl.scene.SubScene;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.utils.FontManager;
+import com.birb_birb.blockbounce.utils.MenuManager;
 import com.birb_birb.blockbounce.utils.SoundManager;
 import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
@@ -15,27 +17,21 @@ import javafx.scene.text.Text;
 
 import java.util.function.Consumer;
 
-/**
- * Dialog for entering player name for high score
- */
-public class HighScoreInputDialog extends SubScene {
-    private static final int DIALOG_WIDTH = 500;
-    private static final int DIALOG_HEIGHT = 300;
+public class HighScoreInput extends SubScene {
 
     private final TextField nameInput;
     private final Consumer<String> onSubmit;
     private final Runnable onCancel;
 
-    public HighScoreInputDialog(int score, int rank, Consumer<String> onSubmit, Runnable onCancel) {
+    public HighScoreInput(int score, int rank, Consumer<String> onSubmit, Runnable onCancel) {
         this.onSubmit = onSubmit;
         this.onCancel = onCancel;
 
-        // Create background overlay
-        Rectangle overlay = new Rectangle(GameConstants.WINDOW_WIDTH, GameConstants.WINDOW_HEIGHT);
-        overlay.setFill(Color.rgb(0, 0, 0, 0.7));
+        // Background dimming
+        Rectangle overlay = MenuManager.createDimmingOverlay(0);
 
         // Create dialog box
-        Rectangle dialogBox = new Rectangle(DIALOG_WIDTH, DIALOG_HEIGHT);
+        Rectangle dialogBox = new Rectangle(GameConstants.DIALOG_WIDTH, GameConstants.DIALOG_HEIGHT);
         dialogBox.setFill(Color.rgb(40, 30, 20));
         dialogBox.setStroke(Color.rgb(200, 150, 100));
         dialogBox.setStrokeWidth(3);
@@ -43,42 +39,30 @@ public class HighScoreInputDialog extends SubScene {
         dialogBox.setArcHeight(20);
 
         // Load custom font
-        Font customFont;
-        try {
-            customFont = Font.loadFont(
-                getClass().getResourceAsStream("/assets/fonts/Daydream.ttf"), 24
-            );
-        } catch (Exception e) {
-            customFont = Font.font("Arial", 24);
-        }
-
-        Font smallFont = Font.font(customFont.getFamily(), 18);
+        Font custom = FontManager.getSecondFont();
+        Font title = Font.font(custom.getFamily(), 24);
+        Font small = Font.font(custom.getFamily(), 14);
 
         // Create title text
-        Text titleText = new Text("NEW HIGH SCORE!");
-        titleText.setFont(customFont);
+        Text titleText = new Text("YOUR SCORE: " + score);
+        titleText.setFont(custom);
         titleText.setFill(Color.GOLD);
 
         // Create rank text
         Text rankText = new Text("Rank #" + rank);
-        rankText.setFont(smallFont);
+        rankText.setFont(title);
         rankText.setFill(Color.LIGHTGREEN);
-
-        // Create score text
-        Text scoreText = new Text("Score: " + score);
-        scoreText.setFont(smallFont);
-        scoreText.setFill(Color.WHITE);
 
         // Create instruction text
         Text instructionText = new Text("Enter your name:");
-        instructionText.setFont(smallFont);
+        instructionText.setFont(small);
         instructionText.setFill(Color.LIGHTGRAY);
 
         // Create text input field
         nameInput = new TextField();
         nameInput.setPromptText("Player Name");
         nameInput.setMaxWidth(300);
-        nameInput.setFont(Font.font(customFont.getFamily(), 20));
+        nameInput.setFont(Font.font(custom.getFamily(), 20));
         nameInput.setStyle(
             "-fx-background-color: rgba(60, 50, 40, 0.9); " +
             "-fx-text-fill: white; " +
@@ -98,15 +82,15 @@ public class HighScoreInputDialog extends SubScene {
         });
 
         // Create submit instruction
-        Text submitText = new Text("Press ENTER to submit");
-        submitText.setFont(Font.font(customFont.getFamily(), 14));
+        Text submitText = new Text("[Press ENTER to submit]");
+        submitText.setFont(Font.font(custom.getFamily(), 10));
         submitText.setFill(Color.LIGHTBLUE);
 
         // Layout
-        VBox contentBox = new VBox(15);
+        VBox contentBox = new VBox(12);
         contentBox.setAlignment(Pos.CENTER);
         contentBox.getChildren().addAll(
-            titleText, rankText, scoreText, instructionText, nameInput, submitText
+            titleText, rankText, instructionText, nameInput, submitText
         );
 
         StackPane dialogPane = new StackPane();
@@ -152,4 +136,3 @@ public class HighScoreInputDialog extends SubScene {
         }
     }
 }
-

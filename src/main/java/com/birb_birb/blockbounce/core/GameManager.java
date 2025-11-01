@@ -5,6 +5,7 @@ import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.ui.GameplayButtons;
 import com.birb_birb.blockbounce.utils.FontManager;
+import com.birb_birb.blockbounce.utils.MenuManager;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -18,7 +19,8 @@ public abstract class GameManager {
 
     protected Text scoreText;
     protected Text livesText;
-    protected Font gameFont = FontManager.getCustomFont();
+    protected Font gameFont = FontManager.getMainFont();
+    protected Font displayFont = FontManager.getSecondFont();
 
     private final java.util.ArrayDeque<Message> messageQueue = new java.util.ArrayDeque<>();
     private boolean messageActive = false;
@@ -132,11 +134,14 @@ public abstract class GameManager {
      * Handler for Game Over state.
      */
     protected void handleGameOver() {
+        // Add dimming overlay
+        getGameScene().addUINode(MenuManager.createDimmingOverlay());
+
         Text gameOverText = new Text("GAME OVER");
         Text finalScoreText = new Text("Final Score: " + geti("score"));
 
-        gameOverText.setFont(gameFont);
-        finalScoreText.setFont(gameFont);
+        gameOverText.setFont(displayFont);
+        finalScoreText.setFont(displayFont);
 
         gameOverText.setFill(Color.RED);
         gameOverText.setTranslateX((double) GameConstants.WINDOW_WIDTH / 2 - 150);
@@ -185,7 +190,7 @@ public abstract class GameManager {
         Text countdownText = new Text(String.valueOf(number));
         try {
             Font messageFont = Font.loadFont(
-                getClass().getResourceAsStream(GameConstants.FONT_PATH), 80);
+                getClass().getResourceAsStream(GameConstants.MAIN_FONT_PATH), 80);
             countdownText.setFont(Font.font(messageFont.getFamily(), FontWeight.BOLD, 80));
         } catch (Exception e) {
             countdownText.setFont(Font.font("System", FontWeight.BOLD, 80));
@@ -212,7 +217,7 @@ public abstract class GameManager {
         Text goText = new Text("GO!");
         try {
             Font messageFont = Font.loadFont(
-                getClass().getResourceAsStream(GameConstants.FONT_PATH), 80);
+                getClass().getResourceAsStream(GameConstants.MAIN_FONT_PATH), 80);
             goText.setFont(Font.font(messageFont.getFamily(), FontWeight.BOLD, 80));
         } catch (Exception e) {
             goText.setFont(Font.font("System", FontWeight.BOLD, 80));
@@ -249,7 +254,7 @@ public abstract class GameManager {
         try {
             // Load custom font if available, otherwise use default
             Font messageFont = Font.loadFont(
-                    getClass().getResourceAsStream(GameConstants.FONT_PATH), 80);
+                    getClass().getResourceAsStream(GameConstants.MAIN_FONT_PATH), 80);
             messageText.setFont(Font.font(messageFont.getFamily(), FontWeight.BOLD, 48));
         } catch (Exception e) {
             messageText.setFont(Font.font("System", FontWeight.BOLD, 48));

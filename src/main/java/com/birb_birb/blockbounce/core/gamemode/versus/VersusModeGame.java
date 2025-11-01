@@ -8,6 +8,7 @@ import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.BlockBounceApp;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
+import com.birb_birb.blockbounce.utils.MenuManager;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.input.KeyCode;
@@ -229,6 +230,9 @@ public class VersusModeGame extends GameManager {
         // At that point, compare scores and declare the winner (or tie).
         if (player1Playfield.isGameOver() && player2Playfield.isGameOver()) {
             if (endScheduled) return;
+
+            // Add dimming overlay
+            getGameScene().addUINode(MenuManager.createDimmingOverlay());
 
             int score1 = player1Playfield.getScore();
             int score2 = player2Playfield.getScore();

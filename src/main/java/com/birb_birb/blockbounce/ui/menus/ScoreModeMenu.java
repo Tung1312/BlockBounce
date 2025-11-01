@@ -4,6 +4,7 @@ import com.almasb.fxgl.app.scene.MenuType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.utils.ButtonManager;
+import com.birb_birb.blockbounce.utils.FontManager;
 import com.birb_birb.blockbounce.utils.saveload.SaveGameManager;
 import com.birb_birb.blockbounce.utils.MenuManager;
 import com.birb_birb.blockbounce.utils.SoundManager;
@@ -23,8 +24,6 @@ import javafx.scene.text.Text;
 
 import java.util.List;
 import java.util.stream.IntStream;
-
-import static com.almasb.fxgl.dsl.FXGL.*;
 
 /**
  * Score Mode submenu for selecting New Game or Load Game
@@ -78,7 +77,7 @@ public class ScoreModeMenu extends MenuManager {
             loadGameButton.setOnAction(e -> {
                 SoundManager.playClickSound();
                 GameMode.setCurrentGameMode(GameMode.ENDLESS);
-                GameMode.setShouldLoadSave(true); // Set flag to load save
+                GameMode.setShouldLoadSave(true);
                 fireNewGame();
             });
         }
@@ -86,10 +85,9 @@ public class ScoreModeMenu extends MenuManager {
         VBox buttonPanel = createButtonPanel();
         root.getChildren().add(buttonPanel);
 
-        // Highscores list on the left parchment
+        // Highscores list
         VBox highscoresBox = buildHighscoresBox();
-        // Position roughly under the "HIGHSCORES" title drawn on the parchment
-        highscoresBox.setLayoutX(92);   // tune if needed to fit your background image
+        highscoresBox.setLayoutX(92);
         highscoresBox.setLayoutY(170);
         root.getChildren().add(highscoresBox);
 
@@ -103,23 +101,14 @@ public class ScoreModeMenu extends MenuManager {
         int limit = Math.min(5, scores.size());
 
         // Prepare fonts
-        Font base = com.birb_birb.blockbounce.utils.FontManager.getCustomFont();
+        Font base = FontManager.getSecondFont();
         String family = base != null ? base.getFamily() : "Arial";
         Font headerFont = Font.font(family, 28);
         Font rowFont = Font.font(family, 26);
-        Color rowColor = Color.rgb(62, 32, 31);
 
         VBox box = new VBox(12);
         box.setAlignment(Pos.TOP_LEFT);
         box.setPadding(new Insets(4, 0, 0, 0));
-
-        if (limit == 0) {
-            Text none = new Text("No high scores yet!");
-            none.setFill(rowColor);
-            none.setFont(rowFont);
-            box.getChildren().add(none);
-            return box;
-        }
 
         // Grid with 3 columns: Rank | Name | Score
         GridPane grid = new GridPane();
@@ -127,7 +116,7 @@ public class ScoreModeMenu extends MenuManager {
         grid.setVgap(10);
 
         ColumnConstraints c0 = new ColumnConstraints();
-        c0.setPrefWidth(40); // rank
+        c0.setPrefWidth(30); // rank
         ColumnConstraints c1 = new ColumnConstraints();
         c1.setMinWidth(250);
         c1.setPrefWidth(250); // name column fixed width
@@ -162,7 +151,7 @@ public class ScoreModeMenu extends MenuManager {
 
             Text rRank = new Text((i + 1) + ".");
             rRank.setFont(rowFont);
-            rRank.setFill(rowColor);
+            rRank.setFill(GameConstants.FONT_COLOR);
 
             // Name as Label with ellipsis when exceeding 250px column width
             Label rName = new Label(name);
@@ -177,7 +166,7 @@ public class ScoreModeMenu extends MenuManager {
 
             Text rScore = new Text(String.format("%,d", hs.getScore()));
             rScore.setFont(rowFont);
-            rScore.setFill(rowColor);
+            rScore.setFill(GameConstants.FONT_COLOR);
 
             int row = i + 1;
             grid.add(rRank, 0, row);

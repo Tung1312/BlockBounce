@@ -10,7 +10,8 @@ import com.birb_birb.blockbounce.utils.saveload.SaveData;
 import com.birb_birb.blockbounce.utils.saveload.StateCapture;
 import com.birb_birb.blockbounce.utils.saveload.SaveGameManager;
 import com.birb_birb.blockbounce.utils.highscore.HighScoreManager;
-import com.birb_birb.blockbounce.ui.dialogs.HighScoreInputDialog;
+import com.birb_birb.blockbounce.ui.HighScoreInput;
+import com.birb_birb.blockbounce.utils.MenuManager;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
@@ -154,23 +155,14 @@ public class ScoreModeGame extends GameManager {
         return false;
     }
 
-    /**
-     * Auto-save to current slot
-     */
     public void autoSave() {
         saveGame(currentSaveSlot);
     }
 
-    /**
-     * Get current save slot
-     */
     public int getCurrentSaveSlot() {
         return currentSaveSlot;
     }
 
-    /**
-     * Set current save slot
-     */
     public void setCurrentSaveSlot(int slot) {
         if (slot >= 1 && slot <= 3) {
             this.currentSaveSlot = slot;
@@ -280,6 +272,9 @@ public class ScoreModeGame extends GameManager {
 
     @Override
     protected void handleGameOver() {
+        // Add dimming overlay
+        getGameScene().addUINode(MenuManager.createDimmingOverlay());
+
         // Display final time in game over screen
         int totalSeconds = (int) elapsedTime;
         int minutes = totalSeconds / 60;
@@ -291,9 +286,9 @@ public class ScoreModeGame extends GameManager {
         Text finalScoreText = new Text("Final Score: " + finalScore);
         Text finalTimeText = new Text(String.format("Time: %02d:%02d", minutes, seconds));
 
-        gameOverText.setFont(gameFont);
-        finalScoreText.setFont(gameFont);
-        finalTimeText.setFont(gameFont);
+        gameOverText.setFont(displayFont);
+        finalScoreText.setFont(displayFont);
+        finalTimeText.setFont(displayFont);
 
         gameOverText.setFill(Color.RED);
         finalScoreText.setFill(Color.WHITE);
@@ -316,7 +311,7 @@ public class ScoreModeGame extends GameManager {
         if (HighScoreManager.isHighScore(finalScore)) {
             int rank = HighScoreManager.getScoreRank(finalScore);
 
-            HighScoreInputDialog dialog = new HighScoreInputDialog(
+            HighScoreInput dialog = new HighScoreInput(
                 finalScore,
                 rank,
                 name -> {
@@ -341,4 +336,3 @@ public class ScoreModeGame extends GameManager {
         }
     }
 }
-

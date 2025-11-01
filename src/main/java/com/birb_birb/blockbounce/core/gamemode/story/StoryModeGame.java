@@ -116,23 +116,14 @@ public class StoryModeGame extends GameManager {
         }
     }
 
-    /**
-     * Auto-save to current slot
-     */
     public void autoSave() {
         saveGame(currentSaveSlot);
     }
 
-    /**
-     * Get current save slot
-     */
     public int getCurrentSaveSlot() {
         return currentSaveSlot;
     }
 
-    /**
-     * Set current save slot
-     */
     public void setCurrentSaveSlot(int slot) {
         if (slot >= 1 && slot <= 3) {
             this.currentSaveSlot = slot;

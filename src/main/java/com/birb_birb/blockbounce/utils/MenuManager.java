@@ -7,6 +7,9 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 
 import java.util.Objects;
 
@@ -72,7 +75,7 @@ public abstract class MenuManager extends FXGLMenu {
         button.setPrefWidth(GameConstants.BUTTON_WIDTH);
         button.setPrefHeight(GameConstants.BUTTON_HEIGHT);
 
-        final javafx.scene.text.Font customFont = FontManager.getCustomFont();
+        final Font customFont = FontManager.getMainFont();
         button.setFont(customFont);
         button.getStyleClass().clear();
 
@@ -132,6 +135,16 @@ public abstract class MenuManager extends FXGLMenu {
         });
 
         return button;
+    }
+
+    public static Rectangle createDimmingOverlay() {
+        return createDimmingOverlay(0.7);
+    }
+
+    public static Rectangle createDimmingOverlay(double opacity) {
+        Rectangle overlay = new Rectangle(GameConstants.WINDOW_WIDTH, GameConstants.WINDOW_HEIGHT);
+        overlay.setFill(Color.rgb(0, 0, 0, opacity));
+        return overlay;
     }
 
     /**
