@@ -52,6 +52,10 @@ public class BlockBounceApp extends GameApplication {
     protected void initGame() {
         CursorManager.apply(getGameScene().getRoot());
 
+        getGameController().resumeEngine();
+
+        inputHandler.reset();
+
         // Initialize game based on selected mode
         switch (GameMode.getCurrentGameMode()) {
             case STORY:
