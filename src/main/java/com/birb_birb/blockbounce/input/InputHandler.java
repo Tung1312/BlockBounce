@@ -55,11 +55,6 @@ public class InputHandler {
             handleSaveKey(e);
         }
 
-        //  L to Load (redundant)
-        if (e.getCode() == KeyCode.L) {
-            handleLoadKey(e);
-        }
-
         consumeArrowKeys(e);
     }
 
@@ -103,33 +98,7 @@ public class InputHandler {
 
     /**Handle S key press for saving game state*/
     private void handleSaveKey(KeyEvent e) {
-        if (GameMode.getCurrentGameMode() == GameMode.STORY) {
-            // Do not allow saving after game over
-            if (getb("gameOver")) {
-                e.consume();
-                return;
-            }
-
-            getGameController().pauseEngine();
-
-            boolean success = StoryModeGame.getInstance().saveGame(1);
-            if (success) {
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(1500);
-                    } catch (InterruptedException ex) {
-                        Thread.currentThread().interrupt();
-                    }
-
-                    javafx.application.Platform.runLater(() -> {
-                        getGameController().gotoMainMenu();
-                    });
-                }).start();
-            } else {
-                getGameController().resumeEngine();
-            }
-            e.consume();
-        } else if (GameMode.getCurrentGameMode() == GameMode.ENDLESS) {
+        if (GameMode.getCurrentGameMode() == GameMode.ENDLESS) {
             // Do not allow saving after game over
             if (getb("gameOver")) {
                 e.consume();
@@ -154,17 +123,6 @@ public class InputHandler {
             } else {
                 getGameController().resumeEngine();
             }
-            e.consume();
-        }
-    }
-
-    /**Handle L key press for loading game state*/
-    private void handleLoadKey(KeyEvent e) {
-        if (GameMode.getCurrentGameMode() == GameMode.STORY) {
-            StoryModeGame.getInstance().loadGame(1);
-            e.consume();
-        } else if (GameMode.getCurrentGameMode() == GameMode.ENDLESS) {
-            ScoreModeGame.getInstance().loadGame(1);
             e.consume();
         }
     }
