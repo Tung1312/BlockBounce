@@ -85,7 +85,6 @@ public final class GameFactory {
         return e;
     }
 
-
     public static void createBricks() {
         Texture baseTexture = getAssetLoader().loadTexture(GameConstants.BRICK_TEXTURE);
 

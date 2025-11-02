@@ -1,6 +1,7 @@
 package com.birb_birb.blockbounce.utils;
 
-import com.birb_birb.blockbounce.utils.physics.BallPhysics;
+import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.physics.BallPhysics;
 import javafx.geometry.Point2D;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -206,13 +207,13 @@ class BallPhysicsTest {
     @Test
     @DisplayName("Get maximum vertical angle limit")
     void testGetMaxVerticalAngle() {
-        assertEquals(75.0, BallPhysics.getMaxVerticalAngle(), DELTA);
+        assertEquals(75.0, GameConstants.MAX_VERTICAL_ANGLE, DELTA);
     }
 
     @Test
     @DisplayName("Get minimum vertical angle limit")
     void testGetMinVerticalAngle() {
-        assertEquals(15.0, BallPhysics.getMinVerticalAngle(), DELTA);
+        assertEquals(15.0, GameConstants.MIN_VERTICAL_ANGLE, DELTA);
     }
 
     @Test
