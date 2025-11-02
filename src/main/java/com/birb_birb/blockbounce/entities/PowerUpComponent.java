@@ -24,7 +24,9 @@ public class PowerUpComponent extends Component {
     public enum PowerUpType {
         DOUBLE_BALL,
         SMALL_PADDLE,
-        FAST_BALL
+        FAST_BALL,
+        EXTRA_LIFE,
+        DOUBLE_POINTS
     }
 
     private final PowerUpType type;
@@ -83,6 +85,12 @@ public class PowerUpComponent extends Component {
                 break;
             case FAST_BALL:
                 applyFastBall(paddleId);
+                break;
+            case EXTRA_LIFE:
+                applyExtraLife(paddleId);
+                break;
+            case DOUBLE_POINTS:
+                applyDoublePoints(paddleId);
                 break;
         }
     }
@@ -178,15 +186,27 @@ public class PowerUpComponent extends Component {
     }
 
     private void applySmallPaddle(Entity paddle) {
-        // Visually shrink paddle and reduce movement bounds by setting property
+        // Visually shrink paddle and update collision box
         double originalWidth = GameConstants.PADDLE_WIDTH;
         double newWidth = originalWidth * 0.6;
+        double offsetX = (originalWidth - newWidth) / 2.0; // Center the smaller paddle
 
-        // store original width so we can restore later
+        // Store original width so we can restore later
         try { paddle.setProperty("origPaddleWidth", originalWidth); } catch (Exception ignored) {}
         try { paddle.setProperty("paddleWidth", newWidth); } catch (Exception ignored) {}
 
-        // scale the visual node if possible: get first child from view component
+        // Update the paddle's hitbox to match the new width
+        try {
+            paddle.getBoundingBoxComponent().clearHitBoxes();
+            paddle.getBoundingBoxComponent().addHitBox(new HitBox(
+                new Point2D(offsetX, 0),
+                BoundingShape.box(newWidth, GameConstants.PADDLE_HEIGHT)
+            ));
+        } catch (Exception e) {
+            System.err.println("Error updating paddle hitbox: " + e.getMessage());
+        }
+
+        // Scale the visual node
         try {
             if (!paddle.getViewComponent().getChildren().isEmpty()) {
                 Node view = paddle.getViewComponent().getChildren().getFirst();
@@ -197,9 +217,21 @@ public class PowerUpComponent extends Component {
             }
         } catch (Exception ignored) {}
 
-        // schedule restore after 10 seconds
+        // Schedule restore after 10 seconds
         getGameTimer().runOnceAfter(() -> {
             try { paddle.setProperty("paddleWidth", originalWidth); } catch (Exception ignored) {}
+
+            // Restore original hitbox
+            try {
+                paddle.getBoundingBoxComponent().clearHitBoxes();
+                paddle.getBoundingBoxComponent().addHitBox(new HitBox(
+                    BoundingShape.box(originalWidth, GameConstants.PADDLE_HEIGHT)
+                ));
+            } catch (Exception e) {
+                System.err.println("Error restoring paddle hitbox: " + e.getMessage());
+            }
+
+            // Restore visual scale
             try {
                 if (!paddle.getViewComponent().getChildren().isEmpty()) {
                     Node v = paddle.getViewComponent().getChildren().getFirst();
@@ -257,5 +289,52 @@ public class PowerUpComponent extends Component {
             }
         }, Duration.seconds(8));
     }
-}
 
+    private void applyExtraLife(int paddleId) {
+        // Grant an extra life to the player
+        try {
+            // Check if we're in versus mode
+            if (com.birb_birb.blockbounce.constants.GameMode.getCurrentGameMode() ==
+                com.birb_birb.blockbounce.constants.GameMode.VERSUS) {
+                // In versus mode, increment player-specific lives
+                String livesKey = "player" + paddleId + "Lives";
+                int currentLives = com.almasb.fxgl.dsl.FXGL.geti(livesKey);
+                com.almasb.fxgl.dsl.FXGL.set(livesKey, currentLives + 1);
+            } else {
+                // In single-player modes (story/score), increment global lives
+                int currentLives = com.almasb.fxgl.dsl.FXGL.geti("lives");
+                com.almasb.fxgl.dsl.FXGL.set("lives", currentLives + 1);
+            }
+        } catch (Exception e) {
+            System.err.println("Error applying extra life: " + e.getMessage());
+        }
+    }
+
+    private void applyDoublePoints(int paddleId) {
+        // Temporarily double the points gained by the player for 15 seconds
+        try {
+            // Check if we're in versus mode
+            if (com.birb_birb.blockbounce.constants.GameMode.getCurrentGameMode() ==
+                com.birb_birb.blockbounce.constants.GameMode.VERSUS) {
+                // In versus mode, set player-specific double points flag
+                String doublePointsKey = "player" + paddleId + "DoublePoints";
+                com.almasb.fxgl.dsl.FXGL.set(doublePointsKey, true);
+
+                // Revert after 15 seconds
+                getGameTimer().runOnceAfter(() -> {
+                    com.almasb.fxgl.dsl.FXGL.set(doublePointsKey, false);
+                }, Duration.seconds(15));
+            } else {
+                // In single-player modes (story/score), set global double points flag
+                com.almasb.fxgl.dsl.FXGL.set("doublePoints", true);
+
+                // Revert after 15 seconds
+                getGameTimer().runOnceAfter(() -> {
+                    com.almasb.fxgl.dsl.FXGL.set("doublePoints", false);
+                }, Duration.seconds(15));
+            }
+        } catch (Exception e) {
+            System.err.println("Error applying double points: " + e.getMessage());
+        }
+    }
+}

@@ -122,24 +122,28 @@ public class BallComponent extends Component {
         double paddleWidth = getPaddleWidth(paddle);
         double paddleHeight = paddle.getHeight();
 
-        // Implement custom AABB collision to respect paddleWidth
+        // Calculate offset for centered small paddle
+        double paddleOffsetX = (GameConstants.PADDLE_WIDTH - paddleWidth) / 2.0;
+
+        // Implement custom AABB collision to respect paddleWidth and offset
         double ballLeft = entity.getX();
         double ballRight = entity.getX() + entity.getWidth();
         double ballTop = entity.getY();
         double ballBottom = entity.getY() + entity.getHeight();
 
-        double paddleLeft = paddle.getX();
-        double paddleRight = paddle.getX() + paddleWidth;
+        // Use the actual collision bounds accounting for the offset
+        double paddleLeft = paddle.getX() + paddleOffsetX;
+        double paddleRight = paddle.getX() + paddleOffsetX + paddleWidth;
         double paddleTop = paddle.getY();
         double paddleBottom = paddle.getY() + paddleHeight;
 
         boolean overlapping = ballRight >= paddleLeft && ballLeft <= paddleRight && ballBottom >= paddleTop && ballTop <= paddleBottom;
         if (!overlapping) return;
 
-        // Calculate collision geometry
+        // Calculate collision geometry using the adjusted bounds
         double ballCenterX = (ballLeft + ballRight) / 2.0;
         double ballCenterY = (ballTop + ballBottom) / 2.0;
-        double paddleCenterX = paddle.getX() + paddleWidth / 2.0;
+        double paddleCenterX = paddle.getX() + paddleOffsetX + paddleWidth / 2.0;
         double paddleCenterY = paddle.getY() + paddleHeight / 2.0;
 
         double deltaX = ballCenterX - paddleCenterX;
@@ -171,10 +175,10 @@ public class BallComponent extends Component {
             // Hit from LEFT or RIGHT side - bounce horizontally only
             if (deltaX > 0) {
                 // Hit from right side - push ball to the right
-                entity.setX(paddle.getX() + paddleWidth + 1);
+                entity.setX(paddleRight + 1);
             } else {
                 // Hit from left side - push ball to the left
-                entity.setX(paddle.getX() - entity.getWidth() - 1);
+                entity.setX(paddleLeft - entity.getWidth() - 1);
             }
 
             velocity = new Point2D(-velocity.getX(), velocity.getY());
@@ -264,10 +268,12 @@ public class BallComponent extends Component {
             double chance = Math.random();
             if (chance < 0.30) {  // 30% chance to spawn power-up
                 // pick a random power-up
-                int r = (int) (Math.random() * 3);
+                int r = (int) (Math.random() * 5);
                 PowerUpComponent.PowerUpType type = r == 0 ? PowerUpComponent.PowerUpType.DOUBLE_BALL
                     : r == 1 ? PowerUpComponent.PowerUpType.SMALL_PADDLE
-                    : PowerUpComponent.PowerUpType.FAST_BALL;
+                    : r == 2 ? PowerUpComponent.PowerUpType.FAST_BALL
+                    : r == 3 ? PowerUpComponent.PowerUpType.EXTRA_LIFE
+                    : PowerUpComponent.PowerUpType.DOUBLE_POINTS;
 
                 // target the owner of this ball if available
                 int target = 0;
@@ -278,16 +284,27 @@ public class BallComponent extends Component {
 
         } else {
             brick.removeFromWorld();
-            inc("score", 10);
+
+            // Check if double points is active
+            int points = 10;
+            try {
+                if (getb("doublePoints")) {
+                    points *= 2;
+                }
+            } catch (Exception ignored) {}
+
+            inc("score", points);
 
             // Small chance to spawn a power-up in single-player
             double chance = Math.random();
             if (chance < 0.30) {  // 30% chance to spawn power-up
                 // pick a random power-up
-                int r = (int) (Math.random() * 3);
+                int r = (int) (Math.random() * 5);
                 PowerUpComponent.PowerUpType type = r == 0 ? PowerUpComponent.PowerUpType.DOUBLE_BALL
                     : r == 1 ? PowerUpComponent.PowerUpType.SMALL_PADDLE
-                    : PowerUpComponent.PowerUpType.FAST_BALL;
+                    : r == 2 ? PowerUpComponent.PowerUpType.FAST_BALL
+                    : r == 3 ? PowerUpComponent.PowerUpType.EXTRA_LIFE
+                    : PowerUpComponent.PowerUpType.DOUBLE_POINTS;
 
                 GameFactory.createPowerUp(brick.getX(), brick.getY(), type, 1);
             }
@@ -457,6 +474,16 @@ public class BallComponent extends Component {
             try {
                 paddle.setProperty("paddleWidth", GameConstants.PADDLE_WIDTH);
             } catch (Exception ignored) {}
+
+            // Reset paddle hitbox to normal
+            try {
+                paddle.getBoundingBoxComponent().clearHitBoxes();
+                paddle.getBoundingBoxComponent().addHitBox(new com.almasb.fxgl.physics.HitBox(
+                    com.almasb.fxgl.physics.BoundingShape.box(GameConstants.PADDLE_WIDTH, GameConstants.PADDLE_HEIGHT)
+                ));
+            } catch (Exception e) {
+                System.err.println("Error restoring paddle hitbox on reset: " + e.getMessage());
+            }
 
             // Reset paddle visual scale
             try {

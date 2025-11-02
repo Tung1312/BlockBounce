@@ -230,7 +230,17 @@ public class Playfield {
     public void destroyBrick(Entity brick) {
         if (bricks.remove(brick)) {
             brick.removeFromWorld();
-            addScore(POINTS_PER_BRICK);
+
+            // Check if double points is active for this player
+            int points = POINTS_PER_BRICK;
+            try {
+                String doublePointsKey = "player" + playerId + "DoublePoints";
+                if (com.almasb.fxgl.dsl.FXGL.getb(doublePointsKey)) {
+                    points *= 2;
+                }
+            } catch (Exception ignored) {}
+
+            addScore(points);
         }
     }
 
@@ -281,7 +291,7 @@ public class Playfield {
     }
 
     public double getRightBoundary(double objectWidth) {
-        return x + width - objectWidth - 10;
+        return x + width - objectWidth + 10;
     }
 
     public double getTopBoundary() {
