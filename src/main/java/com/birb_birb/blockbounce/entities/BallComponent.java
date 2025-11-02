@@ -1,12 +1,13 @@
 package com.birb_birb.blockbounce.entities;
 
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.Component;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.gamemode.versus.Playfield;
-import com.birb_birb.blockbounce.utils.physics.BallPhysics;
+import com.birb_birb.blockbounce.physics.BallPhysics;
+import com.birb_birb.blockbounce.physics.CollisionHandler;
+import com.birb_birb.blockbounce.physics.PhysicsComponent;
 import com.birb_birb.blockbounce.utils.SoundManager;
 import javafx.geometry.Point2D;
 
@@ -14,23 +15,23 @@ import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
-public class BallComponent extends Component {
+public class BallComponent extends PhysicsComponent {
 
-    private Point2D velocity = new Point2D(2.5, -2.5);
     private boolean hasCollidedThisFrame = false;
     private double collisionCooldown = 0;
     private boolean isAttachedToPaddle = true;
     private boolean hasLaunched = false;
-    private boolean isFrozen = false;
     private double speedMultiplier = 1.0;
     private final Playfield playfield;
 
     public BallComponent() {
         this.playfield = null;
+        this.velocity = new Point2D(2.5, -2.5);
     }
 
     public BallComponent(Playfield playfield) {
         this.playfield = playfield;
+        this.velocity = new Point2D(2.5, -2.5);
     }
 
     @Override
@@ -39,9 +40,10 @@ public class BallComponent extends Component {
             return;
         }
 
+        Entity paddle = getPaddle();
+
         // If ball is attached to paddle, follow paddle position
         if (isAttachedToPaddle) {
-            Entity paddle = getPaddle();
             if (paddle != null) {
                 double paddleWidth = getPaddleWidth(paddle);
 
@@ -66,12 +68,17 @@ public class BallComponent extends Component {
 
         // Paddle collision
         if (!hasCollidedThisFrame && collisionCooldown <= 0) {
-            handlePaddleCollision();
+            handlePaddleCollision(paddle);
         }
 
         // Brick collision
         if (!hasCollidedThisFrame && collisionCooldown <= 0) {
             handleBrickCollision();
+        }
+
+        // normalize velocity only if collision occurred this frame
+        if (hasCollidedThisFrame) {
+            velocity = BallPhysics.normalizeVelocity(velocity, GameConstants.BASE_SPEED * speedMultiplier);
         }
 
         // Out of bounds check
@@ -108,84 +115,28 @@ public class BallComponent extends Component {
                 entity.setY(topBound);
             }
 
-            // normalize velocity
-            velocity = BallPhysics.normalizeVelocity(velocity, GameConstants.BASE_SPEED * speedMultiplier);
-
+            hasCollidedThisFrame = true;
             SoundManager.playHitSound();
         }
     }
 
-    private void handlePaddleCollision() {
-        Entity paddle = getPaddle();
+    private void handlePaddleCollision(Entity paddle) {
         if (paddle == null) return;
 
         double paddleWidth = getPaddleWidth(paddle);
-        double paddleHeight = paddle.getHeight();
-
-        // Calculate offset for centered small paddle
         double paddleOffsetX = (GameConstants.PADDLE_WIDTH - paddleWidth) / 2.0;
 
-        // Implement custom AABB collision to respect paddleWidth and offset
-        double ballLeft = entity.getX();
-        double ballRight = entity.getX() + entity.getWidth();
-        double ballTop = entity.getY();
-        double ballBottom = entity.getY() + entity.getHeight();
+        Point2D newVelocity = CollisionHandler.resolvePaddleCollisionWithOffset(
+            entity,
+            paddle,
+            paddleWidth,
+            paddleOffsetX,
+            GameConstants.BASE_SPEED * speedMultiplier
+        );
 
-        // Use the actual collision bounds accounting for the offset
-        double paddleLeft = paddle.getX() + paddleOffsetX;
-        double paddleRight = paddle.getX() + paddleOffsetX + paddleWidth;
-        double paddleTop = paddle.getY();
-        double paddleBottom = paddle.getY() + paddleHeight;
-
-        boolean overlapping = ballRight >= paddleLeft && ballLeft <= paddleRight && ballBottom >= paddleTop && ballTop <= paddleBottom;
-        if (!overlapping) return;
-
-        // Calculate collision geometry using the adjusted bounds
-        double ballCenterX = (ballLeft + ballRight) / 2.0;
-        double ballCenterY = (ballTop + ballBottom) / 2.0;
-        double paddleCenterX = paddle.getX() + paddleOffsetX + paddleWidth / 2.0;
-        double paddleCenterY = paddle.getY() + paddleHeight / 2.0;
-
-        double deltaX = ballCenterX - paddleCenterX;
-        double deltaY = ballCenterY - paddleCenterY;
-
-        // Calculate which side was hit
-        double ratioX = Math.abs(deltaX) / (paddleWidth / 2);
-        double ratioY = Math.abs(deltaY) / (paddleHeight / 2);
-
-        if (ratioY > ratioX) {
-            // Hit from top or bottom
-            if (ballBottom > paddleTop && velocity.getY() > 0 && deltaY < 0) {
-                // Hit from TOP - normal bounce
-                entity.setY(paddleTop - entity.getHeight() - 1);
-
-                // Calculate bounce velocity using BallPhysics with current speed multiplier
-                velocity = BallPhysics.calculatePaddleBounce(
-                    ballCenterX,
-                    paddleCenterX,
-                    paddleWidth,
-                    GameConstants.BASE_SPEED * speedMultiplier
-                );
-
-                hasCollidedThisFrame = true;
-                collisionCooldown = 0.05;
-                SoundManager.playHitSound();
-            }
-        } else {
-            // Hit from LEFT or RIGHT side - bounce horizontally only
-            if (deltaX > 0) {
-                // Hit from right side - push ball to the right
-                entity.setX(paddleRight + 1);
-            } else {
-                // Hit from left side - push ball to the left
-                entity.setX(paddleLeft - entity.getWidth() - 1);
-            }
-
-            velocity = new Point2D(-velocity.getX(), velocity.getY());
-
-            // normalize velocity
-            velocity = BallPhysics.normalizeVelocity(velocity, GameConstants.BASE_SPEED * speedMultiplier);
-
+        // If collision occurred, update velocity and set collision flags
+        if (newVelocity != null) {
+            velocity = newVelocity;
             hasCollidedThisFrame = true;
             collisionCooldown = 0.05;
             SoundManager.playHitSound();
@@ -196,41 +147,14 @@ public class BallComponent extends Component {
         List<Entity> bricks = getBricks();
 
         for (Entity brick : bricks) {
+            if (!CollisionHandler.checkAABB(entity, brick)) {
+                continue;
+            }
+
+            // full collision check
             if (entity.isColliding(brick)) {
-                // Calculate collision side
-                double ballCenterX = entity.getX() + entity.getWidth() / 2;
-                double ballCenterY = entity.getY() + entity.getHeight() / 2;
-                double brickCenterX = brick.getX() + brick.getWidth() / 2;
-                double brickCenterY = brick.getY() + brick.getHeight() / 2;
+                velocity = CollisionHandler.resolveBrickCollision(entity, brick, velocity);
 
-                double deltaX = ballCenterX - brickCenterX;
-                double deltaY = ballCenterY - brickCenterY;
-
-                double ratioX = Math.abs(deltaX) / (brick.getWidth() / 2);
-                double ratioY = Math.abs(deltaY) / (brick.getHeight() / 2);
-
-                if (ratioX > ratioY) {
-                    // Hit from left or right -> Push ball out horizontally
-                    velocity = new Point2D(-velocity.getX(), velocity.getY());
-                    if (deltaX > 0) {
-                        entity.setX(brick.getX() + brick.getWidth() + 1);
-                    } else {
-                        entity.setX(brick.getX() - entity.getWidth() - 1);
-                    }
-                } else {
-                    // Hit from top or bottom -> Push ball out vertically
-                    velocity = new Point2D(velocity.getX(), -velocity.getY());
-                    if (deltaY > 0) {
-                        entity.setY(brick.getY() + brick.getHeight() + 1);
-                    } else {
-                        entity.setY(brick.getY() - entity.getHeight() - 1);
-                    }
-                }
-
-                // Normalize velocity with current speed multiplier
-                velocity = BallPhysics.normalizeVelocity(velocity, GameConstants.BASE_SPEED * speedMultiplier);
-
-                // Destroy brick using appropriate strategy
                 destroyBrick(brick);
 
                 hasCollidedThisFrame = true;
@@ -240,8 +164,6 @@ public class BallComponent extends Component {
             }
         }
     }
-
-    // ==================== STRATEGY METHODS ====================
 
     private Entity getPaddle() {
         if (playfield != null) {
@@ -330,11 +252,7 @@ public class BallComponent extends Component {
         hasLaunched = false;
     }
 
-    // ==================== PUBLIC API ====================
-
-    /**
-     * Attach the ball to the paddle (used when a life is lost)
-     */
+    /**Attach the ball to the paddle*/
     public void attachToPaddle() {
         this.isAttachedToPaddle = true;
         this.hasLaunched = false;
@@ -362,29 +280,13 @@ public class BallComponent extends Component {
         return hasLaunched;
     }
 
-    /**
-     * Set the launched state (used when loading saved game)
-     */
+    /**Set the launched state*/
     public void setLaunched(boolean launched) {
         this.hasLaunched = launched;
         this.isAttachedToPaddle = !launched;
     }
 
-    // ==================== FREEZE CONTROL ====================
-
-    public void freeze() {
-        isFrozen = true;
-    }
-
-    public void unfreeze() {
-        isFrozen = false;
-    }
-
-    public boolean isFrozen() {
-        return isFrozen;
-    }
-
-    // ==================== SPEED CONTROL ====================
+    // SPEED CONTROL
 
     public double getSpeedMultiplier() {
         return speedMultiplier;
@@ -401,16 +303,6 @@ public class BallComponent extends Component {
                 Math.sin(currentAngle) * newSpeed
             );
         }
-    }
-
-    // ==================== MOVABLE INTERFACE IMPLEMENTATION ====================
-
-    public Point2D getVelocity() {
-        return velocity;
-    }
-
-    public void setVelocity(Point2D velocity) {
-        this.velocity = velocity;
     }
 
     // ==================== HELPER METHODS ====================
@@ -433,33 +325,20 @@ public class BallComponent extends Component {
     }
 
     private void handleOutOfBounds() {
-        if (playfield != null) {
-            // Versus mode - playfield handles this in VersusModeGame
-            // No action here for individual ball; delegate to playfield/game mode.
-            // nothing to do here for the ball itself
+        List<Entity> allBalls = getGameWorld().getEntitiesByType(EntityType.BALL);
+        // If there's more than one ball, just remove this one silently
+        if (allBalls.size() > 1) {
+            entity.removeFromWorld();
+            return;
+        }
+        inc("lives", -1);
+        if (geti("lives") > 0) {
+            SoundManager.playDeathSound();
+        }
+        if (geti("lives") <= 0) {
+            set("gameOver", true);
         } else {
-            // Single-player mode: only lose life if this is the LAST ball
-            // Simply count total balls - if more than 1, just remove this one
-            List<Entity> allBalls = getGameWorld().getEntitiesByType(EntityType.BALL);
-
-            // If there's more than one ball, just remove this one silently
-            if (allBalls.size() > 1) {
-                entity.removeFromWorld();
-                return;
-            }
-
-            // This is the last ball - lose life and reset everything
-            inc("lives", -1);
-            if (geti("lives") > 0) {
-                SoundManager.playDeathSound();
-            }
-
-            if (geti("lives") <= 0) {
-                set("gameOver", true);
-            } else {
-                // Reset paddle, ball, and remove power-up effects
-                resetGameState();
-            }
+            resetGameState();
         }
     }
 

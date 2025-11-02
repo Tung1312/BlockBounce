@@ -5,17 +5,13 @@ import com.almasb.fxgl.entity.Entity;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.GameMode;
-import com.birb_birb.blockbounce.core.BlockBounceApp;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
 import com.birb_birb.blockbounce.utils.MenuManager;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.input.KeyCode;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
-
-import java.util.Set;
 
 public class VersusModeGame extends GameManager {
 
@@ -76,18 +72,6 @@ public class VersusModeGame extends GameManager {
 
         // Reset match-end guard
         endScheduled = false;
-    }
-
-    public boolean isMovingLeft(int playerId) {
-        BlockBounceApp app = (BlockBounceApp) getApp();
-        Set<KeyCode> pressedKeys = app.getPressedKeys();
-        return playerId == 1 ? pressedKeys.contains(KeyCode.A) : pressedKeys.contains(KeyCode.LEFT);
-    }
-
-    public boolean isMovingRight(int playerId) {
-        BlockBounceApp app = (BlockBounceApp) getApp();
-        Set<KeyCode> pressedKeys = app.getPressedKeys();
-        return playerId == 1 ? pressedKeys.contains(KeyCode.D) : pressedKeys.contains(KeyCode.RIGHT);
     }
 
     @Override

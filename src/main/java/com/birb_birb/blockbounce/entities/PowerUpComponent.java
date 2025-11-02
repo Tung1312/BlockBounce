@@ -9,6 +9,7 @@ import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.gamemode.versus.Playfield;
 import com.birb_birb.blockbounce.utils.SoundManager;
 import com.birb_birb.blockbounce.utils.TextureManager;
+import com.birb_birb.blockbounce.physics.CollisionHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.util.Duration;
@@ -64,7 +65,7 @@ public class PowerUpComponent extends Component {
 
             if (targetPlayer != 0 && targetPlayer != paddleId) continue;
 
-            if (entity.isColliding(paddle)) {
+            if (CollisionHandler.checkAABB(entity, paddle) && entity.isColliding(paddle)) {
                 applyEffect(paddle, paddleId);
                 entity.removeFromWorld();
                 break;
