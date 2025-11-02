@@ -110,18 +110,23 @@ public class InputHandler {
                 return;
             }
 
-            // Freeze all movement immediately
-            freezeAllEntities();
+            getGameController().pauseEngine();
 
             boolean success = StoryModeGame.getInstance().saveGame(1);
             if (success) {
-                // Add delay before returning to menu for smoother transition
-                getGameTimer().runOnceAfter(() -> {
-                    getGameController().gotoMainMenu();
-                }, javafx.util.Duration.millis(500));
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(1500);
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                    }
+
+                    javafx.application.Platform.runLater(() -> {
+                        getGameController().gotoMainMenu();
+                    });
+                }).start();
             } else {
-                // If save failed, unfreeze
-                unfreezeAllEntities();
+                getGameController().resumeEngine();
             }
             e.consume();
         } else if (GameMode.getCurrentGameMode() == GameMode.ENDLESS) {
@@ -131,18 +136,23 @@ public class InputHandler {
                 return;
             }
 
-            // Freeze all movement immediately
-            freezeAllEntities();
+            getGameController().pauseEngine();
 
             boolean success = ScoreModeGame.getInstance().saveGame(1);
             if (success) {
-                // Add delay before returning to menu for smoother transition
-                getGameTimer().runOnceAfter(() -> {
-                    getGameController().gotoMainMenu();
-                }, javafx.util.Duration.millis(500));
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(1500);
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                    }
+
+                    javafx.application.Platform.runLater(() -> {
+                        getGameController().gotoMainMenu();
+                    });
+                }).start();
             } else {
-                // If save failed, unfreeze
-                unfreezeAllEntities();
+                getGameController().resumeEngine();
             }
             e.consume();
         }
@@ -223,30 +233,6 @@ public class InputHandler {
             if (ballComponent != null && !ballComponent.hasLaunched()) {
                 ballComponent.launch();
                 SoundManager.playHitSound();
-            }
-        });
-    }
-
-    /**
-     * Freeze all entity movement (for saving).
-     */
-    private void freezeAllEntities() {
-        getGameWorld().getEntitiesByType(EntityType.BALL).forEach(ball -> {
-            BallComponent ballComponent = ball.getComponent(BallComponent.class);
-            if (ballComponent != null) {
-                ballComponent.freeze();
-            }
-        });
-    }
-
-    /**
-     * Unfreeze all entity movement (after failed save).
-     */
-    private void unfreezeAllEntities() {
-        getGameWorld().getEntitiesByType(EntityType.BALL).forEach(ball -> {
-            BallComponent ballComponent = ball.getComponent(BallComponent.class);
-            if (ballComponent != null) {
-                ballComponent.unfreeze();
             }
         });
     }
