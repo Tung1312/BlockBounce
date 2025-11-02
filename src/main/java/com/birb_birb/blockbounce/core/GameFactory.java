@@ -206,16 +206,22 @@ public final class GameFactory {
         String texturePath;
         switch (type) {
             case DOUBLE_BALL:
-                texturePath = GameConstants.POWERUP_MULTIPLY_TEXTURE;
+                texturePath = POWERUP_MULTIPLY_TEXTURE;
                 break;
             case SMALL_PADDLE:
-                texturePath = GameConstants.POWERUP_SHRINK_TEXTURE;
+                texturePath = POWERUP_SHRINK_TEXTURE;
                 break;
             case FAST_BALL:
-                texturePath = GameConstants.POWERUP_SPEED_TEXTURE;
+                texturePath = POWERUP_SPEED_TEXTURE;
+                break;
+            case EXTRA_LIFE:
+                texturePath = POWERUP_LIFE_TEXTURE;
+                break;
+            case DOUBLE_POINTS:
+                texturePath = POWERUP_DOUBLE_TEXTURE;
                 break;
             default:
-                texturePath = GameConstants.BALL_TEXTURE;
+                texturePath = BALL_TEXTURE;
                 break;
         }
 

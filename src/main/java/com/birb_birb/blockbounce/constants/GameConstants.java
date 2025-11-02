@@ -24,7 +24,7 @@ public class GameConstants {
     public static final String MAIN_MENU_BACKGROUND = "/assets/textures/menus/main_menu_background.png";
     public static final String SCORE_MODE_BACKGROUND = "/assets/textures/menus/score_mode_background.png";
     public static final String VERSUS_MODE_BACKGROUND = "/assets/textures/menus/versus_mode_template.png";
-    public static final String HOW_TO_PLAY = "/assets/textures/menus/how_to_play.png";
+    // public static final String HOW_TO_PLAY = "/assets/textures/menus/how_to_play.png";
 
     public static final String STORY_MODE_BACKGROUND = "/assets/textures/menus/story_mode_background.png";
     public static final String STORY_MODE_LEVELS = "/assets/textures/menus/levels/unlocked_level_8.png";
@@ -44,6 +44,8 @@ public class GameConstants {
     public static final String POWERUP_MULTIPLY_TEXTURE = "/entities/powerup/multiply.png";
     public static final String POWERUP_SHRINK_TEXTURE = "/entities/powerup/shrink.png";
     public static final String POWERUP_SPEED_TEXTURE = "/entities/powerup/speed.png";
+    public static final String POWERUP_DOUBLE_TEXTURE = "/entities/powerup/double.png";
+    public static final String POWERUP_LIFE_TEXTURE = "/entities/powerup/life.png";
 
     public static final String MAIN_FONT_PATH = "/assets/fonts/Daydream.ttf";
     public static final String SECONDARY_FONT_PATH = "/assets/fonts/MinecraftTen.ttf";
