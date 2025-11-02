@@ -2,6 +2,7 @@ package com.birb_birb.blockbounce.ui.menus;
 
 import com.almasb.fxgl.app.scene.MenuType;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.utils.ButtonManager;
 import com.birb_birb.blockbounce.utils.MenuManager;
 import com.birb_birb.blockbounce.utils.SoundManager;
@@ -9,9 +10,9 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 
-/**
- * Main menu of the game with options for different game modes.
- */
+import static com.almasb.fxgl.dsl.FXGL.getGameController;
+
+/**Main menu of the game with options for different game modes*/
 public class MainMenu extends MenuManager {
 
     private static final double ICON_BUTTON_SPACING = 228;
@@ -50,7 +51,11 @@ public class MainMenu extends MenuManager {
         // Set button actions
         storyModeButton.setOnAction(e -> ButtonManager.navigateToStoryMode());
         scoreModeButton.setOnAction(e -> ButtonManager.navigateToScoreMode());
-        versusModeButton.setOnAction(e -> ButtonManager.navigateToVersusMode());
+        versusModeButton.setOnAction(e -> {
+            GameMode.setCurrentGameMode(GameMode.VERSUS);
+            getGameController().startNewGame();
+        });
+        //versusModeButton.setOnAction(e -> ButtonManager.navigateToVersusMode());
 
         // Add buttons to the root pane
         root.getChildren().addAll(storyModeButton, scoreModeButton, versusModeButton);
@@ -59,9 +64,6 @@ public class MainMenu extends MenuManager {
         root.getChildren().add(secondaryButtonBox);
     }
 
-    /**
-     * Create HBox containing Help and How to Play  buttons
-     */
     private HBox createSecondaryButtons() {
         HBox hbox = new HBox(ICON_BUTTON_SPACING);
         hbox.setAlignment(Pos.CENTER);
@@ -75,18 +77,15 @@ public class MainMenu extends MenuManager {
         Button settingButton = createButton();
         settingButton.setOnAction(e -> ButtonManager.openSettings());
 
-        // How to play button
-        Button howToPlayButton = createButton();
-        howToPlayButton.setOnAction(e -> ButtonManager.showGithub());
+        // GitHub button
+        Button gitHubButton = createButton();
+        gitHubButton.setOnAction(e -> ButtonManager.showGithub());
 
-        hbox.getChildren().addAll(settingButton, howToPlayButton);
+        hbox.getChildren().addAll(settingButton, gitHubButton);
 
         return hbox;
     }
 
-    /**
-     * Create button
-     */
     private Button createButton() {
         Button button = new Button();
         button.setPrefWidth(ICON_BUTTON_SIZE);

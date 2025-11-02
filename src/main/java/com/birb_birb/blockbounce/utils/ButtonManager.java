@@ -1,6 +1,5 @@
 package com.birb_birb.blockbounce.utils;
 
-import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.ui.menus.ScoreModeMenu;
 import com.birb_birb.blockbounce.ui.menus.StoryModeMenu;
@@ -9,9 +8,7 @@ import javafx.scene.control.Button;
 import javafx.util.Duration;
 
 import java.awt.Desktop;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
