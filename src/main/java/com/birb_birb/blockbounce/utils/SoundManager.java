@@ -18,12 +18,9 @@ public class SoundManager {
 
     private static boolean initialized = false;
 
-    /**
-     * Initialize the sound manager and load sound assets
-     */
+    /**Initialize sound manager and load sound assets*/
     public static void initialize() {
         if (initialized) {
-            System.out.println("SoundManager already initialized");
             return;
         }
 
@@ -45,75 +42,39 @@ public class SoundManager {
     }
 
     public static void playHoverSound() {
-        try {
-            getAudioPlayer().playSound(hoverSound);
-        } catch (Exception e) {
-            System.err.println("Failed to play sound: " + e.getMessage());
-        }
+        if (hoverSound != null) getAudioPlayer().playSound(hoverSound);
     }
 
     public static void playClickSound() {
-        try {
-            getAudioPlayer().playSound(clickSound);
-        } catch (Exception e) {
-            System.err.println("Failed to play sound: " + e.getMessage());
-        }
+        if (clickSound != null) getAudioPlayer().playSound(clickSound);
     }
 
     public static void playHitSound() {
-        try {
-            getAudioPlayer().playSound(ballHitSound);
-        } catch (Exception e) {
-            System.err.println("Failed to play sound: " + e.getMessage());
-        }
+        if (ballHitSound != null) getAudioPlayer().playSound(ballHitSound);
     }
 
     public static void playBreakSound() {
-        try {
-            getAudioPlayer().playSound(breakSound);
-        } catch (Exception e) {
-            System.err.println("Failed to play sound: " + e.getMessage());
-        }
+        if (breakSound != null) getAudioPlayer().playSound(breakSound);
     }
 
     public static void playDeathSound() {
-        try {
-            getAudioPlayer().playSound(deathSound);
-        } catch (Exception e) {
-            System.err.println("Failed to play sound: " + e.getMessage());
-        }
+        if (deathSound != null) getAudioPlayer().playSound(deathSound);
     }
 
     public static void playLooseSound() {
-        try {
-            getAudioPlayer().playSound(looseSound);
-        } catch (Exception e) {
-            System.err.println("Failed to play sound: " + e.getMessage());
-        }
+        if (looseSound != null) getAudioPlayer().playSound(looseSound);
     }
 
     public static void playCompleteSound() {
-        try {
-            getAudioPlayer().playSound(completeSound);
-        } catch (Exception e) {
-            System.err.println("Failed to play sound: " + e.getMessage());
-        }
+        if (completeSound != null) getAudioPlayer().playSound(completeSound);
     }
 
     public static void playOrbSound() {
-        try {
-            getAudioPlayer().playSound(orbSound);
-        } catch (Exception e) {
-            System.err.println("Failed to play sound: " + e.getMessage());
-        }
+        if (orbSound != null) getAudioPlayer().playSound(orbSound);
     }
 
     public static void playAnvilSound() {
-        try {
-            getAudioPlayer().playSound(anvilSound);
-        } catch (Exception e) {
-            System.err.println("Failed to play sound: " + e.getMessage());
-        }
+        if (anvilSound != null) getAudioPlayer().playSound(anvilSound);
     }
 
     public static boolean isInitialized() {

@@ -78,7 +78,6 @@ public class GameConstants {
     public static final double PADDLE_WIDTH = 172;
     public static final double PADDLE_HEIGHT = 32;
 
-    // Base speed for the ball
     public static final double BASE_SPEED = 5.0;
     public static final double POWER_UP_FALL_SPEED = 2.0;
 
