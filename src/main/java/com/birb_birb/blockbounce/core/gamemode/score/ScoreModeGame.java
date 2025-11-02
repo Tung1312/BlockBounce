@@ -250,7 +250,7 @@ public class ScoreModeGame extends GameManager {
         getGameTimer().runAtInterval(() -> {
             if (getGameWorld().getEntitiesByType(EntityType.BRICK).isEmpty()
                 && !getb("gameOver")) {
-                spawnMoreBricks();
+                GameFactory.createBricks();
                 // Show continue message (no completion callback)
                 displayMessage("CONTINUE!", Color.LIGHTGREEN, 1.5, null);
             }
@@ -262,14 +262,6 @@ public class ScoreModeGame extends GameManager {
         int minutes = totalSeconds / 60;
         int seconds = totalSeconds % 60;
         timerText.setText(String.format("Time: %02d:%02d", minutes, seconds));
-    }
-
-    private void spawnMoreBricks() {
-        // Create new bricks for endless mode
-        GameFactory.createBricks();
-
-        // Show continue message
-        displayMessage("CONTINUE!", Color.LIGHTGREEN, 1.5, null);
     }
 
     @Override

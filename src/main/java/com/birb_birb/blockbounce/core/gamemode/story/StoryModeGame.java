@@ -7,9 +7,6 @@ import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
 import com.birb_birb.blockbounce.utils.MenuManager;
 import com.birb_birb.blockbounce.utils.SoundManager;
-import com.birb_birb.blockbounce.utils.saveload.SaveData;
-import com.birb_birb.blockbounce.utils.saveload.StateCapture;
-import com.birb_birb.blockbounce.utils.saveload.SaveGameManager;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
@@ -19,7 +16,6 @@ public class StoryModeGame extends GameManager {
 
     private static final StoryModeGame INSTANCE = new StoryModeGame();
     private Text levelText;
-    private int currentSaveSlot = 1; // Default save slot
 
     private StoryModeGame() {}
 
@@ -30,106 +26,8 @@ public class StoryModeGame extends GameManager {
         INSTANCE.initialize();
     }
 
-    /**
-     * Start game from a saved state
-     * @param slot Save slot to load from (1-3)
-     */
-    public static void startFromSave(int slot) {
-        if (GameMode.getCurrentGameMode() != GameMode.STORY) {
-            System.err.println("Warning: StoryModeGame.startFromSave() called but current mode is " + GameMode.getCurrentGameMode());
-        }
-        INSTANCE.currentSaveSlot = slot;
-        INSTANCE.initialize();
-        INSTANCE.loadGame(slot);
-    }
-
-    /**
-     * Get the singleton instance
-     */
     public static StoryModeGame getInstance() {
         return INSTANCE;
-    }
-
-    /**
-     * Save current game state to a slot
-     * @param slot Save slot number (1-3)
-     */
-    public boolean saveGame(int slot) {
-        SaveData saveData = StateCapture.captureStoryModeState();
-        boolean success = SaveGameManager.saveGame(slot, saveData);
-
-        if (success) {
-            currentSaveSlot = slot;
-            displayMessage("Game Saved!", Color.LIGHTGREEN, 1.5, null);
-        } else {
-            displayMessage("Save Failed!", Color.RED, 1.5, null);
-        }
-
-        return success;
-    }
-
-    /**
-     * Load game state from a slot
-     * @param slot Save slot number (1-3)
-     */
-    public boolean loadGame(int slot) {
-        SaveData saveData = SaveGameManager.loadGame(slot);
-
-        if (saveData != null) {
-            StateCapture.restoreStoryModeState(saveData);
-            currentSaveSlot = slot;
-
-            // Check if ball was launched when saved
-            if (saveData.isBallLaunched()) {
-                // Temporarily pause ball movement
-                var balls = getGameWorld().getEntitiesByType(com.birb_birb.blockbounce.constants.EntityType.BALL);
-                if (!balls.isEmpty()) {
-                    com.birb_birb.blockbounce.entities.BallComponent ballComponent =
-                        balls.get(0).getComponent(com.birb_birb.blockbounce.entities.BallComponent.class);
-                    if (ballComponent != null) {
-                        // Save current velocity
-                        final javafx.geometry.Point2D savedVelocity = ballComponent.getVelocity();
-                        // Temporarily stop the ball
-                        ballComponent.setVelocity(new javafx.geometry.Point2D(0, 0));
-
-                        // Show countdown 3-2-1-GO
-                        displayCountdown(() -> {
-                            // After countdown, restore ball velocity
-                            if (ballComponent != null) {
-                                ballComponent.setVelocity(savedVelocity);
-                            }
-                            displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.0, null);
-                        });
-                    } else {
-                        displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
-                    }
-                } else {
-                    displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
-                }
-            } else {
-                // Ball wasn't launched, just show normal message
-                displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
-            }
-
-            return true;
-        } else {
-            displayMessage("Load Failed!", Color.RED, 1.5, null);
-            return false;
-        }
-    }
-
-    public void autoSave() {
-        saveGame(currentSaveSlot);
-    }
-
-    public int getCurrentSaveSlot() {
-        return currentSaveSlot;
-    }
-
-    public void setCurrentSaveSlot(int slot) {
-        if (slot >= 1 && slot <= 3) {
-            this.currentSaveSlot = slot;
-        }
     }
 
     @Override
@@ -176,9 +74,6 @@ public class StoryModeGame extends GameManager {
 
     private void nextLevel() {
         inc("level", 1);
-
-        // Auto-save when completing a level
-        autoSave();
 
         // Play complete sound when finishing a story mode level
         SoundManager.playCompleteSound();

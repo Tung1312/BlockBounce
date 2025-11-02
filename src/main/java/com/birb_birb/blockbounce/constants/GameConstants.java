@@ -81,6 +81,14 @@ public class GameConstants {
     public static final double BASE_SPEED = 5.0;
     public static final double POWER_UP_FALL_SPEED = 2.0;
 
+    public static final double MAX_VERTICAL_ANGLE = 75.0;
+    public static final double MIN_VERTICAL_ANGLE = 15.0;
+    public static final double MAX_SPEED_MULTIPLIER = 1.2;
+    public static final double MAX_HIT_OFFSET = 0.75;
+    public static final double BOUNCE_ANGLE_RANGE = Math.PI / 3;
+    public static final double MIN_UPWARD_VELOCITY = -2.0;
+    public static final double COLLISION_EPSILON = 0.01;
+
     private GameConstants() {
     }
 }

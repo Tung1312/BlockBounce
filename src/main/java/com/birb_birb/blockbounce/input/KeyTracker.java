@@ -1,4 +1,4 @@
-package com.birb_birb.blockbounce.utils.tracker;
+package com.birb_birb.blockbounce.input;
 
 import javafx.scene.input.KeyCode;
 import java.util.HashSet;
