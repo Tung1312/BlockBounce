@@ -69,10 +69,14 @@ public class InputHandler {
         if (GameMode.getCurrentGameMode() == GameMode.VERSUS) {
             var p1 = VersusModeGame.INSTANCE.getPlayer1Playfield();
             if (p1 != null && p1.getBall() != null) {
-                BallComponent bc = p1.getBall().getComponent(BallComponent.class);
-                if (bc != null && !bc.hasLaunched()) {
-                    bc.launch();
-                    SoundManager.playHitSound();
+                try {
+                    BallComponent bc = p1.getBall().getComponent(BallComponent.class);
+                    if (bc != null && !bc.hasLaunched()) {
+                        bc.launch();
+                        SoundManager.playHitSound();
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // Ball entity exists but doesn't have BallComponent attached
                 }
             }
         } else {
@@ -86,10 +90,14 @@ public class InputHandler {
         if (GameMode.getCurrentGameMode() == GameMode.VERSUS) {
             var p2 = VersusModeGame.INSTANCE.getPlayer2Playfield();
             if (p2 != null && p2.getBall() != null) {
-                BallComponent bc = p2.getBall().getComponent(BallComponent.class);
-                if (bc != null && !bc.hasLaunched()) {
-                    bc.launch();
-                    SoundManager.playHitSound();
+                try {
+                    BallComponent bc = p2.getBall().getComponent(BallComponent.class);
+                    if (bc != null && !bc.hasLaunched()) {
+                        bc.launch();
+                        SoundManager.playHitSound();
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // Ball entity exists but doesn't have BallComponent attached
                 }
             }
             e.consume();
@@ -200,4 +208,3 @@ public class InputHandler {
         initialized = false;
     }
 }
-
