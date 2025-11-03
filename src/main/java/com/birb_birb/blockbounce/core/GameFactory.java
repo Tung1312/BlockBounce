@@ -39,6 +39,8 @@ public final class GameFactory {
                 return GameConstants.ENDSTONE_TEXTURE;
             case OBSIDIAN:
                 return GameConstants.OBSIDIAN_TEXTURE;
+            case LUCKY:
+                return GameConstants.LUCKY_BLOCK_TEXTURE;
             default:
                 return GameConstants.WOOD_TEXTURE;
         }
@@ -222,6 +224,7 @@ public final class GameFactory {
             case "NETHERBRICK" -> BrickComponent.BrickType.NETHERBRICK;
             case "ENDSTONE" -> BrickComponent.BrickType.ENDSTONE;
             case "OBSIDIAN" -> BrickComponent.BrickType.OBSIDIAN;
+            case "LUCKY" -> BrickComponent.BrickType.LUCKY;
             default -> BrickComponent.BrickType.WOOD;
         };
     }

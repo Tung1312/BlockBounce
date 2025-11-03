@@ -32,6 +32,7 @@ public class LevelData {
         BRICK_TYPE_MAP.put('N', "NETHERBRICK");
         BRICK_TYPE_MAP.put('E', "ENDSTONE");
         BRICK_TYPE_MAP.put('O', "OBSIDIAN");
+        BRICK_TYPE_MAP.put('L', "LUCKY");
 
         DURABILITY_MAP.put("WOOD", 1);
         DURABILITY_MAP.put("STONE", 2);
@@ -39,6 +40,7 @@ public class LevelData {
         DURABILITY_MAP.put("NETHERBRICK", 2);
         DURABILITY_MAP.put("ENDSTONE", 2);
         DURABILITY_MAP.put("OBSIDIAN", -1);
+        DURABILITY_MAP.put("LUCKY", 1);
     }
 
     /**
@@ -83,6 +85,7 @@ public class LevelData {
             case "NETHERBRICK" -> "DARK_RED";
             case "ENDSTONE" -> "YELLOW";
             case "OBSIDIAN" -> "BLACK";
+            case "LUCKY" -> "GOLD";
             default -> "WHITE";
         };
     }

@@ -14,7 +14,7 @@ public class BlockData implements Serializable {
     private double y;
     private String color; // Color as string (e.g., "RED", "BLUE", "GREEN")
     private int hits; // Number of hits remaining (deprecated, use durability instead)
-    private String brickType; // "WOOD", "STONE", "NETHERACK", "NETHERBRICK", "ENDSTONE", "OBSIDIAN"
+    private String brickType; // "WOOD", "STONE", "NETHERACK", "NETHERBRICK", "ENDSTONE", "OBSIDIAN", "LUCKY"
     private int durability; // Current durability of the brick
 
     public BlockData() {}
