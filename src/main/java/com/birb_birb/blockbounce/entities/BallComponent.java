@@ -155,7 +155,15 @@ public class BallComponent extends PhysicsComponent {
             if (entity.isColliding(brick)) {
                 velocity = CollisionHandler.resolveBrickCollision(entity, brick, velocity);
 
-                destroyBrick(brick);
+                BrickComponent brickComponent = brick.getComponent(BrickComponent.class);
+                if (brickComponent != null) {
+                    brickComponent.takeDamage();
+
+                    // only destroy bricks with
+                    if (brickComponent.getDurability() == 0) {
+                        destroyBrick(brick);
+                    }
+                }
 
                 hasCollidedThisFrame = true;
                 collisionCooldown = 0.05;

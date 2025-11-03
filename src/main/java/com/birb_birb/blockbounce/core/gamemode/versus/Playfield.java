@@ -154,10 +154,21 @@ public class Playfield {
         double offsetY = y + BRICK_OFFSET_Y;
         double offsetX = x + BRICK_OFFSET_X;
 
-        var baseTexture = getAssetLoader().loadTexture(GameConstants.BRICK_TEXTURE);
+        for (int row = 1; row <= BRICK_ROWS; row++) {
+            for (int col = 1; col <= BRICK_COLS; col++) {
+                BrickComponent.BrickType type;
+                String texturePath;
 
-        for (int row = 0; row < BRICK_ROWS; row++) {
-            for (int col = 0; col < BRICK_COLS; col++) {
+                if (row > 3) {
+                    type = BrickComponent.BrickType.STONE;
+                    texturePath = GameConstants.STONE_TEXTURE;
+                } else {
+                    type = BrickComponent.BrickType.WOOD;
+                    texturePath = GameConstants.WOOD_TEXTURE;
+                }
+
+                var baseTexture = getAssetLoader().loadTexture(texturePath);
+
                 Entity brick = entityBuilder()
                         .type(EntityType.BRICK)
                         .at(offsetX + col * GameConstants.BRICK_SIZE,
@@ -167,7 +178,7 @@ public class Playfield {
                                 GameConstants.BRICK_SIZE))
                         .bbox(new HitBox(BoundingShape.box(GameConstants.BRICK_SIZE,
                                 GameConstants.BRICK_SIZE)))
-                        .with(new BrickComponent())
+                        .with(new BrickComponent(type))
                         .collidable()
                         .buildAndAttach();
 

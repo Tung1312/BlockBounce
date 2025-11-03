@@ -11,7 +11,7 @@
 
 ```bash
 // Clone dự án này về máy
-git clone https://github.com/your-username/BlockBounce.git
+git clone https://github.com/Tung1312/BlockBounce.git
 
 // Di chuyển đến thư mục chứa dự án vừa clone
 cd BlockBounce
@@ -33,22 +33,25 @@ hoặc
 ![a.png](src/main/resources/docs/buttons/a.png)![d.png](src/main/resources/docs/buttons/d.png)
 - **Phóng bóng:**\
 ![space.png](src/main/resources/docs/buttons/space.png)
-- **Lưu game:**\
-![s.png](src/main/resources/docs/buttons/s.png) (Score Mode only)
 
 
 - **Các elements trong game:**
 
-| Texture                                                                                   | Element              | Mô tả                                                         |
-|-------------------------------------------------------------------------------------------|----------------------|---------------------------------------------------------------|
-| <img src="src/main/resources/assets/textures/entities/ball.png" width="28" />             | Bóng tuyết (Ball)    | Bóng tuyết dùng để phá gạch. Bật lại khi chạm tường/pít tông. |
-| <img src="src/main/resources/assets/textures/entities/paddle.png" width="56" />           | Pít tông (Paddle)    | Vật thể người chơi điều khiển sang trái/phải để đỡ bóng.      |
-| <img src="src/main/resources/assets/textures/entities/brick.png" width="28" />            | Khối gỗ (Brick)      | Khối gạch là mục tiêu chính cần phá để nhận điểm hoặc qua màn. |
-| <img src="src/main/resources/assets/textures/entities/powerup/multiply.png" width="28" /> | Vật phẩm Double Ball | Nhân đôi số lượng bóng trên màn hình.                       |
-| <img src="src/main/resources/assets/textures/entities/powerup/speed.png" width="28" />    | Vật phẩm Fast Ball   | Tăng tốc độ của bóng trong 8 giây.                            |
-| <img src="src/main/resources/assets/textures/entities/powerup/life.png" width="28" />     | Vật phẩm Extra Life  | Tăng thêm 1 mạng cho người chơi.                              |
-| <img src="src/main/resources/assets/textures/entities/powerup/double.png" width="28" />   | Vật phẩm Double Points | Nhân đôi điểm nhận được trong một thời gian ngắn.            |
-| <img src="src/main/resources/assets/textures/entities/powerup/shrink.png" width="28" />   | Vật phẩm Small Paddle | Thu nhỏ pít tông 40% trong 10 giây.                           |
+| Texture                                                                                                    | Tên               | Mô tả                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+|------------------------------------------------------------------------------------------------------------|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <p align="center"><img src="src/main/resources/assets/textures/entities/ball.png" width="28" /></p>        | Bóng tuyết (Ball) | Bóng tuyết dùng để phá gạch. Bật lại khi chạm tường/pít tông.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| <p align="center"><img src="src/main/resources/assets/textures/entities/paddle.png" width="56" /></p>      | Pít tông (Paddle) | Vật thể người chơi điều khiển sang trái/phải để đỡ bóng.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| <p align="center"><img src="src/main/resources/assets/textures/entities/blocks/wood.png" width="28" /></p> | Khối gạch (Brick) | Khối gạch là mục tiêu chính cần phá để nhận điểm hoặc qua màn.<br/> Các loại gạch bao gồm:<br/> <img src="src/main/resources/assets/textures/entities/blocks/wood.png" width="28" /> <img src="src/main/resources/assets/textures/entities/blocks/netherack.png" width="28" /> có độ bền = 1. <br/>  <img src="src/main/resources/assets/textures/entities/blocks/stone.png" width="28" /> <img src="src/main/resources/assets/textures/entities/blocks/netherbrick.png" width="28" /> <img src="src/main/resources/assets/textures/entities/blocks/endstone.png" width="28" /> có độ bền = 2. <br/> <img src="src/main/resources/assets/textures/entities/blocks/obsidian.png" width="28" /> không thể bị phá hủy. (độ bền = -1) |
+
+- **Các vật phẩm rơi ra trong game:**
+
+| Texture                                                                                                         | Tên                    | Mô tả                                                         |
+|-----------------------------------------------------------------------------------------------------------------|------------------------|---------------------------------------------------------------|
+| <p align="center"><img src="src/main/resources/assets/textures/entities/powerup/multiply.png" width="28" /></p> |  Double Ball   | Nhân đôi số lượng bóng trên màn hình.                       |
+| <p align="center"><img src="src/main/resources/assets/textures/entities/powerup/speed.png" width="28" /></p>    |  Fast Ball     | Tăng tốc độ của bóng trong 8 giây.                            |
+| <p align="center"><img src="src/main/resources/assets/textures/entities/powerup/life.png" width="28" /></p>     |  Extra Life    | Tăng thêm 1 mạng cho người chơi.                              |
+| <p align="center"><img src="src/main/resources/assets/textures/entities/powerup/double.png" width="28" /></p>   |  Double Points | Nhân đôi điểm nhận được trong một thời gian ngắn.            |
+| <p align="center"><img src="src/main/resources/assets/textures/entities/powerup/shrink.png" width="28" /></p>   |  Small Paddle  | Thu nhỏ pít tông 40% trong 10 giây.                           |
 
 ## I. Story Mode
 Chế độ chơi theo tiến trình đặt trước, bao gồm 8 màn chơi khác biệt.
@@ -61,8 +64,8 @@ Chế độ chơi endless tính điểm, bản đồ sẽ được tái tạo kh
 Chế độ có bảng xếp hạng (local) để so sánh điểm các màn chơi của những người chơi khác nhau.
 ![score_mode_menu_docs.png](src/main/resources/docs/score_mode_menu_docs.png)
 ![score_mode_game_docs.png](src/main/resources/docs/score_mode_game_docs.png)
-Người chơi có thể lưu lại màn chơi của mình sao đó load lại để tiếp tục chơi tiếp ở lần tiếp theo.
-
+Người chơi có thể lưu lại màn chơi của mình sao đó load lại để tiếp tục chơi tiếp ở lần tiếp theo bằng:\
+![s.png](src/main/resources/docs/buttons/s.png)
 ## III. Versus Mode
 Chế độ chơi 2 người để bạn có thể cùng chơi game với 1 người khác trên cùng 1 màn hình.
 ![versus_mode_game_docs.png](src/main/resources/docs/versus_mode_game_docs.png)

@@ -18,6 +18,28 @@ public final class GameFactory {
 
     private GameFactory() {}
 
+    /**
+     * Get the texture path for a given brick type
+     */
+    private static String getTexturePathForBrickType(BrickComponent.BrickType type) {
+        switch (type) {
+            case WOOD:
+                return GameConstants.WOOD_TEXTURE;
+            case STONE:
+                return GameConstants.STONE_TEXTURE;
+            case NETHERACK:
+                return GameConstants.NETHERACK_TEXTURE;
+            case NETHERBRICK:
+                return GameConstants.NETHERBRICK_TEXTURE;
+            case ENDSTONE:
+                return GameConstants.ENDSTONE_TEXTURE;
+            case OBSIDIAN:
+                return GameConstants.OBSIDIAN_TEXTURE;
+            default:
+                return GameConstants.WOOD_TEXTURE;
+        }
+    }
+
     public static Entity createBackground() {
         Texture backgroundTexture = TextureManager.loadTexture(
                 GameConstants.BACKGROUND_TEXTURE,
@@ -86,15 +108,35 @@ public final class GameFactory {
     }
 
     public static void createBricks() {
-        Texture baseTexture = getAssetLoader().loadTexture(GameConstants.BRICK_TEXTURE);
-
-        int cols = 15;   // number of bricks per row
-        int rows = 5;    // number of brick rows
+        int cols = 10;   // number of bricks per row
+        int rows = 6;    // number of brick rows
         double offsetY = GameConstants.OFFSET_TOP + 80;
         double offsetX = GameConstants.OFFSET_LEFT + 60;
 
-        for (int y = 0; y < rows; y++) {
-            for (int x = 0; x < cols; x++) {
+        for (int y = 1; y <= rows; y++) {
+            for (int x = 1; x <= cols; x++) {
+                BrickComponent.BrickType type = BrickComponent.BrickType.WOOD;
+
+                switch (y) {
+                    case 2:
+                        type = BrickComponent.BrickType.STONE;
+                        break;
+                    case 3:
+                        type = BrickComponent.BrickType.NETHERACK;
+                        break;
+                    case 4:
+                        type = BrickComponent.BrickType.NETHERBRICK;
+                        break;
+                    case 5:
+                        type = BrickComponent.BrickType.ENDSTONE;
+                        break;
+                    case 6:
+                        type = BrickComponent.BrickType.OBSIDIAN;
+                        break;
+                }
+
+                String texturePath = getTexturePathForBrickType(type);
+                Texture baseTexture = getAssetLoader().loadTexture(texturePath);
                 Texture texture = TextureManager.loadTextureCopy(baseTexture, BRICK_SIZE, BRICK_SIZE);
 
                 entityBuilder()
@@ -102,7 +144,7 @@ public final class GameFactory {
                         .at(offsetX + x * BRICK_SIZE, offsetY + y * BRICK_SIZE)
                         .view(texture)
                         .bbox(new HitBox(BoundingShape.box(BRICK_SIZE, BRICK_SIZE)))
-                        .with(new BrickComponent())
+                        .with(new BrickComponent(type))
                         .collidable()
                         .buildAndAttach();
             }
@@ -114,7 +156,17 @@ public final class GameFactory {
      * Used for restoring saved game state
      */
     public static Entity createBrick(double x, double y, Color color) {
-        Texture baseTexture = getAssetLoader().loadTexture(GameConstants.BRICK_TEXTURE);
+        return createBrick(x, y, color, BrickComponent.BrickType.WOOD);
+    }
+
+    /**
+     * Create a single brick at specified position with color and type
+     * Used for restoring saved game state
+     */
+    public static Entity createBrick(double x, double y, Color color, BrickComponent.BrickType type) {
+        String texturePath = getTexturePathForBrickType(type);
+
+        Texture baseTexture = getAssetLoader().loadTexture(texturePath);
         Texture texture = TextureManager.loadTextureCopy(baseTexture, BRICK_SIZE, BRICK_SIZE);
 
         return entityBuilder()
@@ -122,7 +174,7 @@ public final class GameFactory {
                 .at(x, y)
                 .view(texture)
                 .bbox(new HitBox(BoundingShape.box(BRICK_SIZE, BRICK_SIZE)))
-                .with(new BrickComponent())
+                .with(new BrickComponent(type))
                 .collidable()
                 .buildAndAttach();
     }
