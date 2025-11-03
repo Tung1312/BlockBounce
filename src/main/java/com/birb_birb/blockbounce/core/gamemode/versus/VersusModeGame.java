@@ -156,40 +156,7 @@ public class VersusModeGame extends GameManager {
         if (playfield.isGameOver()) return;
 
         if (playfield.isBallOutOfBounds()) {
-            // Count how many balls are still alive for this player
-            int playerId = playfield.getPlayerId();
-            java.util.List<Entity> allBalls = getGameWorld().getEntitiesByType(EntityType.BALL);
-            int aliveBalls = 0;
-
-            for (Entity b : allBalls) {
-                // Check if ball belongs to this player
-                try {
-                    int ballPlayerId = b.getInt("playerId");
-                    if (ballPlayerId == playerId) {
-                        // Check if ball is not out of bounds yet
-                        if (b.getY() <= playfield.getBottomBoundary()) {
-                            aliveBalls++;
-                        }
-                    }
-                } catch (Exception ignored) {}
-            }
-
-            // If this is NOT the last ball, just remove it and continue
-            if (aliveBalls > 1) {
-                // Find and remove the out-of-bounds ball
-                for (Entity b : allBalls) {
-                    try {
-                        int ballPlayerId = b.getInt("playerId");
-                        if (ballPlayerId == playerId && b.getY() > playfield.getBottomBoundary()) {
-                            b.removeFromWorld();
-                            break;
-                        }
-                    } catch (Exception ignored) {}
-                }
-                return; // Don't lose life or reset
-            }
-
-            // This is the last ball - lose life and respawn
+            // Ball went out of bounds - lose life and respawn
             playfield.loseLife();
             set(propertyPrefix + "Lives", playfield.getLives());
 

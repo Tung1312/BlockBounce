@@ -333,6 +333,13 @@ public class BallComponent extends PhysicsComponent {
     }
 
     private void handleOutOfBounds() {
+        // In Versus mode, DON'T remove the ball - let Playfield handle everything
+        if (playfield != null) {
+            // Do nothing - Playfield will detect and handle it
+            return;
+        }
+
+        // Single-player mode logic
         List<Entity> allBalls = getGameWorld().getEntitiesByType(EntityType.BALL);
         // If there's more than one ball, just remove this one silently
         if (allBalls.size() > 1) {
