@@ -1,6 +1,7 @@
 package com.birb_birb.blockbounce.saveload;
 
 import com.birb_birb.blockbounce.utils.saveload.SaveData;
+import com.birb_birb.blockbounce.utils.saveload.BlockData;
 import com.birb_birb.blockbounce.utils.saveload.SaveGameManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -185,8 +186,8 @@ public class SaveLoadSystemTest {
         SaveData data = new SaveData();
 
         // Add some block data
-        SaveData.BlockData block1 = new SaveData.BlockData(100, 200, "RED", 1);
-        SaveData.BlockData block2 = new SaveData.BlockData(150, 250, "BLUE", 2);
+        BlockData block1 = new BlockData(100, 200, "RED", 1);
+        BlockData block2 = new BlockData(150, 250, "BLUE", 2);
 
         data.getBlocks().add(block1);
         data.getBlocks().add(block2);
@@ -198,13 +199,13 @@ public class SaveLoadSystemTest {
         assertNotNull(loaded);
         assertEquals(2, loaded.getBlocks().size());
 
-        SaveData.BlockData loadedBlock1 = loaded.getBlocks().get(0);
+        BlockData loadedBlock1 = loaded.getBlocks().get(0);
         assertEquals(100, loadedBlock1.getX(), 0.01);
         assertEquals(200, loadedBlock1.getY(), 0.01);
         assertEquals("RED", loadedBlock1.getColor());
         assertEquals(1, loadedBlock1.getHits());
 
-        SaveData.BlockData loadedBlock2 = loaded.getBlocks().get(1);
+        BlockData loadedBlock2 = loaded.getBlocks().get(1);
         assertEquals(150, loadedBlock2.getX(), 0.01);
         assertEquals(250, loadedBlock2.getY(), 0.01);
         assertEquals("BLUE", loadedBlock2.getColor());
