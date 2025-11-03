@@ -8,8 +8,12 @@ import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.entities.*;
 import com.birb_birb.blockbounce.utils.TextureManager;
+import com.birb_birb.blockbounce.utils.saveload.BlockData;
+import com.birb_birb.blockbounce.utils.saveload.LevelData;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+
+import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static com.birb_birb.blockbounce.constants.GameConstants.*;
@@ -177,6 +181,49 @@ public final class GameFactory {
                 .with(new BrickComponent(type))
                 .collidable()
                 .buildAndAttach();
+    }
+
+    /**Create bricks from a LevelData JSON configuration*/
+    public static void createBricksFromLevel(LevelData levelData) {
+        if (levelData == null) {
+            System.err.println("LevelData is null, falling back to default brick creation");
+            createBricks();
+            return;
+        }
+
+        List<BlockData> bricks = levelData.getBricks();
+        for (BlockData blockData : bricks) {
+            BrickComponent.BrickType type = parseBrickType(blockData.getBrickType());
+            String texturePath = getTexturePathForBrickType(type);
+
+            Texture baseTexture = getAssetLoader().loadTexture(texturePath);
+            Texture texture = TextureManager.loadTextureCopy(baseTexture, BRICK_SIZE, BRICK_SIZE);
+
+            entityBuilder()
+                    .type(EntityType.BRICK)
+                    .at(blockData.getX(), blockData.getY())
+                    .view(texture)
+                    .bbox(new HitBox(BoundingShape.box(BRICK_SIZE, BRICK_SIZE)))
+                    .with(new BrickComponent(type))
+                    .collidable()
+                    .buildAndAttach();
+        }
+    }
+
+    /**Parse brick type string to BrickType enum*/
+    private static BrickComponent.BrickType parseBrickType(String typeString) {
+        if (typeString == null) {
+            return BrickComponent.BrickType.WOOD;
+        }
+
+        return switch (typeString.toUpperCase()) {
+            case "STONE" -> BrickComponent.BrickType.STONE;
+            case "NETHERACK" -> BrickComponent.BrickType.NETHERACK;
+            case "NETHERBRICK" -> BrickComponent.BrickType.NETHERBRICK;
+            case "ENDSTONE" -> BrickComponent.BrickType.ENDSTONE;
+            case "OBSIDIAN" -> BrickComponent.BrickType.OBSIDIAN;
+            default -> BrickComponent.BrickType.WOOD;
+        };
     }
 
     public static void createWalls() {

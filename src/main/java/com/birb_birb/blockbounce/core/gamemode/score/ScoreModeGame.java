@@ -7,6 +7,7 @@ import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
 import com.birb_birb.blockbounce.entities.BallComponent;
+import com.birb_birb.blockbounce.entities.BrickComponent;
 import com.birb_birb.blockbounce.utils.SoundManager;
 import com.birb_birb.blockbounce.utils.saveload.SaveData;
 import com.birb_birb.blockbounce.utils.saveload.StateCapture;
@@ -258,8 +259,16 @@ public class ScoreModeGame extends GameManager {
 
         // Automatically spawn more bricks when all are destroyed (endless mode)
         getGameTimer().runAtInterval(() -> {
-            if (getGameWorld().getEntitiesByType(EntityType.BRICK).isEmpty()
-                && !getb("gameOver")) {
+            long destructibleBricks = getGameWorld()
+                .getEntitiesByType(EntityType.BRICK)
+                .stream()
+                .filter(brick -> {
+                    BrickComponent brickComp = brick.getComponent(BrickComponent.class);
+                    return brickComp != null && brickComp.getBrickType() != BrickComponent.BrickType.OBSIDIAN;
+                })
+                .count();
+
+            if (destructibleBricks == 0 && !getb("gameOver")) {
                 GameFactory.createBricks();
                 // Show continue message (no completion callback)
                 displayMessage("CONTINUE!", Color.LIGHTGREEN, 1.5, null);
