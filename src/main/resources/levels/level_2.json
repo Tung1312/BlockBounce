@@ -1,0 +1,11 @@
+{
+  "levelId": 2,
+  "startX": 470.0,
+  "startY": 200.0,
+  "grid": [
+    "SSSSSS",
+    ".SSSS.",
+    "SSSSSS"
+  ]
+}
+
