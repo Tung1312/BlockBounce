@@ -181,51 +181,115 @@ public class VersusModeGame extends GameManager {
         // At that point, compare scores and declare the winner (or tie).
         if (player1Playfield.isGameOver() && player2Playfield.isGameOver()) {
             if (endScheduled) return;
-
-            // Add dimming overlay
-            getGameScene().addUINode(MenuManager.createDimmingOverlay());
+            endScheduled = true;
 
             int score1 = player1Playfield.getScore();
             int score2 = player2Playfield.getScore();
 
+            // Determine winner
             String resultMsg;
             Color msgColor;
+            int winnerPlayerId = 0;
 
             if (score1 > score2) {
                 resultMsg = "PLAYER 1 WINS!";
                 msgColor = Color.GOLD;
+                winnerPlayerId = 1;
             } else if (score2 > score1) {
                 resultMsg = "PLAYER 2 WINS!";
                 msgColor = Color.GOLD;
+                winnerPlayerId = 2;
             } else {
                 resultMsg = "TIE GAME!";
                 msgColor = Color.ORANGE;
+                winnerPlayerId = 0; // Tie
             }
 
-            endScheduled = true;
+            handleGameOver(resultMsg, msgColor, score1, score2, winnerPlayerId);
+        }
+    }
 
-            getGameController().pauseEngine();
+    /**
+     * Handle game over with multi-threading pattern
+     * Shows countdown, saves game (optional), then returns to menu
+     */
+    private void handleGameOver(String resultMsg, Color msgColor, int score1, int score2, int winnerPlayerId) {
+        getGameController().pauseEngine();
 
-            displayMessage(resultMsg, msgColor, 3.0, null);
+        // Add dimming overlay
+        getGameScene().addUINode(MenuManager.createDimmingOverlay());
 
-            //wait then return to menu
-            new Thread(() -> {
-                try {
-                    Thread.sleep(6000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+        // Display winner message
+        javafx.scene.text.Text winnerText = new javafx.scene.text.Text(resultMsg);
+        winnerText.setFont(gameFont);
+        winnerText.setFill(msgColor);
+        winnerText.setTranslateX((GameConstants.WINDOW_WIDTH / 2.0) - 200);
+        winnerText.setTranslateY((GameConstants.WINDOW_HEIGHT / 2.0) - 100);
+        getGameScene().addUINode(winnerText);
+
+        // Display scores
+        javafx.scene.text.Text scoresText = new javafx.scene.text.Text(
+            String.format("Player 1: %d  |  Player 2: %d", score1, score2)
+        );
+        scoresText.setFont(gameFont);
+        scoresText.setFill(Color.WHITE);
+        scoresText.setTranslateX((GameConstants.WINDOW_WIDTH / 2.0) - 200);
+        scoresText.setTranslateY((GameConstants.WINDOW_HEIGHT / 2.0) - 40);
+        getGameScene().addUINode(scoresText);
+
+        // Countdown text
+        javafx.scene.text.Text countdownText = new javafx.scene.text.Text("");
+        countdownText.setFont(gameFont);
+        countdownText.setFill(Color.CYAN);
+        countdownText.setTranslateX((GameConstants.WINDOW_WIDTH / 2.0) - 150);
+        countdownText.setTranslateY((GameConstants.WINDOW_HEIGHT / 2.0) + 50);
+        getGameScene().addUINode(countdownText);
+
+        // Create worker thread for countdown and cleanup
+        new Thread(() -> {
+            try {
+                // Show countdown: 3... 2... 1...
+                for (int i = 3; i > 0; i--) {
+                    final String count = String.valueOf(i);
+                    javafx.application.Platform.runLater(() -> {
+                        countdownText.setText("Returning to menu in " + count + "...");
+                    });
+                    Thread.sleep(1000);
                 }
 
-                javafx.application.Platform.runLater(() -> {
+                // Optional: Save game stats (you can implement this later)
+                // saveGameStats(score1, score2, winnerPlayerId);
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            // Return to JavaFX thread for UI operations
+            javafx.application.Platform.runLater(() -> {
+                try {
+                    set("gameOver", true);
+                    getGameController().resumeEngine();
+                    getGameController().gotoMainMenu();
+                } catch (Exception ignored) {
+                    // Fallback: try to go to menu anyway
                     try {
-                        set("gameOver", true);
-                        getGameController().resumeEngine();
                         getGameController().gotoMainMenu();
-                    } catch (Exception ignored) {
+                    } catch (Exception e) {
+                        System.err.println("Failed to return to menu: " + e.getMessage());
                     }
-                });
-            }).start();
-        }
+                }
+            });
+        }).start(); // Start the worker thread
+    }
+
+    /**
+     * Optional: Save game statistics
+     * Can be implemented to save match history, player stats, etc.
+     */
+    private void saveGameStats(int score1, int score2, int winnerPlayerId) {
+        // TODO: Implement game stats saving
+        // Example: Save to file, database, or high scores
+        System.out.println("Saving game stats: P1=" + score1 + ", P2=" + score2 + ", Winner=" + winnerPlayerId);
     }
 
     public Playfield getPlayer1Playfield() {
