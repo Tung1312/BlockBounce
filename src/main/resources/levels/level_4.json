@@ -1,0 +1,16 @@
+{
+  "levelId": 4,
+  "startX": 120.0,
+  "startY": 130.0,
+  "grid": [
+    ".WWWWWWWW",
+    ".WLLSLLSW",
+    ".WSOOOOSW",
+    ".WSO..OSW",
+    ".WSO..OSW",
+    ".WSO..OSW",
+    ".WSOOOOSW",
+    "SSSSSSSSSS"
+  ]
+}
+

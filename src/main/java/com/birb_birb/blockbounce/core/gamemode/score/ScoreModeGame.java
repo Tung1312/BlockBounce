@@ -7,6 +7,7 @@ import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
 import com.birb_birb.blockbounce.entities.BallComponent;
+import com.birb_birb.blockbounce.entities.BrickComponent;
 import com.birb_birb.blockbounce.utils.SoundManager;
 import com.birb_birb.blockbounce.utils.saveload.SaveData;
 import com.birb_birb.blockbounce.utils.saveload.StateCapture;
@@ -40,12 +41,18 @@ public class ScoreModeGame extends GameManager {
         if (GameMode.shouldLoadSave()) {
             GameMode.setShouldLoadSave(false); // Reset flag
 
+            // Add dimming overlay immediately after initialization
+            javafx.scene.Node loadingOverlay = MenuManager.createDimmingOverlay(1);
+            getGameScene().addUINode(loadingOverlay);
+
             // Show loading message immediately
-            INSTANCE.displayMessage("Loading...", javafx.scene.paint.Color.CYAN, 0.5, null);
+            INSTANCE.displayMessage("Loading...", Color.CYAN, 0.5, null);
 
             // Delay load to ensure game is fully initialized and loading message is visible
             getGameTimer().runOnceAfter(() -> {
                 INSTANCE.loadGame(1);
+                // Remove the loading overlay after load completes
+                getGameScene().removeUINode(loadingOverlay);
             }, javafx.util.Duration.millis(500));
         }
     }
@@ -119,11 +126,15 @@ public class ScoreModeGame extends GameManager {
 
                 // If ball was launched when saved, pause it and show countdown
                 if (result.isTimerStarted()) {
+                    // Add dimming overlay for countdown (loading overlay was already added)
+                    javafx.scene.Node dimmingOverlay = MenuManager.createDimmingOverlay();
+                    getGameScene().addUINode(dimmingOverlay);
+
                     // Temporarily pause ball movement
                     var balls = getGameWorld().getEntitiesByType(EntityType.BALL);
                     if (!balls.isEmpty()) {
-                        com.birb_birb.blockbounce.entities.BallComponent ballComponent =
-                            balls.get(0).getComponent(com.birb_birb.blockbounce.entities.BallComponent.class);
+                        BallComponent ballComponent =
+                            balls.get(0).getComponent(BallComponent.class);
                         if (ballComponent != null) {
                             // Save current velocity
                             final javafx.geometry.Point2D savedVelocity = ballComponent.getVelocity();
@@ -132,21 +143,21 @@ public class ScoreModeGame extends GameManager {
 
                             // Show countdown 3-2-1-GO
                             displayCountdown(() -> {
-                                // After countdown, restore ball velocity
+                                // After countdown, restore ball velocity and remove overlay
                                 if (ballComponent != null) {
                                     ballComponent.setVelocity(savedVelocity);
                                 }
-                                displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.0, null);
+                                getGameScene().removeUINode(dimmingOverlay);
                             });
                         } else {
-                            displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
+                            getGameScene().removeUINode(dimmingOverlay);
                         }
                     } else {
-                        displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
+                        getGameScene().removeUINode(dimmingOverlay);
                     }
                 } else {
-                    // Ball wasn't launched, just show normal message
-                    displayMessage("Game Loaded!", Color.LIGHTBLUE, 1.5, null);
+                    // Ball wasn't launched, no countdown needed
+                    // Loading overlay will be removed by the caller
                 }
 
                 return true;
@@ -248,8 +259,16 @@ public class ScoreModeGame extends GameManager {
 
         // Automatically spawn more bricks when all are destroyed (endless mode)
         getGameTimer().runAtInterval(() -> {
-            if (getGameWorld().getEntitiesByType(EntityType.BRICK).isEmpty()
-                && !getb("gameOver")) {
+            long destructibleBricks = getGameWorld()
+                .getEntitiesByType(EntityType.BRICK)
+                .stream()
+                .filter(brick -> {
+                    BrickComponent brickComp = brick.getComponent(BrickComponent.class);
+                    return brickComp != null && brickComp.getBrickType() != BrickComponent.BrickType.OBSIDIAN;
+                })
+                .count();
+
+            if (destructibleBricks == 0 && !getb("gameOver")) {
                 GameFactory.createBricks();
                 // Show continue message (no completion callback)
                 displayMessage("CONTINUE!", Color.LIGHTGREEN, 1.5, null);

@@ -155,7 +155,15 @@ public class BallComponent extends PhysicsComponent {
             if (entity.isColliding(brick)) {
                 velocity = CollisionHandler.resolveBrickCollision(entity, brick, velocity);
 
-                destroyBrick(brick);
+                BrickComponent brickComponent = brick.getComponent(BrickComponent.class);
+                if (brickComponent != null) {
+                    brickComponent.takeDamage();
+
+                    // only destroy bricks with
+                    if (brickComponent.getDurability() == 0) {
+                        destroyBrick(brick);
+                    }
+                }
 
                 hasCollidedThisFrame = true;
                 collisionCooldown = 0.05;
@@ -184,12 +192,13 @@ public class BallComponent extends PhysicsComponent {
 
     private void destroyBrick(Entity brick) {
         if (playfield != null) {
-            // In versus mode, delegate destruction and spawn a power-up sometimes
+            // In versus mode, delegate destruction
             playfield.destroyBrick(brick);
 
-            double chance = Math.random();
-            if (chance < 0.30) {  // 30% chance to spawn power-up
-                // pick a random power-up
+            // Check if this is a lucky brick and spawn power-up
+            BrickComponent brickComp = brick.getComponent(BrickComponent.class);
+            if (brickComp != null && brickComp.getBrickType() == BrickComponent.BrickType.LUCKY) {
+                // Lucky brick always spawns a power-up
                 int r = (int) (Math.random() * 5);
                 PowerUpComponent.PowerUpType type = r == 0 ? PowerUpComponent.PowerUpType.DOUBLE_BALL
                     : r == 1 ? PowerUpComponent.PowerUpType.SMALL_PADDLE
@@ -217,10 +226,10 @@ public class BallComponent extends PhysicsComponent {
 
             inc("score", points);
 
-            // Small chance to spawn a power-up in single-player
-            double chance = Math.random();
-            if (chance < 0.30) {  // 30% chance to spawn power-up
-                // pick a random power-up
+            // Check if this is a lucky brick and spawn power-up
+            BrickComponent brickComp = brick.getComponent(BrickComponent.class);
+            if (brickComp != null && brickComp.getBrickType() == BrickComponent.BrickType.LUCKY) {
+                // Lucky brick always spawns a power-up
                 int r = (int) (Math.random() * 5);
                 PowerUpComponent.PowerUpType type = r == 0 ? PowerUpComponent.PowerUpType.DOUBLE_BALL
                     : r == 1 ? PowerUpComponent.PowerUpType.SMALL_PADDLE
@@ -325,6 +334,13 @@ public class BallComponent extends PhysicsComponent {
     }
 
     private void handleOutOfBounds() {
+        // In Versus mode, DON'T remove the ball - let Playfield handle everything
+        if (playfield != null) {
+            // Do nothing - Playfield will detect and handle it
+            return;
+        }
+
+        // Single-player mode logic
         List<Entity> allBalls = getGameWorld().getEntitiesByType(EntityType.BALL);
         // If there's more than one ball, just remove this one silently
         if (allBalls.size() > 1) {

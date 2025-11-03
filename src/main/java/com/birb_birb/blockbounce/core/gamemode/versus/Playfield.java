@@ -51,6 +51,7 @@ public class Playfield {
     private int score;
     private int lives;
     private boolean gameOver;
+    private boolean isResettingBall = false;  // Flag to prevent multiple resets
 
     public Playfield(int playerId, double x, double y, double width, double height) {
         this.playerId = playerId;
@@ -154,10 +155,21 @@ public class Playfield {
         double offsetY = y + BRICK_OFFSET_Y;
         double offsetX = x + BRICK_OFFSET_X;
 
-        var baseTexture = getAssetLoader().loadTexture(GameConstants.BRICK_TEXTURE);
+        for (int row = 1; row <= BRICK_ROWS; row++) {
+            for (int col = 1; col <= BRICK_COLS; col++) {
+                BrickComponent.BrickType type;
+                String texturePath;
 
-        for (int row = 0; row < BRICK_ROWS; row++) {
-            for (int col = 0; col < BRICK_COLS; col++) {
+                if (row > 3) {
+                    type = BrickComponent.BrickType.STONE;
+                    texturePath = GameConstants.STONE_TEXTURE;
+                } else {
+                    type = BrickComponent.BrickType.WOOD;
+                    texturePath = GameConstants.WOOD_TEXTURE;
+                }
+
+                var baseTexture = getAssetLoader().loadTexture(texturePath);
+
                 Entity brick = entityBuilder()
                         .type(EntityType.BRICK)
                         .at(offsetX + col * GameConstants.BRICK_SIZE,
@@ -167,7 +179,7 @@ public class Playfield {
                                 GameConstants.BRICK_SIZE))
                         .bbox(new HitBox(BoundingShape.box(GameConstants.BRICK_SIZE,
                                 GameConstants.BRICK_SIZE)))
-                        .with(new BrickComponent())
+                        .with(new BrickComponent(type))
                         .collidable()
                         .buildAndAttach();
 
@@ -184,18 +196,34 @@ public class Playfield {
      * This now checks ALL balls belonging to this player, not just the original ball reference
      */
     public boolean isBallOutOfBounds() {
-        // Check all balls in the game world that belong to this player
+        // Check if ball reference exists and is active
+        if (ball != null && ball.isActive()) {
+            // Check if THIS ball is out of bounds
+            if (ball.getY() > getBottomBoundary()) {
+                return true;
+            }
+            return false;
+        }
+
+        // Ball is null or not active - check if there's any ball for this player in the world
         List<Entity> allBalls = getGameWorld().getEntitiesByType(EntityType.BALL);
         for (Entity b : allBalls) {
             try {
                 int ballPlayerId = b.getInt("playerId");
-                if (ballPlayerId == playerId) {
+                if (ballPlayerId == playerId && b.isActive()) {
+                    // Found an active ball for this player - update reference
+                    this.ball = b;
+
+                    // Check if it's out of bounds
                     if (b.getY() > getBottomBoundary()) {
                         return true;
                     }
+                    return false;
                 }
             } catch (Exception ignored) {}
         }
+
+        // No active ball found for this player
         return false;
     }
 
@@ -203,25 +231,47 @@ public class Playfield {
      * Reset ball to center position
      */
     public void resetBall() {
-        // For versus mode we want the ball to re-attach to the player's paddle
+        // Prevent multiple resets in quick succession
+        if (isResettingBall) {
+            return;
+        }
+        isResettingBall = true;
+
+        // Remove old ball if it exists and is active
         if (ball != null) {
-            BallComponent ballComp = ball.getComponent(BallComponent.class);
-
-            // If we have both paddle and component, attach to paddle so
-            // BallComponent's onUpdate will position it on the paddle and
-            // prevent physics processing until launch.
-            if (ballComp != null) {
-                ballComp.attachToPaddle();
+            try {
+                if (ball.isActive()) {
+                    ball.removeFromWorld();
+                }
+            } catch (Exception e) {
+                // Ball might already be removed
             }
+        }
 
-            // Also immediately position the ball on top of the paddle to avoid
-            // any visual glitch before the next update/frame.
-            if (paddle != null) {
+        // Create new ball
+        createBall();
+
+        // Attach to paddle
+        if (ball != null && paddle != null) {
+            try {
+                BallComponent ballComp = ball.getComponent(BallComponent.class);
+                if (ballComp != null) {
+                    ballComp.attachToPaddle();
+                }
+
+                // Position ball on top of paddle
                 double ballX = paddle.getX() + (paddle.getWidth() - GameConstants.BALL_SIZE) / 2.0;
                 double ballY = paddle.getY() - GameConstants.BALL_SIZE - 2.0;
                 ball.setPosition(ballX, ballY);
+            } catch (Exception e) {
+                // Component not found or positioning failed
             }
         }
+
+        // Allow resetting again after a short delay
+        com.almasb.fxgl.dsl.FXGL.runOnce(() -> {
+            isResettingBall = false;
+        }, javafx.util.Duration.seconds(0.5));
     }
 
     /**

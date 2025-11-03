@@ -2,8 +2,10 @@ package com.birb_birb.blockbounce.utils.saveload;
 
 import com.almasb.fxgl.entity.Entity;
 import com.birb_birb.blockbounce.constants.EntityType;
+import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.entities.BallComponent;
-import com.birb_birb.blockbounce.utils.saveload.SaveData.BlockData;
+import com.birb_birb.blockbounce.entities.BrickComponent;
+import com.birb_birb.blockbounce.entities.BrickComponent.BrickType;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
@@ -12,81 +14,10 @@ import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
-/**
- * Helper class to capture and restore game state
- */
+/**Helper class to capture and restore game state*/
 public class StateCapture {
 
-    /**
-     * Capture current game state for Story Mode
-     */
-    public static SaveData captureStoryModeState() {
-        SaveData data = new SaveData();
-
-        // Set game mode
-        data.setGameMode("STORY");
-
-        // Capture game properties
-        data.setCurrentLevel(geti("level"));
-        data.setScore(geti("score"));
-        data.setLives(geti("lives"));
-
-        // Capture paddle state
-        List<Entity> paddles = getGameWorld().getEntitiesByType(EntityType.PADDLE);
-        if (!paddles.isEmpty()) {
-            Entity paddle = paddles.getFirst();
-            data.setPaddleX(paddle.getX());
-            data.setPaddleY(paddle.getY());
-        }
-
-        // Capture ball state
-        List<Entity> balls = getGameWorld().getEntitiesByType(EntityType.BALL);
-        if (!balls.isEmpty()) {
-            Entity ball = balls.getFirst();
-            data.setBallX(ball.getX());
-            data.setBallY(ball.getY());
-
-            BallComponent ballComponent = ball.getComponent(BallComponent.class);
-            if (ballComponent != null) {
-                data.setBallLaunched(ballComponent.hasLaunched());
-                Point2D velocity = ballComponent.getVelocity();
-                if (velocity != null) {
-                    data.setBallVelocityX(velocity.getX());
-                    data.setBallVelocityY(velocity.getY());
-                }
-            }
-        }
-
-        // Capture blocks state
-        List<BlockData> blocks = new ArrayList<>();
-        List<Entity> bricks = getGameWorld().getEntitiesByType(EntityType.BRICK);
-        for (Entity brick : bricks) {
-            BlockData blockData = new BlockData();
-            blockData.setX(brick.getX());
-            blockData.setY(brick.getY());
-
-            // Get color from view
-            if (!brick.getViewComponent().getChildren().isEmpty()) {
-                javafx.scene.Node node = brick.getViewComponent().getChildren().getFirst();
-                if (node instanceof javafx.scene.shape.Rectangle rect) {
-                    Color color = (Color) rect.getFill();
-                    blockData.setColor(colorToString(color));
-                }
-            }
-
-            // Default hits to 1 (blocks don't have hits property in current implementation)
-            blockData.setHits(1);
-
-            blocks.add(blockData);
-        }
-        data.setBlocks(blocks);
-
-        return data;
-    }
-
-    /**
-     * Capture current game state for Score Mode
-     */
+    /**Capture current game state for Score Mode*/
     public static SaveData captureScoreModeState(double elapsedTime) {
         SaveData data = new SaveData();
 
@@ -133,7 +64,22 @@ public class StateCapture {
             blockData.setX(brick.getX());
             blockData.setY(brick.getY());
 
-            // Get color from view
+            // Get brick component to extract type and durability
+            BrickComponent brickComponent = brick.getComponent(BrickComponent.class);
+
+            if (brickComponent != null) {
+                // Save brick type and current durability
+                blockData.setBrickType(brickComponent.getBrickType().name());
+                blockData.setDurability(brickComponent.getDurability());
+                blockData.setHits(brickComponent.getDurability()); // For backward compatibility
+            } else {
+                // Fallback for bricks without component
+                blockData.setBrickType("WOOD");
+                blockData.setDurability(1);
+                blockData.setHits(1);
+            }
+
+            // Get color from view (optional, may not be used for textured bricks)
             if (!brick.getViewComponent().getChildren().isEmpty()) {
                 javafx.scene.Node node = brick.getViewComponent().getChildren().getFirst();
                 if (node instanceof javafx.scene.shape.Rectangle rect) {
@@ -142,8 +88,6 @@ public class StateCapture {
                 }
             }
 
-            // Default hits to 1
-            blockData.setHits(1);
 
             blocks.add(blockData);
         }
@@ -152,58 +96,7 @@ public class StateCapture {
         return data;
     }
 
-    /**
-     * Restore game state from save data
-     */
-    public static void restoreStoryModeState(SaveData data) {
-        if (data == null) {
-            System.err.println("Cannot restore null save data");
-            return;
-        }
-
-        // Clear current entities
-        getGameWorld().getEntitiesByType(EntityType.BALL).forEach(Entity::removeFromWorld);
-        getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(Entity::removeFromWorld);
-        getGameWorld().getEntitiesByType(EntityType.BRICK).forEach(Entity::removeFromWorld);
-
-        // Restore game properties
-        set("level", data.getCurrentLevel());
-        set("score", data.getScore());
-        set("lives", data.getLives());
-        set("gameOver", false);
-
-        // Restore paddle
-        Entity paddle = com.birb_birb.blockbounce.core.GameFactory.createPaddle();
-        paddle.setPosition(data.getPaddleX(), data.getPaddleY());
-
-        // Restore ball
-        Entity ball = com.birb_birb.blockbounce.core.GameFactory.createBall();
-        ball.setPosition(data.getBallX(), data.getBallY());
-
-        BallComponent ballComponent = ball.getComponent(BallComponent.class);
-        if (ballComponent != null && data.isBallLaunched()) {
-            // Set velocity
-            Point2D velocity = new Point2D(data.getBallVelocityX(), data.getBallVelocityY());
-            ball.setProperty("velocity", velocity);
-            ballComponent.setLaunched(true);
-        }
-
-        // Restore blocks
-        for (BlockData blockData : data.getBlocks()) {
-            Color color = stringToColor(blockData.getColor());
-            Entity brick = com.birb_birb.blockbounce.core.GameFactory.createBrick(
-                blockData.getX(), blockData.getY(), color
-            );
-
-            if (blockData.getHits() > 0) {
-                brick.setProperty("hits", blockData.getHits());
-            }
-        }
-    }
-
-    /**
-     * Restore Score Mode game state from save data
-     */
+    /**Restore Score Mode game state from save data*/
     public static RestoreResult restoreScoreModeState(SaveData data) {
         if (data == null) {
             System.err.println("Cannot restore null save data");
@@ -240,12 +133,48 @@ public class StateCapture {
         // Restore blocks
         for (BlockData blockData : data.getBlocks()) {
             Color color = stringToColor(blockData.getColor());
-            Entity brick = com.birb_birb.blockbounce.core.GameFactory.createBrick(
-                blockData.getX(), blockData.getY(), color
+
+            // Determine brick type
+            BrickType brickType;
+            try {
+                String typeStr = blockData.getBrickType();
+                if (typeStr != null && !typeStr.isEmpty()) {
+                    brickType = BrickType.valueOf(typeStr);
+                } else {
+                    brickType = BrickType.WOOD;
+                }
+            } catch (IllegalArgumentException e) {
+                // If brick type is invalid, default to WOOD
+                brickType = BrickType.WOOD;
+            }
+
+            // Create brick with correct type
+            Entity brick = GameFactory.createBrick(
+                blockData.getX(), blockData.getY(), color, brickType
             );
 
-            if (blockData.getHits() > 0) {
-                brick.setProperty("hits", blockData.getHits());
+            // Restore durability if it was damaged
+            BrickComponent brickComponent = brick.getComponent(BrickComponent.class);
+
+            if (brickComponent != null && blockData.getDurability() > 0) {
+                brickComponent.setDurability(blockData.getDurability());
+
+                // If durability is 1 and brick type has 2 max durability, show cracked texture
+                if (blockData.getDurability() == 1 &&
+                    (brickType == BrickType.STONE ||
+                     brickType == BrickType.NETHERBRICK ||
+                     brickType == BrickType.ENDSTONE)) {
+                    // Manually trigger texture update to cracked version
+                    java.lang.reflect.Method updateMethod;
+                    try {
+                        updateMethod = BrickComponent.class
+                            .getDeclaredMethod("updateTextureToCracked");
+                        updateMethod.setAccessible(true);
+                        updateMethod.invoke(brickComponent);
+                    } catch (Exception e) {
+                        System.err.println("Could not update cracked texture: " + e.getMessage());
+                    }
+                }
             }
         }
 
@@ -253,9 +182,7 @@ public class StateCapture {
         return new RestoreResult(data.getElapsedTime(), data.isBallLaunched());
     }
 
-    /**
-     * Result of restore operation for Score Mode
-     */
+    /**Result of restore operation for Score Mode*/
     public static class RestoreResult {
         private final double elapsedTime;
         private final boolean timerStarted;
@@ -274,9 +201,7 @@ public class StateCapture {
         }
     }
 
-    /**
-     * Convert Color to String for serialization
-     */
+    /**Color to String for serialization*/
     private static String colorToString(Color color) {
         if (color.equals(Color.RED)) return "RED";
         if (color.equals(Color.BLUE)) return "BLUE";
@@ -289,9 +214,7 @@ public class StateCapture {
         return "WHITE";
     }
 
-    /**
-     * Convert String to Color for deserialization
-     */
+    /**String to Color for deserialization*/
     private static Color stringToColor(String colorStr) {
         if (colorStr == null) {
             return Color.WHITE;

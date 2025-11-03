@@ -37,7 +37,16 @@ public class GameConstants {
     public static final String SELECT_7 = "/assets/textures/menus/levels/select_level_7.png";
     public static final String SELECT_8 = "/assets/textures/menus/levels/select_level_8.png";
 
-    public static final String BRICK_TEXTURE = "/entities/brick.png";
+    public static final String WOOD_TEXTURE = "/entities/blocks/wood.png";
+    public static final String STONE_TEXTURE = "/entities/blocks/stone.png";
+    public static final String STONE_CRACKED_TEXTURE = "/entities/blocks/stone_cracked.png";
+    public static final String NETHERACK_TEXTURE = "/entities/blocks/netherack.png";
+    public static final String NETHERBRICK_TEXTURE = "/entities/blocks/netherbrick.png";
+    public static final String NETHERBRICK_CRACKED_TEXTURE = "/entities/blocks/netherbrick_cracked.png";
+    public static final String ENDSTONE_TEXTURE = "/entities/blocks/endstone.png";
+    public static final String ENDSTONE_CRACKED_TEXTURE = "/entities/blocks/endstone_cracked.png";
+    public static final String OBSIDIAN_TEXTURE = "/entities/blocks/obsidian.png";
+    public static final String LUCKY_BLOCK_TEXTURE = "/entities/blocks/lucky_block.png";
     public static final String PADDLE_TEXTURE = "/entities/paddle.png";
     public static final String BALL_TEXTURE = "/entities/ball.png";
     public static final String BACKGROUND_TEXTURE = "/entities/background.png";

@@ -1,12 +1,16 @@
 package com.birb_birb.blockbounce.core.gamemode.story;
 
 import com.almasb.fxgl.entity.Entity;
+import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
+import com.birb_birb.blockbounce.entities.BrickComponent;
 import com.birb_birb.blockbounce.utils.MenuManager;
 import com.birb_birb.blockbounce.utils.SoundManager;
+import com.birb_birb.blockbounce.utils.saveload.LevelData;
+import com.birb_birb.blockbounce.utils.saveload.LevelLoader;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
@@ -16,13 +20,21 @@ public class StoryModeGame extends GameManager {
 
     private static final StoryModeGame INSTANCE = new StoryModeGame();
     private Text levelText;
+    private final LevelLoader levelLoader = new LevelLoader();
+    private static int selectedLevel = 1;
+    private int startingLevel = 1;
 
     private StoryModeGame() {}
+
+    public static void setSelectedLevel(int levelNumber) {
+        selectedLevel = levelNumber;
+    }
 
     public static void startGame() {
         if (GameMode.getCurrentGameMode() != GameMode.STORY) {
             System.err.println("Warning: StoryModeGame.start() called but current mode is " + GameMode.getCurrentGameMode());
         }
+        INSTANCE.startingLevel = selectedLevel;
         INSTANCE.initialize();
     }
 
@@ -33,7 +45,27 @@ public class StoryModeGame extends GameManager {
     @Override
     protected void setupProperties() {
         super.setupProperties();
-        getWorldProperties().setValue("level", 1);
+        getWorldProperties().setValue("level", startingLevel);
+    }
+
+    @Override
+    protected void setupNewGame() {
+        GameFactory.createBackground();
+        GameFactory.createWalls();
+
+        // Load level from JSON based on starting level
+        LevelData levelData = levelLoader.loadLevel(startingLevel);
+        if (levelData != null) {
+            System.out.println("Loading level " + startingLevel);
+            GameFactory.createBricksFromLevel(levelData);
+        } else {
+            // Fallback to default brick generation if JSON level not found
+            System.out.println("Level " + startingLevel + " JSON not found, using default brick generation");
+            GameFactory.createBricks();
+        }
+
+        GameFactory.createPaddle();
+        GameFactory.createBall();
     }
 
     @Override
@@ -48,7 +80,7 @@ public class StoryModeGame extends GameManager {
     }
 
     private void createLevelDisplay() {
-        levelText = new Text("Level: 1");
+        levelText = new Text("Level: " + geti("level"));
         levelText.setFont(gameFont);
         levelText.setFill(GameConstants.FONT_COLOR);
         levelText.setTranslateX(GameConstants.WINDOW_WIDTH / 2.0 + 417);
@@ -65,8 +97,16 @@ public class StoryModeGame extends GameManager {
     protected void setupGameLogic() {
         // Check for level completion when all bricks are destroyed
         getGameTimer().runAtInterval(() -> {
-            if (getGameWorld().getEntitiesByType(com.birb_birb.blockbounce.constants.EntityType.BRICK).isEmpty()
-                && !getb("gameOver")) {
+            long destructibleBricks = getGameWorld()
+                .getEntitiesByType(EntityType.BRICK)
+                .stream()
+                .filter(brick -> {
+                    BrickComponent brickComp = brick.getComponent(BrickComponent.class);
+                    return brickComp != null && brickComp.getBrickType() != BrickComponent.BrickType.OBSIDIAN;
+                })
+                .count();
+
+            if (destructibleBricks == 0 && !getb("gameOver")) {
                 nextLevel();
             }
         }, javafx.util.Duration.seconds(0.5));
@@ -74,12 +114,13 @@ public class StoryModeGame extends GameManager {
 
     private void nextLevel() {
         inc("level", 1);
+        int currentLevel = geti("level");
 
         // Play complete sound when finishing a story mode level
         SoundManager.playCompleteSound();
 
         // Show level up message
-        displayMessage("LEVEL " + geti("level") + "!", (Color) GameConstants.FONT_COLOR, 2.0, null);
+        displayMessage("LEVEL " + currentLevel + "!", (Color) GameConstants.FONT_COLOR, 2.0, null);
 
         // Remove old entities (except frame and walls)
         getGameWorld().getEntitiesByType(com.birb_birb.blockbounce.constants.EntityType.BALL)
@@ -87,8 +128,16 @@ public class StoryModeGame extends GameManager {
         getGameWorld().getEntitiesByType(com.birb_birb.blockbounce.constants.EntityType.PADDLE)
             .forEach(Entity::removeFromWorld);
 
-        // Create new level
-        GameFactory.createBricks();
+        // Create new level - try to load from JSON, fallback to default if not found
+        LevelData levelData = levelLoader.loadLevel(currentLevel);
+        if (levelData != null) {
+            GameFactory.createBricksFromLevel(levelData);
+        } else {
+            // Fallback to default brick generation if JSON level not found
+            System.out.println("Level " + currentLevel + " JSON not found, using default brick generation");
+            GameFactory.createBricks();
+        }
+
         GameFactory.createPaddle();
         GameFactory.createBall();
     }
