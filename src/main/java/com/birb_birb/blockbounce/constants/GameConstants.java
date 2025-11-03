@@ -46,6 +46,7 @@ public class GameConstants {
     public static final String ENDSTONE_TEXTURE = "/entities/blocks/endstone.png";
     public static final String ENDSTONE_CRACKED_TEXTURE = "/entities/blocks/endstone_cracked.png";
     public static final String OBSIDIAN_TEXTURE = "/entities/blocks/obsidian.png";
+    public static final String LUCKY_BLOCK_TEXTURE = "/entities/blocks/lucky_block.png";
     public static final String PADDLE_TEXTURE = "/entities/paddle.png";
     public static final String BALL_TEXTURE = "/entities/ball.png";
     public static final String BACKGROUND_TEXTURE = "/entities/background.png";

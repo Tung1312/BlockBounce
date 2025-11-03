@@ -18,7 +18,8 @@ public class BrickComponent extends Component {
         STONE(2),
         NETHERBRICK(2),
         ENDSTONE(2),
-        OBSIDIAN(-1);
+        OBSIDIAN(-1),
+        LUCKY(1);
 
         private final int durability;
 
