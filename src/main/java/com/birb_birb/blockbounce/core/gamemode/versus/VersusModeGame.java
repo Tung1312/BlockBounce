@@ -39,12 +39,12 @@ public class VersusModeGame extends GameManager {
 
         // Player 1 properties
         set("player1Score", 0);
-        set("player1Lives", 1);
+        set("player1Lives", 3);
         set("player1GameOver", false);
 
         // Player 2 properties
         set("player2Score", 0);
-        set("player2Lives", 1);
+        set("player2Lives", 3);
         set("player2GameOver", false);
     }
 
