@@ -1,0 +1,19 @@
+{
+  "levelId": 23,
+  "startX": 100.0,
+  "startY": 110.0,
+  "grid": [
+    "RRRRRRRRRRRRRRRRRRRR",
+    "R..................R",
+    "R.NNNNNNNNNNNNNNNN.R",
+    "R.N.EEEEEEEEEEEE.N.R",
+    "R.N.E.O......O.E.N.R",
+    "R.N.E.O.LLLL.O.E.N.R",
+    "R.N.E.O......O.E.N.R",
+    "R.N.EEEEEEEEEEEE.N.R",
+    "R.NNNNNNNNNNNNNNNN.R",
+    "R..................R",
+    "RRRRRRRRRRRRRRRRRRRR"
+  ]
+}
+

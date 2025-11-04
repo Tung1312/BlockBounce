@@ -8,6 +8,8 @@ import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
 import com.birb_birb.blockbounce.utils.MenuManager;
+import com.birb_birb.blockbounce.utils.saveload.RandomLevelLoader;
+import com.birb_birb.blockbounce.utils.saveload.LevelData;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -24,7 +26,12 @@ public class VersusModeGame extends GameManager {
     // Guard to ensure end-of-match actions are scheduled only once
     private boolean endScheduled = false;
 
-    private VersusModeGame() {}
+    // Random level loader for synchronized levels
+    private RandomLevelLoader randomLevelLoader;
+
+    private VersusModeGame() {
+        randomLevelLoader = new RandomLevelLoader();
+    }
 
     public static void startGame() {
         if (GameMode.getCurrentGameMode() != GameMode.VERSUS) {
@@ -140,8 +147,32 @@ public class VersusModeGame extends GameManager {
     protected void setupGameLogic() {
         // Check for ball out of bounds and brick respawn for both players
         getGameTimer().runAtInterval(() -> {
-            updatePlayer(player1Playfield, "player1", "PLAYER 1");
-            updatePlayer(player2Playfield, "player2", "PLAYER 2");
+            // Handle ball out of bounds for both players
+            handlePlayerBallOutOfBounds(player1Playfield, "player1", "PLAYER 1");
+            handlePlayerBallOutOfBounds(player2Playfield, "player2", "PLAYER 2");
+
+            // Handle independent brick respawn for each player
+            // Player 1 gets new level when they clear their bricks
+            if (!player1Playfield.hasBricks() && !player1Playfield.isGameOver()) {
+                LevelData randomLevel = randomLevelLoader.loadRandomLevel();
+                if (randomLevel != null) {
+                    player1Playfield.respawnBricksFromLevel(randomLevel);
+                } else {
+                    player1Playfield.respawnBricks();
+                }
+                displayMessage("PLAYER 1: NEW WAVE!", Color.CYAN, 1.5, null);
+            }
+
+            // Player 2 gets new level when they clear their bricks
+            if (!player2Playfield.hasBricks() && !player2Playfield.isGameOver()) {
+                LevelData randomLevel = randomLevelLoader.loadRandomLevel();
+                if (randomLevel != null) {
+                    player2Playfield.respawnBricksFromLevel(randomLevel);
+                } else {
+                    player2Playfield.respawnBricks();
+                }
+                displayMessage("PLAYER 2: NEW WAVE!", Color.CYAN, 1.5, null);
+            }
 
             // Update score properties
             set("player1Score", player1Playfield.getScore());
@@ -150,9 +181,9 @@ public class VersusModeGame extends GameManager {
     }
 
     /**
-     * Update logic for a single player - eliminates code duplication
+     * Handle ball out of bounds for a single player
      */
-    private void updatePlayer(Playfield playfield, String propertyPrefix, String playerName) {
+    private void handlePlayerBallOutOfBounds(Playfield playfield, String propertyPrefix, String playerName) {
         if (playfield.isGameOver()) return;
 
         if (playfield.isBallOutOfBounds()) {
@@ -168,11 +199,6 @@ public class VersusModeGame extends GameManager {
             } else {
                 playfield.resetBall();
             }
-        }
-
-        if (!playfield.hasBricks()) {
-            playfield.respawnBricks();
-            displayMessage(playerName + ": NEW WAVE!", Color.CYAN, 1.5, null);
         }
     }
 
