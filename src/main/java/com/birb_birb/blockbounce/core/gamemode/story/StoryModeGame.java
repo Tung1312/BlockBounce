@@ -50,6 +50,8 @@ public class StoryModeGame extends GameManager {
     @Override
     protected void setupProperties() {
         super.setupProperties();
+        // update starting level before setting up game
+        startingLevel = selectedStartingLevel;
         getWorldProperties().setValue("level", startingLevel);
     }
 

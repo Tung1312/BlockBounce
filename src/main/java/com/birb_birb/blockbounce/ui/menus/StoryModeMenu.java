@@ -26,13 +26,23 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 public class StoryModeMenu extends MenuManager {
 
     private final ProgressLoader progressManager;
-    private int currentLevel = 1;
+    private int currentLevel;
     private ImageView selectImageView;
     private ImageView levelsView;
 
     public StoryModeMenu() {
         super(MenuType.GAME_MENU);
         this.progressManager = ProgressLoader.getInstance();
+
+        // set currentLevel to the highest unlocked level
+        if (progressManager != null) {
+            progressManager.reloadProgress();
+            this.currentLevel = Math.min(progressManager.getUnlockedLevels(), 8);
+
+            setupLevelsDisplay();
+        } else {
+            this.currentLevel = 1;
+        }
     }
 
     @Override
@@ -50,6 +60,7 @@ public class StoryModeMenu extends MenuManager {
         newGameButton.setLayoutX(getButtonX());
         newGameButton.setLayoutY(getAppHeight() * 0.911);
         newGameButton.setOnAction(e -> {
+
             // Check if selected level is unlocked
             if (progressManager != null && !progressManager.isLevelUnlocked(currentLevel)) {
                 return;
@@ -71,16 +82,19 @@ public class StoryModeMenu extends MenuManager {
 
     private void setupLevelsDisplay() {
         try {
-            // Get instance and reload progress before loading/rendering level displays
-            ProgressLoader loader = ProgressLoader.getInstance();
-            loader.reloadProgress();
+            if (progressManager == null) {
+                return;
+            }
 
-            // Base layer - Display unlocked levels based on progress
-            int unlockedLevels = loader.getUnlockedLevels();
+            // Reload progress if currentLevel is still 0
+            if (currentLevel == 0) {
+                progressManager.reloadProgress();
+                currentLevel = Math.min(progressManager.getUnlockedLevels(), 8);
+            }
+
+            // Get the values
+            int unlockedLevels = progressManager.getUnlockedLevels();
             String levelsImagePath = GameConstants.UNLOCKED_LEVEL_IMAGES[Math.min(unlockedLevels - 1, 7)];
-
-            // Set current level to the highest unlocked level (capped at 8)
-            currentLevel = Math.min(unlockedLevels, 8);
 
             Image levelsImage = new Image(Objects.requireNonNull(
                 getClass().getResourceAsStream(levelsImagePath)));
@@ -118,8 +132,7 @@ public class StoryModeMenu extends MenuManager {
             System.out.println("Failed to update select image: " + e.getMessage());
         }
     }
-
-    public static VBox createButtonPanel() {
+    private VBox createButtonPanel() {
         Button settingButton = ButtonManager.createButton();
         settingButton.setOnAction(e -> ButtonManager.openSettings());
         Button homeButton = ButtonManager.createButton();
