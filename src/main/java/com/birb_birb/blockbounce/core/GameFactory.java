@@ -212,6 +212,14 @@ public final class GameFactory {
         }
     }
 
+    /**
+     * Create bricks from LevelData - alias for createBricksFromLevel
+     * Used for infinite mode random level generation
+     */
+    public static void createBricksFromData(LevelData levelData) {
+        createBricksFromLevel(levelData);
+    }
+
     /**Parse brick type string to BrickType enum*/
     private static BrickComponent.BrickType parseBrickType(String typeString) {
         if (typeString == null) {

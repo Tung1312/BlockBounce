@@ -12,6 +12,8 @@ import com.birb_birb.blockbounce.utils.SoundManager;
 import com.birb_birb.blockbounce.utils.saveload.SaveData;
 import com.birb_birb.blockbounce.utils.saveload.StateCapture;
 import com.birb_birb.blockbounce.utils.saveload.SaveGameManager;
+import com.birb_birb.blockbounce.utils.saveload.RandomLevelLoader;
+import com.birb_birb.blockbounce.utils.saveload.LevelData;
 import com.birb_birb.blockbounce.utils.highscore.HighScoreManager;
 import com.birb_birb.blockbounce.ui.HighScoreInput;
 import com.birb_birb.blockbounce.utils.MenuManager;
@@ -28,8 +30,11 @@ public class ScoreModeGame extends GameManager {
     private double elapsedTime = 0;
     private boolean timerStarted = false;
     private int currentSaveSlot = 1; // Default save slot
+    private RandomLevelLoader randomLevelLoader; // For infinite level generation
 
-    private ScoreModeGame() {}
+    private ScoreModeGame() {
+        randomLevelLoader = new RandomLevelLoader();
+    }
 
     public static void startGame() {
         if (GameMode.getCurrentGameMode() != GameMode.ENDLESS) {
@@ -269,9 +274,19 @@ public class ScoreModeGame extends GameManager {
                 .count();
 
             if (destructibleBricks == 0 && !getb("gameOver")) {
-                GameFactory.createBricks();
-                // Show continue message (no completion callback)
-                displayMessage("CONTINUE!", Color.LIGHTGREEN, 1.5, null);
+                // Load a random level from storage
+                LevelData randomLevel = randomLevelLoader.loadRandomLevel();
+                if (randomLevel != null) {
+                    // Create bricks based on the loaded level data
+                    GameFactory.createBricksFromData(randomLevel);
+
+                    // Show continue message (no completion callback)
+                    displayMessage("CONTINUE!", Color.LIGHTGREEN, 1.5, null);
+                } else {
+                    // Fallback to default behavior if no random level is found
+                    GameFactory.createBricks();
+                    displayMessage("CONTINUE!", Color.LIGHTGREEN, 1.5, null);
+                }
             }
         }, javafx.util.Duration.seconds(0.5));
     }

@@ -50,7 +50,10 @@ public class BrickComponent extends Component {
         durability--;
         if (durability == 1) {
             if (brickType == BrickType.STONE || brickType == BrickType.NETHERBRICK || brickType == BrickType.ENDSTONE) {
-                updateTextureToCracked();
+                // Only update texture if component is attached to an entity
+                if (entity != null) {
+                    updateTextureToCracked();
+                }
             }
         }
     }
