@@ -79,6 +79,8 @@ public class StoryModeMenu extends MenuManager {
             int unlockedLevels = loader.getUnlockedLevels();
             String levelsImagePath = GameConstants.UNLOCKED_LEVEL_IMAGES[Math.min(unlockedLevels - 1, 7)];
 
+            // Set current level to the highest unlocked level (capped at 8)
+            currentLevel = Math.min(unlockedLevels, 8);
 
             Image levelsImage = new Image(Objects.requireNonNull(
                 getClass().getResourceAsStream(levelsImagePath)));
@@ -90,7 +92,7 @@ public class StoryModeMenu extends MenuManager {
 
             // Select layer - Indicator (arrow) for level selection
             Image selectImage = new Image(Objects.requireNonNull(
-                getClass().getResourceAsStream(GameConstants.SELECT_IMAGES[0])));
+                getClass().getResourceAsStream(GameConstants.SELECT_IMAGES[currentLevel - 1])));
             selectImageView = new ImageView(selectImage);
             selectImageView.setFitWidth(getAppWidth());
             selectImageView.setFitHeight(getAppHeight());
