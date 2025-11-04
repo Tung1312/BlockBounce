@@ -7,34 +7,39 @@ import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.GameManager;
 import com.birb_birb.blockbounce.entities.BrickComponent;
+import com.birb_birb.blockbounce.utils.ButtonManager;
 import com.birb_birb.blockbounce.utils.MenuManager;
 import com.birb_birb.blockbounce.utils.SoundManager;
 import com.birb_birb.blockbounce.utils.saveload.LevelData;
 import com.birb_birb.blockbounce.utils.saveload.LevelLoader;
+import com.birb_birb.blockbounce.utils.saveload.ProgressLoader;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+
+import java.awt.*;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 
 public class StoryModeGame extends GameManager {
 
     private static final StoryModeGame INSTANCE = new StoryModeGame();
-    private Text levelText;
     private final LevelLoader levelLoader = new LevelLoader();
-    private static int selectedLevel = 1;
+    private final ProgressLoader progressManager = ProgressLoader.getInstance();
+    private static int selectedStartingLevel = 1;
     private int startingLevel = 1;
+    private Text levelText;
 
     private StoryModeGame() {}
 
-    public static void setSelectedLevel(int levelNumber) {
-        selectedLevel = levelNumber;
+    public static void setStartingLevel(int levelNumber) {
+        selectedStartingLevel = levelNumber;
     }
 
     public static void startGame() {
         if (GameMode.getCurrentGameMode() != GameMode.STORY) {
             System.err.println("Warning: StoryModeGame.start() called but current mode is " + GameMode.getCurrentGameMode());
         }
-        INSTANCE.startingLevel = selectedLevel;
+        INSTANCE.startingLevel = selectedStartingLevel;
         INSTANCE.initialize();
     }
 
@@ -45,6 +50,8 @@ public class StoryModeGame extends GameManager {
     @Override
     protected void setupProperties() {
         super.setupProperties();
+        // update starting level before setting up game
+        startingLevel = selectedStartingLevel;
         getWorldProperties().setValue("level", startingLevel);
     }
 
@@ -116,30 +123,39 @@ public class StoryModeGame extends GameManager {
         inc("level", 1);
         int currentLevel = geti("level");
 
-        // Play complete sound when finishing a story mode level
-        SoundManager.playCompleteSound();
-
-        // Show level up message
-        displayMessage("LEVEL " + currentLevel + "!", (Color) GameConstants.FONT_COLOR, 2.0, null);
-
-        // Remove old entities (except frame and walls)
-        getGameWorld().getEntitiesByType(com.birb_birb.blockbounce.constants.EntityType.BALL)
-            .forEach(Entity::removeFromWorld);
-        getGameWorld().getEntitiesByType(com.birb_birb.blockbounce.constants.EntityType.PADDLE)
-            .forEach(Entity::removeFromWorld);
-
-        // Create new level - try to load from JSON, fallback to default if not found
-        LevelData levelData = levelLoader.loadLevel(currentLevel);
-        if (levelData != null) {
-            GameFactory.createBricksFromLevel(levelData);
-        } else {
-            // Fallback to default brick generation if JSON level not found
-            System.out.println("Level " + currentLevel + " JSON not found, using default brick generation");
-            GameFactory.createBricks();
+        // Unlock the next level in progress
+        if (currentLevel > progressManager.getUnlockedLevels()) {
+            progressManager.unlockLevel(currentLevel);
         }
 
-        GameFactory.createPaddle();
-        GameFactory.createBall();
+        // Clear all game elements on screen
+        getGameWorld().getEntitiesByType(EntityType.BALL).forEach(Entity::removeFromWorld);
+        getGameWorld().getEntitiesByType(EntityType.PADDLE).forEach(Entity::removeFromWorld);
+        getGameWorld().getEntitiesByType(EntityType.BRICK).forEach(Entity::removeFromWorld);
+
+        getGameController().pauseEngine();
+
+        new Thread(() -> {
+            try {
+                SoundManager.playCompleteSound();
+
+                javafx.application.Platform.runLater(() -> {
+                    displayMessage("LEVEL " + (currentLevel - 1) + " COMPLETED!",
+                        (Color) GameConstants.FONT_COLOR, 2.5, null);
+                });
+
+                Thread.sleep(2500);
+
+                javafx.application.Platform.runLater(() -> {
+                    getGameController().resumeEngine();
+                    ButtonManager.navigateToStoryMode();
+                });
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.err.println("Level completion sequence interrupted: " + e.getMessage());
+            }
+        }).start();
     }
 
     @Override

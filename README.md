@@ -17,10 +17,10 @@ git clone https://github.com/Tung1312/BlockBounce.git
 cd BlockBounce
 
 // Lệnh để build game
-.\gradlew build
+.\gradlew.bat build
 
 // Lệnh để run game
-.\gradlew run
+.\gradlew.bat run
 ```
 
 <p align="center">
