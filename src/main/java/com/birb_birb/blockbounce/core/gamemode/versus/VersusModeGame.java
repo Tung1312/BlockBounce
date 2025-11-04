@@ -160,6 +160,8 @@ public class VersusModeGame extends GameManager {
                 } else {
                     player1Playfield.respawnBricks();
                 }
+                // Reset ball to paddle for new level
+                player1Playfield.resetBall();
                 displayMessage("PLAYER 1: NEW WAVE!", Color.CYAN, 1.5, null);
             }
 
@@ -171,6 +173,8 @@ public class VersusModeGame extends GameManager {
                 } else {
                     player2Playfield.respawnBricks();
                 }
+                // Reset ball to paddle for new level
+                player2Playfield.resetBall();
                 displayMessage("PLAYER 2: NEW WAVE!", Color.CYAN, 1.5, null);
             }
 

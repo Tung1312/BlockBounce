@@ -1,6 +1,7 @@
 package com.birb_birb.blockbounce.core.gamemode.score;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.EntityType;
@@ -274,6 +275,25 @@ public class ScoreModeGame extends GameManager {
                 .count();
 
             if (destructibleBricks == 0 && !getb("gameOver")) {
+                // Before spawning next level, attach the ball to the paddle
+                var balls = getGameWorld().getEntitiesByType(EntityType.BALL);
+                Entity mainBall;
+                if (balls.isEmpty()) {
+                    mainBall = GameFactory.createBall();
+                } else {
+                    mainBall = balls.getFirst();
+                    // remove any extra balls from DOUBLE_BALL, keep gameplay predictable between levels
+                    for (int i = 1; i < balls.size(); i++) {
+                        balls.get(i).removeFromWorld();
+                    }
+                }
+                if (mainBall != null) {
+                    BallComponent ballComp = mainBall.getComponent(BallComponent.class);
+                    if (ballComp != null) {
+                        ballComp.attachToPaddle();
+                    }
+                }
+
                 // Load a random level from storage
                 LevelData randomLevel = randomLevelLoader.loadRandomLevel();
                 if (randomLevel != null) {
@@ -419,3 +439,4 @@ public class ScoreModeGame extends GameManager {
         }
     }
 }
+
