@@ -242,24 +242,6 @@ public class BallComponent extends PhysicsComponent {
         }
     }
 
-    private void resetBall() {
-        // Reset position to center
-        entity.setPosition(
-            GameConstants.OFFSET_LEFT + GameConstants.PLAYABLE_WIDTH / 2.0,
-            GameConstants.OFFSET_TOP + GameConstants.PLAYABLE_HEIGHT / 2.0
-        );
-
-        // Reset velocity
-        velocity = new Point2D(2.5, -2.5);
-
-        // Reset collision states
-        hasCollidedThisFrame = false;
-        collisionCooldown = 0;
-
-        // Attach ball back to paddle
-        isAttachedToPaddle = true;
-        hasLaunched = false;
-    }
 
     /**Attach the ball to the paddle*/
     public void attachToPaddle() {

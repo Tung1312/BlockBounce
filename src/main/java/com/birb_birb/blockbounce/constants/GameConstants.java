@@ -98,6 +98,4 @@ public class GameConstants {
     public static final double MIN_UPWARD_VELOCITY = -2.0;
     public static final double COLLISION_EPSILON = 0.01;
 
-    private GameConstants() {
-    }
 }

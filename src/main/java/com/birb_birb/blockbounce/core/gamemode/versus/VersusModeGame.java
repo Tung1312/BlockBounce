@@ -1,8 +1,6 @@
 package com.birb_birb.blockbounce.core.gamemode.versus;
 
 import com.almasb.fxgl.dsl.FXGLForKtKt;
-import com.almasb.fxgl.entity.Entity;
-import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.GameFactory;
@@ -282,15 +280,6 @@ public class VersusModeGame extends GameManager {
         }).start(); // Start the worker thread
     }
 
-    /**
-     * Optional: Save game statistics
-     * Can be implemented to save match history, player stats, etc.
-     */
-    private void saveGameStats(int score1, int score2, int winnerPlayerId) {
-        // TODO: Implement game stats saving
-        // Example: Save to file, database, or high scores
-        System.out.println("Saving game stats: P1=" + score1 + ", P2=" + score2 + ", Winner=" + winnerPlayerId);
-    }
 
     public Playfield getPlayer1Playfield() {
         return player1Playfield;

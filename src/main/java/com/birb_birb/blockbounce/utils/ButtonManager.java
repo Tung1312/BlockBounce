@@ -45,10 +45,6 @@ public class ButtonManager {
         getSceneService().pushSubScene(new ScoreModeMenu());
     }
 
-    public static void navigateToVersusMode() {
-        getSceneService().pushSubScene(new VersusModeMenu());
-    }
-
     public static void openSettings() {
         getGameController().gotoGameMenu();
     }
@@ -66,9 +62,6 @@ public class ButtonManager {
         }, Duration.seconds(0));
     }
 
-    public static void goToPreviousScene() {
-        getSceneService().popSubScene();
-    }
 
     public static void navigateBackToGameModeMenu(GameMode gameMode) {
         getDialogService().showConfirmationBox("Are you sure you want to go back to previous menu?", answer -> {

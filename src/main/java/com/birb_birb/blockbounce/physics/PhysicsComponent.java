@@ -15,29 +15,8 @@ public abstract class PhysicsComponent extends Component {
         this.velocity = velocity;
     }
 
-    public double getSpeed() {
-        return velocity.magnitude();
-    }
-
-    public boolean isFrozen() {
-        return isFrozen;
-    }
-
-    public void setFrozen(boolean frozen) {
-        this.isFrozen = frozen;
-    }
-
-    public void freeze() {
-        isFrozen = true;
-    }
-
     public void unfreeze() {
         isFrozen = false;
     }
 
-    protected void applyVelocity() {
-        if (!isFrozen) {
-            entity.translate(velocity);
-        }
-    }
 }

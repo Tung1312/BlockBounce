@@ -58,19 +58,6 @@ public class ScoreModeGame extends GameManager {
     }
 
     /**
-     * Start game from a saved state
-     * @param slot Save slot to load from (1-3)
-     */
-    public static void startFromSave(int slot) {
-        if (GameMode.getCurrentGameMode() != GameMode.ENDLESS) {
-            System.err.println("Warning: ScoreModeGame.startFromSave() called but current mode is " + GameMode.getCurrentGameMode());
-        }
-        INSTANCE.currentSaveSlot = slot;
-        INSTANCE.initialize();
-        INSTANCE.loadGame(slot);
-    }
-
-    /**
      * Get the singleton instance
      */
     public static ScoreModeGame getInstance() {
@@ -168,19 +155,6 @@ public class ScoreModeGame extends GameManager {
         return false;
     }
 
-    public void autoSave() {
-        saveGame(currentSaveSlot);
-    }
-
-    public int getCurrentSaveSlot() {
-        return currentSaveSlot;
-    }
-
-    public void setCurrentSaveSlot(int slot) {
-        if (slot >= 1 && slot <= 3) {
-            this.currentSaveSlot = slot;
-        }
-    }
 
     @Override
     protected void setupProperties() {

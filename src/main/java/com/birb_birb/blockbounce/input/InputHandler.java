@@ -3,7 +3,6 @@ package com.birb_birb.blockbounce.input;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.gamemode.score.ScoreModeGame;
-import com.birb_birb.blockbounce.core.gamemode.story.StoryModeGame;
 import com.birb_birb.blockbounce.core.gamemode.versus.VersusModeGame;
 import com.birb_birb.blockbounce.entities.BallComponent;
 import com.birb_birb.blockbounce.utils.SoundManager;

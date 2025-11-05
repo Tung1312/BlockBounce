@@ -157,13 +157,6 @@ public final class GameFactory {
         }
     }
 
-    /**
-     * Create a single brick at specified position with color
-     * Used for restoring saved game state
-     */
-    public static Entity createBrick(double x, double y, Color color) {
-        return createBrick(x, y, color, BrickComponent.BrickType.WOOD);
-    }
 
     /**
      * Create a single brick at specified position with color and type

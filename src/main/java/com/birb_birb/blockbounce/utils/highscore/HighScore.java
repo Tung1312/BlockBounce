@@ -28,10 +28,6 @@ public class HighScore implements Serializable, Comparable<HighScore> {
         return score;
     }
 
-    public String getTimestamp() {
-        return timestamp;
-    }
-
     @Override
     public int compareTo(HighScore other) {
         // Sort in descending order (highest score first)

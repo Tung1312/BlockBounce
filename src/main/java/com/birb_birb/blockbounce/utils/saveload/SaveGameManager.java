@@ -202,32 +202,7 @@ public class SaveGameManager {
         }
     }
 
-    /**
-     * Delete Score Mode save data from a slot
-     * @param slot Save slot number (1-3)
-     * @return true if deletion was successful
-     */
-    public static boolean deleteScoreSave(int slot) {
-        if (slot < 1 || slot > MAX_SAVE_SLOTS) {
-            System.err.println("Invalid save slot: " + slot);
-            return false;
-        }
 
-        String fileName = SCORE_SAVE_FILE_PREFIX + slot + SAVE_FILE_EXTENSION;
-        Path savePath = Paths.get(SAVE_DIR, fileName);
-
-        try {
-            if (Files.exists(savePath)) {
-                Files.delete(savePath);
-                System.out.println("Score Mode save deleted from slot " + slot);
-                return true;
-            }
-            return false;
-        } catch (IOException e) {
-            System.err.println("Failed to delete Score Mode save: " + e.getMessage());
-            return false;
-        }
-    }
 
     /**
      * Get preview information for a save slot
@@ -243,26 +218,6 @@ public class SaveGameManager {
         return new SavePreview(
             slot,
             data.getCurrentLevel(),
-            data.getScore(),
-            data.getLives(),
-            data.getSaveDate()
-        );
-    }
-
-    /**
-     * Get preview information for a Score Mode save slot
-     * @param slot Save slot number (1-3)
-     * @return SavePreview or null if no save exists
-     */
-    public static SavePreview getScoreSavePreview(int slot) {
-        SaveData data = loadScoreGame(slot);
-        if (data == null) {
-            return null;
-        }
-
-        return new SavePreview(
-            slot,
-            0, // No level in Score Mode
             data.getScore(),
             data.getLives(),
             data.getSaveDate()

@@ -15,39 +15,6 @@ public class CollisionHandler {
                a.getY() <= b.getBottomY();
     }
 
-    /**Calculate hit side of entity B by entity A using overlap depth*/
-    public static String detectCollisionSide(Entity a, Entity b) {
-        double overlapLeft = a.getRightX() - b.getX();
-        double overlapRight = b.getRightX() - a.getX();
-        double overlapTop = a.getBottomY() - b.getY();
-        double overlapBottom = b.getBottomY() - a.getY();
-
-        double minOverlap = Math.min(
-            Math.min(overlapLeft, overlapRight),
-            Math.min(overlapTop, overlapBottom)
-        );
-
-        if (minOverlap == overlapLeft) return "left";
-        if (minOverlap == overlapRight) return "right";
-        if (minOverlap == overlapTop) return "top";
-        return "bottom";
-    }
-
-    /** check if entity is moving towards another entity */
-    public static boolean isMovingTowards(Point2D velocity, Entity from, Entity to) {
-        double dx = to.getCenter().getX() - from.getCenter().getX();
-        double dy = to.getCenter().getY() - from.getCenter().getY();
-
-        return velocity.dotProduct(new Point2D(dx, dy)) > 0;
-    }
-
-    /** check if collision is valid (overlapping and moving towards) */
-    public static boolean isValidCollision(Entity entity, Point2D velocity, Entity target) {
-        if (!checkAABB(entity, target)) {
-            return false;
-        }
-        return isMovingTowards(velocity, entity, target);
-    }
 
     /**Resolver for brick collision (includes position adjustment)*/
     public static Point2D resolveBrickCollision(Entity ball, Entity brick, Point2D velocity) {

@@ -32,9 +32,6 @@ public class BrickComponent extends Component {
         }
     }
 
-    public BrickComponent() {
-        this(BrickType.WOOD);
-    }
 
     public BrickComponent(BrickType type) {
         this.brickType = type;
@@ -90,9 +87,5 @@ public class BrickComponent extends Component {
 
     public BrickType getBrickType() {
         return brickType;
-    }
-
-    public void destroy() {
-        entity.removeFromWorld();
     }
 }
