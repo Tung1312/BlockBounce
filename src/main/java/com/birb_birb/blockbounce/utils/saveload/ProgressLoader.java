@@ -134,15 +134,4 @@ public class ProgressLoader {
         }
     }
 
-    public void unlockNextLevel() {
-        progress.unlocked++;
-        saveProgress();
-        System.out.println("Unlocked level " + progress.unlocked);
-    }
-
-    public void resetProgress() {
-        progress.unlocked = 1;
-        saveProgress();
-        System.out.println("Reset progress to level 1");
-    }
 }

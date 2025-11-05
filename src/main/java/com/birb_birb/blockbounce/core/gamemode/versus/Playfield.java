@@ -403,12 +403,6 @@ public class Playfield {
         };
     }
 
-    /**
-     * Get the current level data (for synchronization in versus mode)
-     */
-    public LevelData getCurrentLevelData() {
-        return currentLevelData;
-    }
 
     /**
      * Player loses a life

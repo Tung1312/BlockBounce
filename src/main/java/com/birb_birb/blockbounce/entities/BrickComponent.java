@@ -76,7 +76,4 @@ public class BrickComponent extends Component {
         return brickType;
     }
 
-    public void destroy() {
-        entity.removeFromWorld();
-    }
 }
