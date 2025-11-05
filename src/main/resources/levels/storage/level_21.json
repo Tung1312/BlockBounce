@@ -1,0 +1,16 @@
+{
+  "levelId": 21,
+  "startX": 80.0,
+  "startY": 90.0,
+  "grid": [
+    "NNNNNNNNNNNNNNNNNNN",
+    "N.................N",
+    "N.WWWW.....WWWW...N",
+    "N.W..W.....W..W...N",
+    "N.WWWW.....WWWW...N",
+    "N.................N",
+    "N....LLLLLLLLL....N",
+    "NNNNNNNNNNNNNNNNNNN"
+  ]
+}
+

@@ -2,6 +2,7 @@ package com.birb_birb.blockbounce.entities;
 
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.texture.Texture;
+import com.birb_birb.blockbounce.constants.BrickType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.utils.TextureManager;
 
@@ -12,26 +13,9 @@ public class BrickComponent extends Component {
     private int durability;
     private final BrickType brickType;
 
-    public enum BrickType {
-        WOOD(1),
-        NETHERACK(1),
-        STONE(2),
-        NETHERBRICK(2),
-        ENDSTONE(2),
-        OBSIDIAN(-1),
-        LUCKY(1);
-
-        private final int durability;
-
-        BrickType(int durability) {
-            this.durability = durability;
-        }
-
-        public int getDurability() {
-            return durability;
-        }
+    public BrickComponent() {
+        this(BrickType.WOOD);
     }
-
 
     public BrickComponent(BrickType type) {
         this.brickType = type;
@@ -47,7 +31,10 @@ public class BrickComponent extends Component {
         durability--;
         if (durability == 1) {
             if (brickType == BrickType.STONE || brickType == BrickType.NETHERBRICK || brickType == BrickType.ENDSTONE) {
-                updateTextureToCracked();
+                // Only update texture if component is attached to an entity
+                if (entity != null) {
+                    updateTextureToCracked();
+                }
             }
         }
     }
@@ -87,5 +74,9 @@ public class BrickComponent extends Component {
 
     public BrickType getBrickType() {
         return brickType;
+    }
+
+    public void destroy() {
+        entity.removeFromWorld();
     }
 }

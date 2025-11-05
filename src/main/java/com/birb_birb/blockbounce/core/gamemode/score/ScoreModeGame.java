@@ -1,6 +1,8 @@
 package com.birb_birb.blockbounce.core.gamemode.score;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
+import com.birb_birb.blockbounce.constants.BrickType;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.EntityType;
@@ -12,6 +14,8 @@ import com.birb_birb.blockbounce.utils.SoundManager;
 import com.birb_birb.blockbounce.utils.saveload.SaveData;
 import com.birb_birb.blockbounce.utils.saveload.StateCapture;
 import com.birb_birb.blockbounce.utils.saveload.SaveGameManager;
+import com.birb_birb.blockbounce.utils.saveload.RandomLevelLoader;
+import com.birb_birb.blockbounce.utils.saveload.LevelData;
 import com.birb_birb.blockbounce.utils.highscore.HighScoreManager;
 import com.birb_birb.blockbounce.ui.HighScoreInput;
 import com.birb_birb.blockbounce.utils.MenuManager;
@@ -28,8 +32,11 @@ public class ScoreModeGame extends GameManager {
     private double elapsedTime = 0;
     private boolean timerStarted = false;
     private int currentSaveSlot = 1; // Default save slot
+    private RandomLevelLoader randomLevelLoader; // For infinite level generation
 
-    private ScoreModeGame() {}
+    private ScoreModeGame() {
+        randomLevelLoader = new RandomLevelLoader();
+    }
 
     public static void startGame() {
         if (GameMode.getCurrentGameMode() != GameMode.ENDLESS) {
@@ -238,14 +245,43 @@ public class ScoreModeGame extends GameManager {
                 .stream()
                 .filter(brick -> {
                     BrickComponent brickComp = brick.getComponent(BrickComponent.class);
-                    return brickComp != null && brickComp.getBrickType() != BrickComponent.BrickType.OBSIDIAN;
+                    return brickComp != null && brickComp.getBrickType() != BrickType.OBSIDIAN;
                 })
                 .count();
 
             if (destructibleBricks == 0 && !getb("gameOver")) {
-                GameFactory.createBricks();
-                // Show continue message (no completion callback)
-                displayMessage("CONTINUE!", Color.LIGHTGREEN, 1.5, null);
+                // Before spawning next level, attach the ball to the paddle
+                var balls = getGameWorld().getEntitiesByType(EntityType.BALL);
+                Entity mainBall;
+                if (balls.isEmpty()) {
+                    mainBall = GameFactory.createBall();
+                } else {
+                    mainBall = balls.getFirst();
+                    // remove any extra balls from DOUBLE_BALL, keep gameplay predictable between levels
+                    for (int i = 1; i < balls.size(); i++) {
+                        balls.get(i).removeFromWorld();
+                    }
+                }
+                if (mainBall != null) {
+                    BallComponent ballComp = mainBall.getComponent(BallComponent.class);
+                    if (ballComp != null) {
+                        ballComp.attachToPaddle();
+                    }
+                }
+
+                // Load a random level from storage
+                LevelData randomLevel = randomLevelLoader.loadRandomLevel();
+                if (randomLevel != null) {
+                    // Create bricks based on the loaded level data
+                    GameFactory.createBricksFromData(randomLevel);
+
+                    // Show continue message (no completion callback)
+                    displayMessage("CONTINUE!", Color.LIGHTGREEN, 1.5, null);
+                } else {
+                    // Fallback to default behavior if no random level is found
+                    GameFactory.createBricks();
+                    displayMessage("CONTINUE!", Color.LIGHTGREEN, 1.5, null);
+                }
             }
         }, javafx.util.Duration.seconds(0.5));
     }
@@ -378,3 +414,4 @@ public class ScoreModeGame extends GameManager {
         }
     }
 }
+

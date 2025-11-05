@@ -1,12 +1,14 @@
 package com.birb_birb.blockbounce.ui.menus;
 
 import com.almasb.fxgl.app.scene.MenuType;
+import com.almasb.fxgl.input.UserAction;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.core.gamemode.story.StoryModeGame;
 import com.birb_birb.blockbounce.utils.ButtonManager;
 import com.birb_birb.blockbounce.utils.MenuManager;
 import com.birb_birb.blockbounce.utils.SoundManager;
+import com.birb_birb.blockbounce.utils.saveload.ProgressLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -23,22 +25,24 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 /**Story Mode menu*/
 public class StoryModeMenu extends MenuManager {
 
-    private int currentLevel = 1;
+    private final ProgressLoader progressManager;
+    private int currentLevel;
     private ImageView selectImageView;
-
-    private static final String[] SELECT_IMAGES = {
-        GameConstants.SELECT_1,
-        GameConstants.SELECT_2,
-        GameConstants.SELECT_3,
-        GameConstants.SELECT_4,
-        GameConstants.SELECT_5,
-        GameConstants.SELECT_6,
-        GameConstants.SELECT_7,
-        GameConstants.SELECT_8
-    };
+    private ImageView levelsView;
 
     public StoryModeMenu() {
         super(MenuType.GAME_MENU);
+        this.progressManager = ProgressLoader.getInstance();
+
+        // set currentLevel to the highest unlocked level
+        if (progressManager != null) {
+            progressManager.reloadProgress();
+            this.currentLevel = Math.min(progressManager.getUnlockedLevels(), 8);
+
+            setupLevelsDisplay();
+        } else {
+            this.currentLevel = 1;
+        }
     }
 
     @Override
@@ -56,8 +60,14 @@ public class StoryModeMenu extends MenuManager {
         newGameButton.setLayoutX(getButtonX());
         newGameButton.setLayoutY(getAppHeight() * 0.911);
         newGameButton.setOnAction(e -> {
+
+            // Check if selected level is unlocked
+            if (progressManager != null && !progressManager.isLevelUnlocked(currentLevel)) {
+                return;
+            }
+
             GameMode.setCurrentGameMode(GameMode.STORY);
-            StoryModeGame.setSelectedLevel(currentLevel);
+            StoryModeGame.setStartingLevel(currentLevel);
             getGameController().startNewGame();
         });
         root.getChildren().add(newGameButton);
@@ -72,11 +82,23 @@ public class StoryModeMenu extends MenuManager {
 
     private void setupLevelsDisplay() {
         try {
-            // Base layer - Display multiple levels
-            // TODO: add locked and unlocked levels
+            if (progressManager == null) {
+                return;
+            }
+
+            // Reload progress if currentLevel is still 0
+            if (currentLevel == 0) {
+                progressManager.reloadProgress();
+                currentLevel = Math.min(progressManager.getUnlockedLevels(), 8);
+            }
+
+            // Get the values
+            int unlockedLevels = progressManager.getUnlockedLevels();
+            String levelsImagePath = GameConstants.UNLOCKED_LEVEL_IMAGES[Math.min(unlockedLevels - 1, 7)];
+
             Image levelsImage = new Image(Objects.requireNonNull(
-                getClass().getResourceAsStream(GameConstants.STORY_MODE_LEVELS)));
-            ImageView levelsView = new ImageView(levelsImage);
+                getClass().getResourceAsStream(levelsImagePath)));
+            levelsView = new ImageView(levelsImage);
             levelsView.setFitWidth(getAppWidth());
             levelsView.setFitHeight(getAppHeight());
             levelsView.setPreserveRatio(false);
@@ -84,7 +106,7 @@ public class StoryModeMenu extends MenuManager {
 
             // Select layer - Indicator (arrow) for level selection
             Image selectImage = new Image(Objects.requireNonNull(
-                getClass().getResourceAsStream(SELECT_IMAGES[0])));
+                getClass().getResourceAsStream(GameConstants.SELECT_IMAGES[currentLevel - 1])));
             selectImageView = new ImageView(selectImage);
             selectImageView.setFitWidth(getAppWidth());
             selectImageView.setFitHeight(getAppHeight());
@@ -97,17 +119,20 @@ public class StoryModeMenu extends MenuManager {
     }
 
     private void updateSelectImage() {
+        if (selectImageView == null) {
+            System.out.println("SelectImageView not initialized yet");
+            return;
+        }
         try {
             Image selectImage = new Image(Objects.requireNonNull(
-                getClass().getResourceAsStream(SELECT_IMAGES[currentLevel - 1])));
+                getClass().getResourceAsStream(GameConstants.SELECT_IMAGES[currentLevel - 1])));
             selectImageView.setImage(selectImage);
             SoundManager.playHoverSound();
         } catch (Exception e) {
             System.out.println("Failed to update select image: " + e.getMessage());
         }
     }
-
-    public static VBox createButtonPanel() {
+    private VBox createButtonPanel() {
         Button settingButton = ButtonManager.createButton();
         settingButton.setOnAction(e -> ButtonManager.openSettings());
         Button homeButton = ButtonManager.createButton();
@@ -127,32 +152,34 @@ public class StoryModeMenu extends MenuManager {
     }
 
     private void setupKeyHandling() {
-        getInput().addAction(new com.almasb.fxgl.input.UserAction("ESC_BACK") {
+        getInput().addAction(new UserAction("ESC_BACK") {
             @Override
             protected void onActionBegin() {
                 getSceneService().popSubScene();
             }
         }, KeyCode.ESCAPE);
 
-        // Arrow key navigation for level selection - RIGHT arrow
-        getInput().addAction(new com.almasb.fxgl.input.UserAction("NEXT_LEVEL_RIGHT") {
+        getInput().addAction(new UserAction("NEXT_LEVEL_RIGHT") {
             @Override
             protected void onActionBegin() {
+                if (progressManager == null) return;
+                int maxLevel = Math.min(8, progressManager.getUnlockedLevels());
                 currentLevel++;
-                if (currentLevel > 8) {
+                if (currentLevel > maxLevel) {
                     currentLevel = 1;
                 }
                 updateSelectImage();
             }
         }, KeyCode.D);
 
-        // Arrow key navigation for level selection - LEFT arrow
-        getInput().addAction(new com.almasb.fxgl.input.UserAction("PREV_LEVEL_LEFT") {
+        getInput().addAction(new UserAction("PREV_LEVEL_LEFT") {
             @Override
             protected void onActionBegin() {
+                if (progressManager == null) return;
+                int maxLevel = Math.min(8, progressManager.getUnlockedLevels());
                 currentLevel--;
                 if (currentLevel < 1) {
-                    currentLevel = 8;
+                    currentLevel = maxLevel;
                 }
                 updateSelectImage();
             }

@@ -27,7 +27,18 @@ public class GameConstants {
     // public static final String HOW_TO_PLAY = "/assets/textures/menus/how_to_play.png";
 
     public static final String STORY_MODE_BACKGROUND = "/assets/textures/menus/story_mode_background.png";
-    public static final String STORY_MODE_LEVELS = "/assets/textures/menus/levels/unlocked_level_8.png";
+
+    public static final String[] UNLOCKED_LEVEL_IMAGES = {
+        "/assets/textures/menus/levels/unlocked_level_1.png",
+        "/assets/textures/menus/levels/unlocked_level_2.png",
+        "/assets/textures/menus/levels/unlocked_level_3.png",
+        "/assets/textures/menus/levels/unlocked_level_4.png",
+        "/assets/textures/menus/levels/unlocked_level_5.png",
+        "/assets/textures/menus/levels/unlocked_level_6.png",
+        "/assets/textures/menus/levels/unlocked_level_7.png",
+        "/assets/textures/menus/levels/unlocked_level_8.png"
+    };
+
     public static final String SELECT_1 = "/assets/textures/menus/levels/select_level_1.png";
     public static final String SELECT_2 = "/assets/textures/menus/levels/select_level_2.png";
     public static final String SELECT_3 = "/assets/textures/menus/levels/select_level_3.png";
@@ -36,6 +47,11 @@ public class GameConstants {
     public static final String SELECT_6 = "/assets/textures/menus/levels/select_level_6.png";
     public static final String SELECT_7 = "/assets/textures/menus/levels/select_level_7.png";
     public static final String SELECT_8 = "/assets/textures/menus/levels/select_level_8.png";
+
+    public static final String[] SELECT_IMAGES = {
+        SELECT_1, SELECT_2, SELECT_3, SELECT_4,
+        SELECT_5, SELECT_6, SELECT_7, SELECT_8
+    };
 
     public static final String WOOD_TEXTURE = "/entities/blocks/wood.png";
     public static final String STONE_TEXTURE = "/entities/blocks/stone.png";

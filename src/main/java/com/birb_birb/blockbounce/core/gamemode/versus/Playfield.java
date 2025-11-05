@@ -3,12 +3,16 @@ package com.birb_birb.blockbounce.core.gamemode.versus;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
+import com.birb_birb.blockbounce.constants.BrickType;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.entities.BallComponent;
 import com.birb_birb.blockbounce.entities.BrickComponent;
 import com.birb_birb.blockbounce.entities.PaddleComponent;
 import com.birb_birb.blockbounce.utils.TextureManager;
+import com.birb_birb.blockbounce.utils.saveload.RandomLevelLoader;
+import com.birb_birb.blockbounce.utils.saveload.LevelData;
+import com.birb_birb.blockbounce.utils.saveload.BlockData;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -52,6 +56,8 @@ public class Playfield {
     private int lives;
     private boolean gameOver;
     private boolean isResettingBall = false;  // Flag to prevent multiple resets
+    private RandomLevelLoader randomLevelLoader; // For infinite level generation
+    private LevelData currentLevelData; // Store the current level for synchronization
 
     public Playfield(int playerId, double x, double y, double width, double height) {
         this.playerId = playerId;
@@ -64,6 +70,8 @@ public class Playfield {
         this.score = 0;
         this.lives = DEFAULT_LIVES;
         this.gameOver = false;
+        this.randomLevelLoader = new RandomLevelLoader();
+        this.currentLevelData = null;
     }
 
     // ==================== INITIALIZATION ====================
@@ -157,14 +165,14 @@ public class Playfield {
 
         for (int row = 1; row <= BRICK_ROWS; row++) {
             for (int col = 1; col <= BRICK_COLS; col++) {
-                BrickComponent.BrickType type;
+                BrickType type;
                 String texturePath;
 
                 if (row > 3) {
-                    type = BrickComponent.BrickType.STONE;
+                    type = BrickType.STONE;
                     texturePath = GameConstants.STONE_TEXTURE;
                 } else {
-                    type = BrickComponent.BrickType.WOOD;
+                    type = BrickType.WOOD;
                     texturePath = GameConstants.WOOD_TEXTURE;
                 }
 
@@ -299,14 +307,107 @@ public class Playfield {
      */
     public void respawnBricks() {
         clearBricks();
-        createBricks();
+
+        // Load a random level from storage
+        LevelData randomLevel = randomLevelLoader.loadRandomLevel();
+        if (randomLevel != null) {
+            currentLevelData = randomLevel;
+            createBricksFromLevel(randomLevel);
+        } else {
+            // Fallback to default brick creation
+            createBricks();
+        }
     }
 
-    private void clearBricks() {
-        for (Entity brick : bricks) {
-            brick.removeFromWorld();
+    /**
+     * Respawn all bricks using a specific level data
+     * @param levelData The level data to create bricks from (for synchronized levels in versus mode)
+     */
+    public void respawnBricksFromLevel(LevelData levelData) {
+        clearBricks();
+        if (levelData != null) {
+            createBricksFromLevel(levelData);
+        } else {
+            createBricks(); // Fallback to default
         }
-        bricks.clear();
+    }
+
+    /**
+     * Create bricks from level data, adjusted to fit within this playfield's bounds
+     */
+    private void createBricksFromLevel(LevelData levelData) {
+        List<BlockData> brickDataList = levelData.getBricks();
+
+        // Calculate offset to fit bricks within this playfield
+        double offsetX = x + BRICK_OFFSET_X;
+        double offsetY = y + BRICK_OFFSET_Y;
+
+        for (BlockData blockData : brickDataList) {
+            BrickType type = parseBrickType(blockData.getBrickType());
+            String texturePath = getTexturePathForBrickType(type);
+
+            var baseTexture = getAssetLoader().loadTexture(texturePath);
+
+            // Adjust brick position to fit within this playfield
+            double brickX = offsetX + (blockData.getX() - levelData.getBricks().get(0).getX());
+            double brickY = offsetY + (blockData.getY() - levelData.getBricks().get(0).getY());
+
+            Entity brick = entityBuilder()
+                    .type(EntityType.BRICK)
+                    .at(brickX, brickY)
+                    .view(TextureManager.loadTextureCopy(baseTexture,
+                            GameConstants.BRICK_SIZE,
+                            GameConstants.BRICK_SIZE))
+                    .bbox(new HitBox(BoundingShape.box(GameConstants.BRICK_SIZE,
+                            GameConstants.BRICK_SIZE)))
+                    .with(new BrickComponent(type))
+                    .collidable()
+                    .buildAndAttach();
+
+            brick.setProperty("playerId", playerId);
+            bricks.add(brick);
+        }
+    }
+
+    /**
+     * Parse brick type string to BrickType enum
+     */
+    private BrickType parseBrickType(String typeString) {
+        if (typeString == null) {
+            return BrickType.WOOD;
+        }
+
+        return switch (typeString.toUpperCase()) {
+            case "STONE" -> BrickType.STONE;
+            case "NETHERACK" -> BrickType.NETHERACK;
+            case "NETHERBRICK" -> BrickType.NETHERBRICK;
+            case "ENDSTONE" -> BrickType.ENDSTONE;
+            case "OBSIDIAN" -> BrickType.OBSIDIAN;
+            case "LUCKY" -> BrickType.LUCKY;
+            default -> BrickType.WOOD;
+        };
+    }
+
+    /**
+     * Get texture path for a brick type
+     */
+    private String getTexturePathForBrickType(BrickType type) {
+        return switch (type) {
+            case WOOD -> GameConstants.WOOD_TEXTURE;
+            case STONE -> GameConstants.STONE_TEXTURE;
+            case NETHERACK -> GameConstants.NETHERACK_TEXTURE;
+            case NETHERBRICK -> GameConstants.NETHERBRICK_TEXTURE;
+            case ENDSTONE -> GameConstants.ENDSTONE_TEXTURE;
+            case OBSIDIAN -> GameConstants.OBSIDIAN_TEXTURE;
+            case LUCKY -> GameConstants.LUCKY_BLOCK_TEXTURE;
+        };
+    }
+
+    /**
+     * Get the current level data (for synchronization in versus mode)
+     */
+    public LevelData getCurrentLevelData() {
+        return currentLevelData;
     }
 
     /**
@@ -390,5 +491,12 @@ public class Playfield {
 
     void addScore(int points) {
         this.score += points;
+    }
+
+    private void clearBricks() {
+        for (Entity brick : bricks) {
+            brick.removeFromWorld();
+        }
+        bricks.clear();
     }
 }

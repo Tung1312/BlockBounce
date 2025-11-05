@@ -5,7 +5,7 @@ import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.entities.BallComponent;
 import com.birb_birb.blockbounce.entities.BrickComponent;
-import com.birb_birb.blockbounce.entities.BrickComponent.BrickType;
+import com.birb_birb.blockbounce.constants.BrickType;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 

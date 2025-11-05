@@ -1,0 +1,17 @@
+{
+  "levelId": 22,
+  "startX": 180.0,
+  "startY": 70.0,
+  "grid": [
+    "EEEEE.....EEEEE",
+    "E.L.E.....E.L.E",
+    "E...E.....E...E",
+    "...............",
+    "..OOOOOOOOOOO..",
+    "...............",
+    "S...S.....S...S",
+    "S.L.S.....S.L.S",
+    "SSSSS.....SSSSS"
+  ]
+}
+
