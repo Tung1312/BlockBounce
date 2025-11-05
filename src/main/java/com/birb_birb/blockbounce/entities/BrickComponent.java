@@ -2,6 +2,7 @@ package com.birb_birb.blockbounce.entities;
 
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.texture.Texture;
+import com.birb_birb.blockbounce.constants.BrickType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.utils.TextureManager;
 
@@ -11,26 +12,6 @@ public class BrickComponent extends Component {
 
     private int durability;
     private final BrickType brickType;
-
-    public enum BrickType {
-        WOOD(1),
-        NETHERACK(1),
-        STONE(2),
-        NETHERBRICK(2),
-        ENDSTONE(2),
-        OBSIDIAN(-1),
-        LUCKY(1);
-
-        private final int durability;
-
-        BrickType(int durability) {
-            this.durability = durability;
-        }
-
-        public int getDurability() {
-            return durability;
-        }
-    }
 
     public BrickComponent() {
         this(BrickType.WOOD);

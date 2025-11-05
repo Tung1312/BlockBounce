@@ -5,6 +5,7 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.*;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.constants.PowerUpType;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.gamemode.versus.Playfield;
 import com.birb_birb.blockbounce.utils.SoundManager;
@@ -21,14 +22,6 @@ import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameTimer;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
 
 public class PowerUpComponent extends Component {
-
-    public enum PowerUpType {
-        DOUBLE_BALL,
-        SMALL_PADDLE,
-        FAST_BALL,
-        EXTRA_LIFE,
-        DOUBLE_POINTS
-    }
 
     private final PowerUpType type;
 

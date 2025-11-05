@@ -1,8 +1,10 @@
 package com.birb_birb.blockbounce.entities;
 
 import com.almasb.fxgl.entity.Entity;
+import com.birb_birb.blockbounce.constants.BrickType;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.constants.PowerUpType;
 import com.birb_birb.blockbounce.core.GameFactory;
 import com.birb_birb.blockbounce.core.gamemode.versus.Playfield;
 import com.birb_birb.blockbounce.physics.BallPhysics;
@@ -197,14 +199,14 @@ public class BallComponent extends PhysicsComponent {
 
             // Check if this is a lucky brick and spawn power-up
             BrickComponent brickComp = brick.getComponent(BrickComponent.class);
-            if (brickComp != null && brickComp.getBrickType() == BrickComponent.BrickType.LUCKY) {
+            if (brickComp != null && brickComp.getBrickType() == BrickType.LUCKY) {
                 // Lucky brick always spawns a power-up
                 int r = (int) (Math.random() * 5);
-                PowerUpComponent.PowerUpType type = r == 0 ? PowerUpComponent.PowerUpType.DOUBLE_BALL
-                    : r == 1 ? PowerUpComponent.PowerUpType.SMALL_PADDLE
-                    : r == 2 ? PowerUpComponent.PowerUpType.FAST_BALL
-                    : r == 3 ? PowerUpComponent.PowerUpType.EXTRA_LIFE
-                    : PowerUpComponent.PowerUpType.DOUBLE_POINTS;
+                PowerUpType type = r == 0 ? PowerUpType.DOUBLE_BALL
+                    : r == 1 ? PowerUpType.SMALL_PADDLE
+                    : r == 2 ? PowerUpType.FAST_BALL
+                    : r == 3 ? PowerUpType.EXTRA_LIFE
+                    : PowerUpType.DOUBLE_POINTS;
 
                 // target the owner of this ball if available
                 int target = 0;
@@ -228,14 +230,14 @@ public class BallComponent extends PhysicsComponent {
 
             // Check if this is a lucky brick and spawn power-up
             BrickComponent brickComp = brick.getComponent(BrickComponent.class);
-            if (brickComp != null && brickComp.getBrickType() == BrickComponent.BrickType.LUCKY) {
+            if (brickComp != null && brickComp.getBrickType() == BrickType.LUCKY) {
                 // Lucky brick always spawns a power-up
                 int r = (int) (Math.random() * 5);
-                PowerUpComponent.PowerUpType type = r == 0 ? PowerUpComponent.PowerUpType.DOUBLE_BALL
-                    : r == 1 ? PowerUpComponent.PowerUpType.SMALL_PADDLE
-                    : r == 2 ? PowerUpComponent.PowerUpType.FAST_BALL
-                    : r == 3 ? PowerUpComponent.PowerUpType.EXTRA_LIFE
-                    : PowerUpComponent.PowerUpType.DOUBLE_POINTS;
+                PowerUpType type = r == 0 ? PowerUpType.DOUBLE_BALL
+                    : r == 1 ? PowerUpType.SMALL_PADDLE
+                    : r == 2 ? PowerUpType.FAST_BALL
+                    : r == 3 ? PowerUpType.EXTRA_LIFE
+                    : PowerUpType.DOUBLE_POINTS;
 
                 GameFactory.createPowerUp(brick.getX(), brick.getY(), type, 1);
             }

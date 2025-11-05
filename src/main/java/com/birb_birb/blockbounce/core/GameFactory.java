@@ -4,8 +4,10 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.Texture;
+import com.birb_birb.blockbounce.constants.BrickType;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
+import com.birb_birb.blockbounce.constants.PowerUpType;
 import com.birb_birb.blockbounce.entities.*;
 import com.birb_birb.blockbounce.utils.TextureManager;
 import com.birb_birb.blockbounce.utils.saveload.BlockData;
@@ -25,7 +27,7 @@ public final class GameFactory {
     /**
      * Get the texture path for a given brick type
      */
-    private static String getTexturePathForBrickType(BrickComponent.BrickType type) {
+    private static String getTexturePathForBrickType(BrickType type) {
         switch (type) {
             case WOOD:
                 return GameConstants.WOOD_TEXTURE;
@@ -121,23 +123,23 @@ public final class GameFactory {
 
         for (int y = 1; y <= rows; y++) {
             for (int x = 1; x <= cols; x++) {
-                BrickComponent.BrickType type = BrickComponent.BrickType.WOOD;
+                BrickType type = BrickType.WOOD;
 
                 switch (y) {
                     case 2:
-                        type = BrickComponent.BrickType.STONE;
+                        type = BrickType.STONE;
                         break;
                     case 3:
-                        type = BrickComponent.BrickType.NETHERACK;
+                        type = BrickType.NETHERACK;
                         break;
                     case 4:
-                        type = BrickComponent.BrickType.NETHERBRICK;
+                        type = BrickType.NETHERBRICK;
                         break;
                     case 5:
-                        type = BrickComponent.BrickType.ENDSTONE;
+                        type = BrickType.ENDSTONE;
                         break;
                     case 6:
-                        type = BrickComponent.BrickType.OBSIDIAN;
+                        type = BrickType.OBSIDIAN;
                         break;
                 }
 
@@ -162,14 +164,14 @@ public final class GameFactory {
      * Used for restoring saved game state
      */
     public static Entity createBrick(double x, double y, Color color) {
-        return createBrick(x, y, color, BrickComponent.BrickType.WOOD);
+        return createBrick(x, y, color, BrickType.WOOD);
     }
 
     /**
      * Create a single brick at specified position with color and type
      * Used for restoring saved game state
      */
-    public static Entity createBrick(double x, double y, Color color, BrickComponent.BrickType type) {
+    public static Entity createBrick(double x, double y, Color color, BrickType type) {
         String texturePath = getTexturePathForBrickType(type);
 
         Texture baseTexture = getAssetLoader().loadTexture(texturePath);
@@ -195,7 +197,7 @@ public final class GameFactory {
 
         List<BlockData> bricks = levelData.getBricks();
         for (BlockData blockData : bricks) {
-            BrickComponent.BrickType type = parseBrickType(blockData.getBrickType());
+            BrickType type = parseBrickType(blockData.getBrickType());
             String texturePath = getTexturePathForBrickType(type);
 
             Texture baseTexture = getAssetLoader().loadTexture(texturePath);
@@ -221,19 +223,19 @@ public final class GameFactory {
     }
 
     /**Parse brick type string to BrickType enum*/
-    private static BrickComponent.BrickType parseBrickType(String typeString) {
+    private static BrickType parseBrickType(String typeString) {
         if (typeString == null) {
-            return BrickComponent.BrickType.WOOD;
+            return BrickType.WOOD;
         }
 
         return switch (typeString.toUpperCase()) {
-            case "STONE" -> BrickComponent.BrickType.STONE;
-            case "NETHERACK" -> BrickComponent.BrickType.NETHERACK;
-            case "NETHERBRICK" -> BrickComponent.BrickType.NETHERBRICK;
-            case "ENDSTONE" -> BrickComponent.BrickType.ENDSTONE;
-            case "OBSIDIAN" -> BrickComponent.BrickType.OBSIDIAN;
-            case "LUCKY" -> BrickComponent.BrickType.LUCKY;
-            default -> BrickComponent.BrickType.WOOD;
+            case "STONE" -> BrickType.STONE;
+            case "NETHERACK" -> BrickType.NETHERACK;
+            case "NETHERBRICK" -> BrickType.NETHERBRICK;
+            case "ENDSTONE" -> BrickType.ENDSTONE;
+            case "OBSIDIAN" -> BrickType.OBSIDIAN;
+            case "LUCKY" -> BrickType.LUCKY;
+            default -> BrickType.WOOD;
         };
     }
 
@@ -310,7 +312,7 @@ public final class GameFactory {
      * Spawn a power-up entity at given position.
      * playerId = 0 for neutral, >0 to target a specific player (useful in versus)
      */
-    public static Entity createPowerUp(double x, double y, PowerUpComponent.PowerUpType type, int playerId) {
+    public static Entity createPowerUp(double x, double y, PowerUpType type, int playerId) {
         // Select texture based on power-up type
         String texturePath;
         switch (type) {

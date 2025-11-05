@@ -2,6 +2,7 @@ package com.birb_birb.blockbounce.core.gamemode.score;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.birb_birb.blockbounce.constants.BrickType;
 import com.birb_birb.blockbounce.constants.GameMode;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.constants.EntityType;
@@ -270,7 +271,7 @@ public class ScoreModeGame extends GameManager {
                 .stream()
                 .filter(brick -> {
                     BrickComponent brickComp = brick.getComponent(BrickComponent.class);
-                    return brickComp != null && brickComp.getBrickType() != BrickComponent.BrickType.OBSIDIAN;
+                    return brickComp != null && brickComp.getBrickType() != BrickType.OBSIDIAN;
                 })
                 .count();
 

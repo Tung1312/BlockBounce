@@ -3,6 +3,7 @@ package com.birb_birb.blockbounce.core.gamemode.versus;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
+import com.birb_birb.blockbounce.constants.BrickType;
 import com.birb_birb.blockbounce.constants.EntityType;
 import com.birb_birb.blockbounce.constants.GameConstants;
 import com.birb_birb.blockbounce.entities.BallComponent;
@@ -164,14 +165,14 @@ public class Playfield {
 
         for (int row = 1; row <= BRICK_ROWS; row++) {
             for (int col = 1; col <= BRICK_COLS; col++) {
-                BrickComponent.BrickType type;
+                BrickType type;
                 String texturePath;
 
                 if (row > 3) {
-                    type = BrickComponent.BrickType.STONE;
+                    type = BrickType.STONE;
                     texturePath = GameConstants.STONE_TEXTURE;
                 } else {
-                    type = BrickComponent.BrickType.WOOD;
+                    type = BrickType.WOOD;
                     texturePath = GameConstants.WOOD_TEXTURE;
                 }
 
@@ -342,7 +343,7 @@ public class Playfield {
         double offsetY = y + BRICK_OFFSET_Y;
 
         for (BlockData blockData : brickDataList) {
-            BrickComponent.BrickType type = parseBrickType(blockData.getBrickType());
+            BrickType type = parseBrickType(blockData.getBrickType());
             String texturePath = getTexturePathForBrickType(type);
 
             var baseTexture = getAssetLoader().loadTexture(texturePath);
@@ -371,26 +372,26 @@ public class Playfield {
     /**
      * Parse brick type string to BrickType enum
      */
-    private BrickComponent.BrickType parseBrickType(String typeString) {
+    private BrickType parseBrickType(String typeString) {
         if (typeString == null) {
-            return BrickComponent.BrickType.WOOD;
+            return BrickType.WOOD;
         }
 
         return switch (typeString.toUpperCase()) {
-            case "STONE" -> BrickComponent.BrickType.STONE;
-            case "NETHERACK" -> BrickComponent.BrickType.NETHERACK;
-            case "NETHERBRICK" -> BrickComponent.BrickType.NETHERBRICK;
-            case "ENDSTONE" -> BrickComponent.BrickType.ENDSTONE;
-            case "OBSIDIAN" -> BrickComponent.BrickType.OBSIDIAN;
-            case "LUCKY" -> BrickComponent.BrickType.LUCKY;
-            default -> BrickComponent.BrickType.WOOD;
+            case "STONE" -> BrickType.STONE;
+            case "NETHERACK" -> BrickType.NETHERACK;
+            case "NETHERBRICK" -> BrickType.NETHERBRICK;
+            case "ENDSTONE" -> BrickType.ENDSTONE;
+            case "OBSIDIAN" -> BrickType.OBSIDIAN;
+            case "LUCKY" -> BrickType.LUCKY;
+            default -> BrickType.WOOD;
         };
     }
 
     /**
      * Get texture path for a brick type
      */
-    private String getTexturePathForBrickType(BrickComponent.BrickType type) {
+    private String getTexturePathForBrickType(BrickType type) {
         return switch (type) {
             case WOOD -> GameConstants.WOOD_TEXTURE;
             case STONE -> GameConstants.STONE_TEXTURE;

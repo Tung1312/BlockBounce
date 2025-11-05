@@ -1,5 +1,6 @@
 package com.birb_birb.blockbounce.entities;
 
+import com.birb_birb.blockbounce.constants.BrickType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,77 +19,77 @@ class BrickComponentTest {
     void testDefaultConstructor() {
         BrickComponent brick = new BrickComponent();
 
-        assertEquals(BrickComponent.BrickType.WOOD, brick.getBrickType());
+        assertEquals(BrickType.WOOD, brick.getBrickType());
         assertEquals(1, brick.getDurability());
     }
 
     @Test
     @DisplayName("Constructor with WOOD type should have durability 1")
     void testWoodBrickCreation() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.WOOD);
+        BrickComponent brick = new BrickComponent(BrickType.WOOD);
 
-        assertEquals(BrickComponent.BrickType.WOOD, brick.getBrickType());
+        assertEquals(BrickType.WOOD, brick.getBrickType());
         assertEquals(1, brick.getDurability());
     }
 
     @Test
     @DisplayName("Constructor with STONE type should have durability 2")
     void testStoneBrickCreation() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.STONE);
+        BrickComponent brick = new BrickComponent(BrickType.STONE);
 
-        assertEquals(BrickComponent.BrickType.STONE, brick.getBrickType());
+        assertEquals(BrickType.STONE, brick.getBrickType());
         assertEquals(2, brick.getDurability());
     }
 
     @Test
     @DisplayName("Constructor with OBSIDIAN type should have durability -1 (unbreakable)")
     void testObsidianBrickCreation() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.OBSIDIAN);
+        BrickComponent brick = new BrickComponent(BrickType.OBSIDIAN);
 
-        assertEquals(BrickComponent.BrickType.OBSIDIAN, brick.getBrickType());
+        assertEquals(BrickType.OBSIDIAN, brick.getBrickType());
         assertEquals(-1, brick.getDurability());
     }
 
     @Test
     @DisplayName("Constructor with LUCKY type should have durability 1")
     void testLuckyBrickCreation() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.LUCKY);
+        BrickComponent brick = new BrickComponent(BrickType.LUCKY);
 
-        assertEquals(BrickComponent.BrickType.LUCKY, brick.getBrickType());
+        assertEquals(BrickType.LUCKY, brick.getBrickType());
         assertEquals(1, brick.getDurability());
     }
 
     @Test
     @DisplayName("NETHERACK brick should have durability 1")
     void testNetherackBrickCreation() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.NETHERACK);
+        BrickComponent brick = new BrickComponent(BrickType.NETHERACK);
 
-        assertEquals(BrickComponent.BrickType.NETHERACK, brick.getBrickType());
+        assertEquals(BrickType.NETHERACK, brick.getBrickType());
         assertEquals(1, brick.getDurability());
     }
 
     @Test
     @DisplayName("NETHERBRICK brick should have durability 2")
     void testNetherbrickBrickCreation() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.NETHERBRICK);
+        BrickComponent brick = new BrickComponent(BrickType.NETHERBRICK);
 
-        assertEquals(BrickComponent.BrickType.NETHERBRICK, brick.getBrickType());
+        assertEquals(BrickType.NETHERBRICK, brick.getBrickType());
         assertEquals(2, brick.getDurability());
     }
 
     @Test
     @DisplayName("ENDSTONE brick should have durability 2")
     void testEndstoneBrickCreation() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.ENDSTONE);
+        BrickComponent brick = new BrickComponent(BrickType.ENDSTONE);
 
-        assertEquals(BrickComponent.BrickType.ENDSTONE, brick.getBrickType());
+        assertEquals(BrickType.ENDSTONE, brick.getBrickType());
         assertEquals(2, brick.getDurability());
     }
 
     @Test
     @DisplayName("takeDamage should reduce durability by 1 for WOOD brick")
     void testTakeDamageReducesDurability() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.WOOD);
+        BrickComponent brick = new BrickComponent(BrickType.WOOD);
 
         int initialDurability = brick.getDurability();
         brick.takeDamage();
@@ -99,7 +100,7 @@ class BrickComponentTest {
     @Test
     @DisplayName("takeDamage should not affect OBSIDIAN brick durability")
     void testTakeDamageOnObsidianBrick() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.OBSIDIAN);
+        BrickComponent brick = new BrickComponent(BrickType.OBSIDIAN);
 
         int initialDurability = brick.getDurability();
         brick.takeDamage();
@@ -111,7 +112,7 @@ class BrickComponentTest {
     @Test
     @DisplayName("STONE brick should require 2 hits to destroy")
     void testStoneBrickRequiresTwoHits() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.STONE);
+        BrickComponent brick = new BrickComponent(BrickType.STONE);
 
         assertEquals(2, brick.getDurability());
 
@@ -125,7 +126,7 @@ class BrickComponentTest {
     @Test
     @DisplayName("setDurability should update brick durability")
     void testSetDurability() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.WOOD);
+        BrickComponent brick = new BrickComponent(BrickType.WOOD);
 
         brick.setDurability(5);
         assertEquals(5, brick.getDurability());
@@ -137,38 +138,38 @@ class BrickComponentTest {
     @Test
     @DisplayName("getBrickType should return correct brick type")
     void testGetBrickType() {
-        BrickComponent woodBrick = new BrickComponent(BrickComponent.BrickType.WOOD);
-        BrickComponent stoneBrick = new BrickComponent(BrickComponent.BrickType.STONE);
-        BrickComponent obsidianBrick = new BrickComponent(BrickComponent.BrickType.OBSIDIAN);
+        BrickComponent woodBrick = new BrickComponent(BrickType.WOOD);
+        BrickComponent stoneBrick = new BrickComponent(BrickType.STONE);
+        BrickComponent obsidianBrick = new BrickComponent(BrickType.OBSIDIAN);
 
-        assertEquals(BrickComponent.BrickType.WOOD, woodBrick.getBrickType());
-        assertEquals(BrickComponent.BrickType.STONE, stoneBrick.getBrickType());
-        assertEquals(BrickComponent.BrickType.OBSIDIAN, obsidianBrick.getBrickType());
+        assertEquals(BrickType.WOOD, woodBrick.getBrickType());
+        assertEquals(BrickType.STONE, stoneBrick.getBrickType());
+        assertEquals(BrickType.OBSIDIAN, obsidianBrick.getBrickType());
     }
 
     @Test
     @DisplayName("BrickType enum should have correct durability values")
     void testBrickTypeEnumDurabilityValues() {
-        assertEquals(1, BrickComponent.BrickType.WOOD.getDurability());
-        assertEquals(1, BrickComponent.BrickType.NETHERACK.getDurability());
-        assertEquals(2, BrickComponent.BrickType.STONE.getDurability());
-        assertEquals(2, BrickComponent.BrickType.NETHERBRICK.getDurability());
-        assertEquals(2, BrickComponent.BrickType.ENDSTONE.getDurability());
-        assertEquals(-1, BrickComponent.BrickType.OBSIDIAN.getDurability());
-        assertEquals(1, BrickComponent.BrickType.LUCKY.getDurability());
+        assertEquals(1, BrickType.WOOD.getDurability());
+        assertEquals(1, BrickType.NETHERACK.getDurability());
+        assertEquals(2, BrickType.STONE.getDurability());
+        assertEquals(2, BrickType.NETHERBRICK.getDurability());
+        assertEquals(2, BrickType.ENDSTONE.getDurability());
+        assertEquals(-1, BrickType.OBSIDIAN.getDurability());
+        assertEquals(1, BrickType.LUCKY.getDurability());
     }
 
     @Test
     @DisplayName("BrickType enum should have exactly 7 types")
     void testBrickTypeEnumCount() {
-        BrickComponent.BrickType[] types = BrickComponent.BrickType.values();
+        BrickType[] types = BrickType.values();
         assertEquals(7, types.length);
     }
 
     @Test
     @DisplayName("Multiple takeDamage calls should reduce durability to zero")
     void testMultipleTakeDamageCalls() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.STONE);
+        BrickComponent brick = new BrickComponent(BrickType.STONE);
 
         assertEquals(2, brick.getDurability());
 
@@ -181,7 +182,7 @@ class BrickComponentTest {
     @Test
     @DisplayName("takeDamage on LUCKY brick should reduce durability")
     void testTakeDamageOnLuckyBrick() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.LUCKY);
+        BrickComponent brick = new BrickComponent(BrickType.LUCKY);
 
         assertEquals(1, brick.getDurability());
 
@@ -192,7 +193,7 @@ class BrickComponentTest {
     @Test
     @DisplayName("Durability should not go negative for breakable bricks")
     void testDurabilityDoesNotGoNegative() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.WOOD);
+        BrickComponent brick = new BrickComponent(BrickType.WOOD);
 
         brick.takeDamage();
         assertEquals(0, brick.getDurability());
@@ -204,7 +205,7 @@ class BrickComponentTest {
     @Test
     @DisplayName("setDurability should allow setting negative values")
     void testSetDurabilityAllowsNegativeValues() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.WOOD);
+        BrickComponent brick = new BrickComponent(BrickType.WOOD);
 
         brick.setDurability(-1);
         assertEquals(-1, brick.getDurability());
@@ -213,21 +214,21 @@ class BrickComponentTest {
     @Test
     @DisplayName("All brick types should be accessible from enum")
     void testAllBrickTypesAccessible() {
-        assertNotNull(BrickComponent.BrickType.WOOD);
-        assertNotNull(BrickComponent.BrickType.NETHERACK);
-        assertNotNull(BrickComponent.BrickType.STONE);
-        assertNotNull(BrickComponent.BrickType.NETHERBRICK);
-        assertNotNull(BrickComponent.BrickType.ENDSTONE);
-        assertNotNull(BrickComponent.BrickType.OBSIDIAN);
-        assertNotNull(BrickComponent.BrickType.LUCKY);
+        assertNotNull(BrickType.WOOD);
+        assertNotNull(BrickType.NETHERACK);
+        assertNotNull(BrickType.STONE);
+        assertNotNull(BrickType.NETHERBRICK);
+        assertNotNull(BrickType.ENDSTONE);
+        assertNotNull(BrickType.OBSIDIAN);
+        assertNotNull(BrickType.LUCKY);
     }
 
     @Test
     @DisplayName("Brick type should remain constant after creation")
     void testBrickTypeImmutable() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.STONE);
+        BrickComponent brick = new BrickComponent(BrickType.STONE);
 
-        BrickComponent.BrickType initialType = brick.getBrickType();
+        BrickType initialType = brick.getBrickType();
         brick.takeDamage();
 
         assertEquals(initialType, brick.getBrickType());
@@ -236,7 +237,7 @@ class BrickComponentTest {
     @Test
     @DisplayName("NETHERBRICK brick should require 2 hits to destroy")
     void testNetherbrickRequiresTwoHits() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.NETHERBRICK);
+        BrickComponent brick = new BrickComponent(BrickType.NETHERBRICK);
 
         assertEquals(2, brick.getDurability());
         brick.takeDamage();
@@ -248,7 +249,7 @@ class BrickComponentTest {
     @Test
     @DisplayName("ENDSTONE brick should require 2 hits to destroy")
     void testEndstoneRequiresTwoHits() {
-        BrickComponent brick = new BrickComponent(BrickComponent.BrickType.ENDSTONE);
+        BrickComponent brick = new BrickComponent(BrickType.ENDSTONE);
 
         assertEquals(2, brick.getDurability());
         brick.takeDamage();
@@ -266,7 +267,7 @@ class BrickComponentTest {
     @Test
     @DisplayName("BrickType enum should be public")
     void testBrickTypeEnumIsPublic() {
-        assertTrue(java.lang.reflect.Modifier.isPublic(BrickComponent.BrickType.class.getModifiers()));
+        assertTrue(java.lang.reflect.Modifier.isPublic(BrickType.class.getModifiers()));
     }
 
     @Test
