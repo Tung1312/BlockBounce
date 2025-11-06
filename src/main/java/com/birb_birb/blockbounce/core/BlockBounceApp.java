@@ -28,7 +28,6 @@ public class BlockBounceApp extends GameApplication {
         settings.setHeight(GameConstants.WINDOW_HEIGHT);
         settings.setTitle(GameConstants.GAME_TITLE);
         settings.setVersion(GameConstants.GAME_VERSION);
-        settings.setFullScreenAllowed(true);
         settings.setFullScreenFromStart(false);
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);

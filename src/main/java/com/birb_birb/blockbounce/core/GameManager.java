@@ -75,7 +75,6 @@ public abstract class GameManager {
     protected void setupUI() {
         createFrame();
 
-        // Don't show the single-player global score/lives UI in Versus mode.
         if (GameMode.getCurrentGameMode() == GameMode.VERSUS) {
             return;
         }

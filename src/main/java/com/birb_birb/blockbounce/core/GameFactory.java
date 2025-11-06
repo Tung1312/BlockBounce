@@ -246,13 +246,7 @@ public final class GameFactory {
                 .collidable()
                 .buildAndAttach();
 
-        entityBuilder()
-                .type(EntityType.WALL)
-                .at(0, 0)
-                .at(OFFSET_LEFT, OFFSET_TOP)
-                .viewWithBBox(new Rectangle(PLAYABLE_WIDTH, 10, Color.TRANSPARENT))
-                .collidable()
-                .buildAndAttach();
+
     }
 
     public static Entity createStoryModeFrame() {
@@ -302,7 +296,7 @@ public final class GameFactory {
 
     /**
      * Spawn a power-up entity at given position.
-     * playerId = 0 for neutral, >0 to target a specific player (useful in versus)
+     * playerId = 0 for neutral, >0 to target a specific player (versus)
      */
     public static Entity createPowerUp(double x, double y, PowerUpType type, int playerId) {
         // Select texture based on power-up type
