@@ -34,6 +34,9 @@ public class ScoreModeGame extends GameManager {
     private int currentSaveSlot = 1; // Default save slot
     private RandomLevelLoader randomLevelLoader; // For infinite level generation
 
+    // Optional: allow selecting a specific starting storage level (e.g., 9..23)
+    private static Integer selectedStartingStorageLevel = null;
+
     private ScoreModeGame() {
         randomLevelLoader = new RandomLevelLoader();
     }
@@ -71,10 +74,11 @@ public class ScoreModeGame extends GameManager {
         return INSTANCE;
     }
 
-    /**
-     * Save current game state to a slot
-     * @param slot Save slot number (1-3)
-     */
+
+    public static void setStartingLevel(Integer storageLevelNumber) {
+        selectedStartingStorageLevel = storageLevelNumber;
+    }
+
     public boolean saveGame(int slot) {
         // Do not allow saving if game is over or lives <= 0
         if (getb("gameOver") || geti("lives") <= 0) {
@@ -95,10 +99,7 @@ public class ScoreModeGame extends GameManager {
         return success;
     }
 
-    /**
-     * Load game state from a slot
-     * @param slot Save slot number (1-3)
-     */
+
     public boolean loadGame(int slot) {
         SaveData saveData =
             SaveGameManager.loadScoreGame(slot);
@@ -225,7 +226,7 @@ public class ScoreModeGame extends GameManager {
                     if (!balls.isEmpty()) {
                         BallComponent ballComponent = balls.get(0).getComponent(BallComponent.class);
                         if (ballComponent != null && ballComponent.hasLaunched()) {
-                            timerStarted = true;
+                          timerStarted = true;
                         }
                     }
                 }
@@ -413,5 +414,33 @@ public class ScoreModeGame extends GameManager {
             }).start();
         }
     }
-}
 
+    @Override
+    protected void setupNewGame() {
+        // Create background and walls
+        GameFactory.createBackground();
+        GameFactory.createWalls();
+
+        // Choose initial bricks: custom storage level -> random storage level -> default grid
+        com.birb_birb.blockbounce.utils.saveload.LevelData levelData = null;
+        if (selectedStartingStorageLevel != null) {
+            levelData = randomLevelLoader.loadLevelFromStorage(selectedStartingStorageLevel);
+            if (levelData == null) {
+                System.err.println("ScoreMode: failed to load specified starting level " + selectedStartingStorageLevel + ", will try random.");
+            }
+        }
+        if (levelData == null) {
+            levelData = randomLevelLoader.loadRandomLevel();
+        }
+
+        if (levelData != null) {
+            GameFactory.createBricksFromData(levelData);
+        } else {
+            GameFactory.createBricks();
+        }
+
+        // Create paddle and ball after bricks
+        GameFactory.createPaddle();
+        GameFactory.createBall();
+    }
+}
