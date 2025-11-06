@@ -21,20 +21,13 @@ public class RandomLevelLoader {
         this.random = new Random();
     }
 
-    /**
-     * Load a random level from storage directory (levels 9-23)
-     * @return LevelData object or null if loading failed
-     */
+
     public LevelData loadRandomLevel() {
         int randomLevel = MIN_LEVEL + random.nextInt(MAX_LEVEL - MIN_LEVEL + 1);
         return loadLevelFromStorage(randomLevel);
     }
 
-    /**
-     * Load a specific level from storage directory
-     * @param levelNumber The level number (9-23)
-     * @return LevelData object or null if loading failed
-     */
+
     public LevelData loadLevelFromStorage(int levelNumber) {
         String resourcePath = "/levels/storage/level_" + levelNumber + ".json";
 

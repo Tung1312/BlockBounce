@@ -11,10 +11,9 @@ import java.util.Map;
  * Data structure for level configuration loaded from JSON files.
  * Uses a grid-based approach for easy level creation.
  *
- * Letter codes in grid:
- * W = WOOD, S = STONE, R = NETHERACK (note: changed from N to R)
+ * W = WOOD, S = STONE, R = NETHERACK (
  * N = NETHERBRICK, E = ENDSTONE, O = OBSIDIAN
- * . or space = Empty space (no brick)
+ * . or space = no brick
  */
 public class LevelData {
     private int levelId;
@@ -43,10 +42,7 @@ public class LevelData {
         DURABILITY_MAP.put("LUCKY", 1);
     }
 
-    /**
-     * Convert the grid pattern into a list of BlockData objects
-     * @return List of blocks with positions and types
-     */
+
     public List<BlockData> getBricks() {
         List<BlockData> bricks = new ArrayList<>();
 
@@ -72,11 +68,7 @@ public class LevelData {
         return bricks;
     }
 
-    /**
-     * Get a default color name for each brick type
-     * @param brickType The brick type
-     * @return Color name as string
-     */
+
     private String getColorForType(String brickType) {
         return switch (brickType) {
             case "WOOD" -> "BROWN";

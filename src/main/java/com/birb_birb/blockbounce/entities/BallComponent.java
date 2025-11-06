@@ -298,7 +298,6 @@ public class BallComponent extends PhysicsComponent {
         }
     }
 
-    // ==================== HELPER METHODS ====================
 
     // Helper to get paddle logical width (uses property if present)
     private double getPaddleWidth(Entity paddle) {

@@ -14,10 +14,7 @@ public class LevelLoader {
         this.gson = new GsonBuilder().setPrettyPrinting().create();
     }
 
-    /**Load a level from resources by level number
-     * @param levelNumber The level number (e.g., 1 loads level_1.json)
-     * @return LevelData object or null if loading failed
-     */
+
     public LevelData loadLevel(int levelNumber) {
         String resourcePath = "/levels/level_" + levelNumber + ".json";
 

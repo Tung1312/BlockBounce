@@ -11,13 +11,7 @@ public class TextureManager {
 
     private TextureManager() {}
 
-    /**
-     * Load and configure a texture with standard settings
-     * @param path Path to the texture
-     * @param width Desired width
-     * @param height Desired height
-     * @return Configured texture
-     */
+
     public static Texture loadTexture(String path, double width, double height) {
         Texture texture = getAssetLoader().loadTexture(path);
         texture.setFitWidth(width);
@@ -27,13 +21,7 @@ public class TextureManager {
         return texture;
     }
 
-    /**
-     * Load texture copy with standard settings (for bricks that need multiple instances)
-     * @param baseTexture Base texture to copy
-     * @param width Desired width
-     * @param height Desired height
-     * @return Configured texture copy
-     */
+
     public static Texture loadTextureCopy(Texture baseTexture, double width, double height) {
         Texture texture = baseTexture.copy();
         texture.setFitWidth(width);

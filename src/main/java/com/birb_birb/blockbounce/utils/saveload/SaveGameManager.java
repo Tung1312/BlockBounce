@@ -29,12 +29,7 @@ public class SaveGameManager {
         }
     }
 
-    /**
-     * Save game data to a specific slot
-     * @param slot Save slot number (1-3)
-     * @param data Game save data
-     * @return true if save was successful
-     */
+
     public static boolean saveGame(int slot, SaveData data) {
         if (slot < 1 || slot > MAX_SAVE_SLOTS) {
             System.err.println("Invalid save slot: " + slot);
@@ -56,11 +51,7 @@ public class SaveGameManager {
         }
     }
 
-    /**
-     * Load game data from a specific slot
-     * @param slot Save slot number (1-3)
-     * @return SaveData or null if load failed
-     */
+
     public static SaveData loadGame(int slot) {
         if (slot < 1 || slot > MAX_SAVE_SLOTS) {
             System.err.println("Invalid save slot: " + slot);
@@ -87,12 +78,7 @@ public class SaveGameManager {
         }
     }
 
-    /**
-     * Save Score Mode game data to a specific slot
-     * @param slot Save slot number (1-3)
-     * @param data Game save data
-     * @return true if save was successful
-     */
+
     public static boolean saveScoreGame(int slot, SaveData data) {
         if (slot < 1 || slot > MAX_SAVE_SLOTS) {
             System.err.println("Invalid save slot: " + slot);
@@ -114,11 +100,7 @@ public class SaveGameManager {
         }
     }
 
-    /**
-     * Load Score Mode game data from a specific slot
-     * @param slot Save slot number (1-3)
-     * @return SaveData or null if load failed
-     */
+
     public static SaveData loadScoreGame(int slot) {
         if (slot < 1 || slot > MAX_SAVE_SLOTS) {
             System.err.println("Invalid save slot: " + slot);
@@ -145,11 +127,7 @@ public class SaveGameManager {
         }
     }
 
-    /**
-     * Check if a save slot has data
-     * @param slot Save slot number (1-3)
-     * @return true if save exists
-     */
+
     public static boolean hasSaveData(int slot) {
         if (slot < 1 || slot > MAX_SAVE_SLOTS) {
             return false;
@@ -160,11 +138,7 @@ public class SaveGameManager {
         return Files.exists(savePath);
     }
 
-    /**
-     * Check if a Score Mode save slot has data
-     * @param slot Save slot number (1-3)
-     * @return true if save exists
-     */
+
     public static boolean hasScoreSaveData(int slot) {
         if (slot < 1 || slot > MAX_SAVE_SLOTS) {
             return false;
@@ -175,11 +149,7 @@ public class SaveGameManager {
         return Files.exists(savePath);
     }
 
-    /**
-     * Delete save data from a slot
-     * @param slot Save slot number (1-3)
-     * @return true if deletion was successful
-     */
+
     public static boolean deleteSave(int slot) {
         if (slot < 1 || slot > MAX_SAVE_SLOTS) {
             System.err.println("Invalid save slot: " + slot);
